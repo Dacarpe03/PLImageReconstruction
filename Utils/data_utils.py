@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 
 def load_numpy_data(data_filepath,
 			  		n_points=None):
@@ -12,9 +14,10 @@ def load_numpy_data(data_filepath,
 	Returns:
 		data (np.array): An array containing the loaded data
 	"""
+
 	if n_points is not None:
-		data = np.load_data(data_filepath)[0:n_points]
+		data = np.load(data_filepath)[0:n_points]
 	else:
-		data = np.load_data(data_filepath)
+		data = np.load(data_filepath)
 
 	return data
