@@ -46,3 +46,29 @@ def flatten_data(
 	flattened_data = data.reshape(n_points, flat_length)
 
 	return flattened_data
+
+
+def shuffle_arrays(
+	array_list
+	):
+	"""
+	Function that applies the same shuffle to a list of arrays
+
+	Input:
+		array_list (list): A list with numpy arrays to be shuffled
+
+	Returns:
+		shuffled_array_list (list): A list with the numpy arrays shuffled
+	"""
+
+	# Compute the number of data points in the array
+	array_length = len(array_list[0])
+	# Create a new arrangement of indices
+	shuffled_indices = np.random.permutation(array_length)
+
+	# Shuffle all the arrays with the new arrangement
+	shuffled_array_list = []
+	for array in array_list:
+		shuffled_array_list.append(array[shuffled_indices])
+
+	return shuffled_array_list
