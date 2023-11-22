@@ -1,10 +1,12 @@
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
 from keras.models import Sequential
 from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation
 
-def create_linear_architecture(
+
+def create_linear_architecture_for_amplitude_reconstruction(
 	input_shape,
 	output_size,
 	hidden_layer_sizes,
@@ -12,14 +14,14 @@ def create_linear_architecture(
 	hidden_activation,
 	output_activation,
 	use_batch_normalization=True,
-	name="SurfaceReconstructor"):
-
+	name="SurfaceReconstructor"
+	):
 	"""
 	Defines de architecture of the neural network
 
 	Input:
 		input_shape (tuple): The shape a data point in the features dataset
-		output_size (int): The length of a data point in the labels dataset
+		output_shape (tuple): The shape of a data point in the labels dataset
 		hidden_layer_sizes (list): A list of integers
 		regularizer (keras.regularizers): A regularizer for the hidden layers (e.g. L1, see keras documentation for more)
 		hidden_activation (string): The name of the activation function of the hidden layers' neurons  (e.g 'relu', see keras documentation for more)
@@ -30,7 +32,8 @@ def create_linear_architecture(
 	Returns:
 		model (keras.Sequential): A keras neural network model with the architecture specified
 	"""
-
+	# As the output is an image, we will show the fucking
+	output_size = output_shape[0] * output_shape[1]
 	# Create a sequential model
 	model = Sequential(
 		name=name
@@ -74,6 +77,13 @@ def create_linear_architecture(
 		Dense(
 			output_size,
 			activation=output_activation
+			)
+		)
+
+	# Reshape the linear neurons into the reconstructed image
+	model.add(
+		Reshape(
+			output_shape
 			)
 		)
 
