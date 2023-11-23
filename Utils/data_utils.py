@@ -72,3 +72,22 @@ def shuffle_arrays(
 		shuffled_array_list.append(array[shuffled_indices])
 
 	return shuffled_array_list
+
+
+def fuse_amplitude_and_phase(
+	amplitudes_array,
+	phases_array
+	):
+	"""
+	Function that stacks the amplitudes and phase arrays into one
+	Input:
+		amplitudes_array (np.array): An array of shape (n, 96, 96) containing the amplitude maps
+		phases_array (np.array): An array of shape (n, 96, 96) containing the phase maps
+
+	Returns:
+		amp_phase_array (np.array): An array of shape (n, 2, 96, 96) containing the amplitude maps
+	"""
+	
+	amp_phase_array = np.stack([amplitudes_array, phases_array])
+
+	return amp_phase_array
