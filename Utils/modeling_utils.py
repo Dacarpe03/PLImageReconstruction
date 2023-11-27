@@ -121,7 +121,6 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	
 	# As the output is an image, we need to create a final layer with as many neurons as pixels
 	output_size = np.prod(output_shape)
-	print(output_size)
 
 	# Create a sequential model
 	model = Sequential(
@@ -168,7 +167,7 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 			activation=output_activation
 			)
 		)
-	print(output_size)
+	
 	# Reshape the linear neurons into the reconstructed image
 	model.add(
 		Reshape(
