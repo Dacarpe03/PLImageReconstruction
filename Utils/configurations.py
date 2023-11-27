@@ -51,6 +51,7 @@ class FullyConnectedArchitecture(ConfigurationElement):
 			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
 		"""
+
 		return self.input_shape, \
 			   self.output_shape, \
 			   self.hidden_layer_sizes, \
@@ -65,3 +66,71 @@ class CompilationConfiguration(ConfigurationElement):
 	"""
 	This class contains the model compilation hyperparameters
 	"""
+
+	def __init__(
+		self, 
+		loss_function,
+		optimizer,
+		metric
+		):
+		super(CompilationConfiguration, self).__init__()
+		self.loss_function = loss_function
+		self.optimizer = optimizer
+		self.metric = metric
+
+
+	def unpack_hyperparameters(
+		self
+		):
+		"""
+		This method returns all the hyperparameters of the architecture configuration
+
+		Input:
+			None
+		
+		Returns:
+			loss_function (keras.losses): A loss function to backpropagate
+			optimizer (keras.optimizers): An optimizer to tune the neural network
+			learning_rate (float): The learning rate used by the optimizer
+			metric (keras.metrics): The metric to monitor to execute the callbacks
+		"""
+
+		return self.loss_function, \
+			   self.optimizer, \
+			   self.metric
+
+
+class TrainingConfiguration(ConfigurationElement):
+	"""
+	This class contains the training hyperparameters
+	"""
+	def __init__(
+		self, 
+		epochs,
+		batch_size,
+		callbacks
+		):
+		super(TrainingConfiguration, self).__init__()
+		self.epochs = epochs
+		self.batch_size = batch_size
+		self.callbacks = callbacks
+
+
+	def unpack_hyperparameters(
+		self
+		):
+		"""
+		This method returns all the hyperparameters of the architecture configuration
+
+		Input:
+			None
+		
+		Returns:
+			epochs (int): The number of epochs to train the model
+			batch_size (batch_size): The size of the batch inside the epochs
+			callbacks (list): A list of callbacks to use during the trainingx
+		"""
+
+		return self.epochs, \
+			   self.batch_size, \
+			   self.callbacks

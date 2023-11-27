@@ -141,8 +141,8 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		model.add(
 			Dense(
 				neurons,
-				kernel_regularizer=regularizer,
-				kernel_initializer=keras.initializers.HeNormal(seed=None),
+				# kernel_regularizer=regularizer,
+				# kernel_initializer=keras.initializers.HeNormal(seed=None),
 				use_bias=False
 				)
 			)
@@ -167,7 +167,7 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 			activation=output_activation
 			)
 		)
-	
+
 	# Reshape the linear neurons into the reconstructed image
 	model.add(
 		Reshape(
@@ -209,10 +209,10 @@ def train_linear_model_for_amplitude_reconstruction(
 	model,
 	train_features,
 	train_labels,
-	batch_size,
-	epochs,
 	val_features,
 	val_labels,
+	batch_size,
+	epochs,
 	callbacks):
 
 	"""
