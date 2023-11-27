@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape
 
 
+
 def create_linear_architecture_for_amplitude_reconstruction(
 	input_shape,
 	output_shape,
@@ -143,6 +144,7 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 				neurons,
 				# kernel_regularizer=regularizer,
 				# kernel_initializer=keras.initializers.HeNormal(seed=None),
+				kernel_regularizer=regularizer,
 				use_bias=False
 				)
 			)
@@ -211,8 +213,8 @@ def train_linear_model_for_amplitude_reconstruction(
 	train_labels,
 	val_features,
 	val_labels,
-	batch_size,
 	epochs,
+	batch_size,
 	callbacks):
 
 	"""
@@ -222,10 +224,10 @@ def train_linear_model_for_amplitude_reconstruction(
 		model (keras.Sequential): The sequential model to train
 		train_features (np.array): An np.array containing np.array with the train features
 		train_labels (np.array): An np.array containing np.array with the train features
-		batch_size(int): The batch size of training samples used before each weight update
-		epochs (int): The number of times the training goes through the training data
 		val_features (np.array): An np.array containing np.array with the train features
 		val_labels (np.array): An np.array containing np.array with the train features 
+		epochs (int): The number of times the training goes through the training data
+		batch_size(int): The batch size of training samples used before each weight update
 		callbacks (list): A list of keras callbacks used during the training.
 
 	Returns:
@@ -240,3 +242,7 @@ def train_linear_model_for_amplitude_reconstruction(
 						verbose=1)
 
 	return history
+
+
+
+
