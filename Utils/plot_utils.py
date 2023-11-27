@@ -1,4 +1,7 @@
 import plotly.express as px
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -45,8 +48,64 @@ def plot_model_history(
     # Set the y axis title
     plt.ylabel('Mean Squared Error')
     # Limit the error
-    plt.ylim(top=0.5, bottom=0)
+    plt.ylim(top=2, bottom=0)
     # Show the plot
     plt.show()
 
     return None
+
+
+def plot_fully_connected_amp_phase_prediction(
+    model,
+    input_flux,
+    original_amplitude,
+    original_phase
+    ):
+    """
+    Plots a 4 figure diagram with the predictions of the model
+
+    Input:
+        model (keras.models): A trained neural network
+        input_flux (np.array): A data point to feed the neural network
+        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
+        original_phase (np.array): Original 2d array containing the phase information in the pupil
+
+    Returns:
+        None
+    """
+
+    reshaped_input_flux = input_flux.reshape(1,len(input_flux))
+    prediction = model.predict(reshaped_input_flux)
+    amplitude_prediction = prediction[0][0]
+    phase_prediction = prediction[0][1]
+
+    plot_amp_phase_prediction(
+        amplitude_prediction,
+        phase_prediction,
+        original_amplitude,
+        original_phase
+        )
+
+
+def plot_amp_phase_prediction(
+    predicted_amplitude,
+    predicted_phase,
+    original_amplitude,
+    original_phase
+    ):
+    # Create a subplot with 2 rows and 2 columns
+    fig = make_subplots(rows=2, cols=2, subplot_titles=("Original Amplitude", "Original Phase", "Reconstructed Amplitude", "Reconstructed Phase"))
+
+    fig.add_trace(go.Heatmap(z=original_amplitude), row=1, col=1)
+    fig.add_trace(go.Heatmap(z=original_phase), row=1, col=2)
+    fig.add_trace(go.Heatmap(z=predicted_amplitude), row=2, col=1)
+    fig.add_trace(go.Heatmap(z=predicted_phase), row=2, col=2)
+
+    fig.update_layout(
+    title_text='Amplitude and Phase Reconstruction',
+    height=800,  # Set the height of the figure
+    width=800    # Set the width of the figure
+    )
+
+    # Show the plot
+    fig.show()
