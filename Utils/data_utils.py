@@ -151,3 +151,107 @@ def fuse_amplitude_and_phase(
 
 	return amp_phase_array
 
+
+def process_amp_phase_data(
+	flux_data_filepath,
+	amplitude_data_filepath,
+	phase_data_filepath,
+	n_points=None,
+	normalize_flux=False,
+	normalize_amplitude=False,
+	normalize_phase=False,
+	shuffle=False,
+	flatten_fluxes=False,
+	split=False,
+	val_ratio=0.1
+	):
+	"""
+	Function that retrieves numpy data given a path and processes it
+
+	Input:
+		flux_data_filepath (string): The feature data file path
+		amplitude_data_filepath (string): The amplitude data file path
+		phase_data_filepath (string): The phase data file path
+		n_points (int): The number of points to load
+		normalize_flux (bool): Indicates wheter or not apply normalization to the flux data
+		normalize_amplitude (bool): Indicates wheter or not apply normalization to the amplitude data
+		normalize_phase (bool): Indicates whether or not apply normalization to the phase data
+		shuffle (bool): Indicates whether or not to shuffle the data (all together: fluxes, amplitudes and phases)
+		flatten_fluxes (bool): Indicates whether or not flatten the flux array
+		split (bool): Indicates whether or not split the datasets into train and validation sets
+		val_ratio (float): The ratio of size between the original array and the validation array
+
+	Returns:
+		If split is True:
+			train_fluxes_array (np.array): The array containing the fluxes training set
+			val_fluxes_array (np.array): The array containing the fluxes validation set
+			train_amp_phase_array (np.array): The array containing the amplitude+phase training set
+			val_amp_phase_array (np.array): The array containing the amplitude+phase validation set
+			scalers (list): A list of scalers of each of the normalized arrays (can be empty)
+
+		If split is False:
+			fluxes_array (np.array): The array containing the fluxes
+			amp_phase_array (np.array): The array containing the amplitudes and phase merged
+			scalers (list): A list of scalers of each of the normalized arrays (can be empty)
+	"""
+
+	# LOAD DATA
+	# If a number of points to sample has been specified, then get the first n_points
+	if n_points is not None:
+		fluxes_array = np.load(flux_data_filepath)[0:n_points]
+		amplitudes_array = np.load(amplitude_data_filepath)[0:n_points]
+		phases_array = np.load(phase_data_filepath)[0:n_points]
+
+	# Else load the whole file
+	else:
+		fluxes_array = np.load(flux_data_filepath)
+		amplitudes_array = np.load(amplitude_data_filepath)
+		phases_array = np.load(phase_data_filepath)
+
+	# NORMALIZE_DATA
+	scalers = []
+	if normalize_flux:
+		fluxes_array, fluxes_scaler = normalize_data(fluxes_array)
+		scalers.append(fluxes_scaler)
+
+	if normalize_amplitude:
+		amplitudes_array, amplitudes_scaler = normalize_data(amplitudes_array)
+		scalers.append(amplitudes_scaler)
+
+	if normalize_phase:
+		phases_array, phases_scaler = normalize_data(phases_array)
+		scalers.append(phases_scaler)
+
+	# SHUFFLE DATA
+	if shuffle:
+		fluxes_array, amplitudes_array, phases_array = shuffle_arrays([fluxes_array,
+                                                               		   amplitudes_array,
+                                                               		   phases_array])
+
+	# FLATTEN FLUXES
+	if flatten_fluxes:
+		fluxes_array = flatten_data(fluxes_array)
+
+	# MERGE PHASE AND AMPLITUDE
+	amp_phase_array = fuse_amplitude_and_phase(amplitudes_array,
+                      					       phases_array)
+
+	# SPLIT DATA
+	if split_data:
+		train_fluxes_array, val_fluxes_array = split_data(fluxes_array,
+                                                                    val_ratio)
+
+		train_amp_phase_array, val_amp_phase_array = split_data(amp_phase_array,
+                                                        		val_ratio)
+
+		return train_fluxes_array, \
+			   val_fluxes_array, \
+			   train_amp_phase_array, \
+			   val_amp_phase_array, \
+			   scalers
+
+
+	return fluxes_array, \
+		   amp_phase_array, \
+		   scalers
+

@@ -4,7 +4,7 @@ from plotly.subplots import make_subplots
 
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import numpy as np
 
 def plot_map(
 	whatever_map

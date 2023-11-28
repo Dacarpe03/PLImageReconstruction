@@ -418,7 +418,7 @@ def FirstConvolutionalModelWithBN(
 	"""
 
 	# Define training hyperparameters
-	epochs = 200
+	epochs = 1000
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -522,7 +522,7 @@ def FirstWorkingModelWithBN(
 	"""
 
 	# Define training hyperparameters
-	epochs = 200
+	epochs = 1000
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
