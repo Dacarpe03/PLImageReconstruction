@@ -84,7 +84,42 @@ def plot_fully_connected_amp_phase_prediction(
         phase_prediction,
         original_amplitude,
         original_phase
-        )
+    )
+
+
+def plot_conv_amp_phase_prediction(
+    model,
+    input_flux,
+    original_amplitude,
+    original_phase
+    ):
+    """
+    Plots a 4 figure diagram with the predictions of the convolutional model
+
+    Input:
+        model (keras.models): A trained neural network
+        input_flux (np.array): A data point to feed the neural network
+        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
+        original_phase (np.array): Original 2d array containing the phase information in the pupil
+
+    Returns:
+        None
+    """
+
+    reshaped_input_flux = np.array([input_flux])
+    prediction = model.predict(reshaped_input_flux)
+    amplitude_prediction = prediction[0][0]
+    phase_prediction = prediction[0][1]
+
+    plot_amp_phase_prediction(
+        amplitude_prediction,
+        phase_prediction,
+        original_amplitude,
+        original_phase
+    )
+
+
+
 
 
 def plot_amp_phase_prediction(

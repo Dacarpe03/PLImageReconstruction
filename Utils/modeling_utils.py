@@ -180,7 +180,126 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	return model
 
 
-def compile_linear_model_for_amplitude_reconstruction(
+def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
+	input_shape,
+	output_shape,
+	convolutional_layer_sizes,
+	convolutinal_layer_kernels,
+	fully_connected_hidden_layer_sizes,
+	regularizer,
+	convolutional_activation,
+	fully_connected_hidden_activation,
+	output_activation,
+	use_batch_normalization=True,
+	name="ConvolutionalAmplitudePhaseReconstructor"
+	):
+
+	"""
+	Defines de architecture of the convolutional neural network
+
+	Input:
+		input_shape (tuple): The shape a data point in the features dataset
+		output_shape (tuple): The shape of a data point in the labels dataset
+		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
+		convolutinal_layer_kernels (list): A list of integers containing the size of the kernel per convolutional layer
+		fully_connected_hidden_layer_sizes (list): A list of integers
+		regularizer (keras.regularizers): A regularizer for the hidden layers (e.g. L1, see keras documentation for more)
+		fully_connected_hidden_activation (string): The name of the activation function of the hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
+		use_batch_normalization (bool): If True, then add batch normalization to the hidder layers
+		name (string): The name of the model
+
+	Returns:
+		model (keras.Sequential): A keras neural network model with the architecture specified
+	"""
+
+	model = Sequential()
+	input_shape = input_shape + (1, )
+	output_size = np.prod(output_shape)
+
+
+	model.add(
+		Conv2D(
+			convolutional_layer_sizes[0],
+			convolutinal_layer_kernels[0],
+			activation=convolutional_activation,
+			input_shape=input_shape
+		)
+	)
+
+	model.add(
+		MaxPooling2D(
+			pool_size=(2,2)
+		)
+	)
+
+	for i in range(1, len(convolutional_layer_sizes)):
+		model.add(
+				Conv2D(
+					convolutional_layer_sizes[i],
+					convolutinal_layer_kernels[i],
+					activation=convolutional_activation
+				)
+		)
+
+		model.add(
+				MaxPooling2D(
+					pool_size=(2,2)
+				)
+		)
+
+	model.add(
+			Flatten()
+	)
+	
+	for neurons in fully_connected_hidden_layer_sizes:
+
+		# Define layer
+		model.add(
+			Dense(
+				neurons,
+				# kernel_regularizer=regularizer,
+				# kernel_initializer=keras.initializers.HeNormal(seed=None),
+				kernel_regularizer=regularizer,
+				use_bias=False
+			)
+		)
+
+		# Add normalization
+		if use_batch_normalization:
+			model.add(
+				BatchNormalization()
+			)
+
+		# Define the activation function
+		model.add(
+			Activation(
+				fully_connected_hidden_activation
+			)
+		)
+
+
+	# Add output layer
+	model.add(
+		Dense(
+			output_size,
+			activation=output_activation
+		)
+	)
+
+	# Reshape the linear neurons into the reconstructed image
+	model.add(
+		Reshape(
+			output_shape
+		)
+	)
+
+	model.summary()
+	return model
+
+
+def compile_model(
 	model,
 	loss_function,
 	optimizer,
@@ -207,7 +326,7 @@ def compile_linear_model_for_amplitude_reconstruction(
 	return None
 
 
-def train_linear_model_for_amplitude_reconstruction(
+def train_model(
 	model,
 	train_features,
 	train_labels,
