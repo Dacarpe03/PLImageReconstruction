@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 from keras.models import Sequential
-from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape
+from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape, Dropout
 
 
 
@@ -101,7 +101,9 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	hidden_activation,
 	output_activation,
 	use_batch_normalization=True,
-	name="AmplitudeReconstructor"
+	name="AmplitudeReconstructor",
+	use_dropout=False,
+	dropout_rate=0.1
 	):
 	"""
 	Defines de architecture of the neural network
@@ -159,6 +161,13 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		model.add(
 			Activation(
 				hidden_activation
+				)
+			)
+
+		if use_dropout:
+			model.add(
+				Dropout(
+					0.1
 				)
 			)
 
