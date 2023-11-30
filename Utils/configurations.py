@@ -903,7 +903,7 @@ def FCDropoutL2(
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
-	regularizer = L2(0.001)
+	regularizer = L2(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
@@ -931,7 +931,7 @@ def FCDropoutL2(
 		-Input shape: {input_shape}
 		-Output shape: {output_shape}
 		-Hidden layers: {hidden_layer_sizes}
-		-Regularizer: L1 (0.05)
+		-Regularizer: L2 (0.0001)
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
@@ -940,7 +940,7 @@ def FCDropoutL2(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.01
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
