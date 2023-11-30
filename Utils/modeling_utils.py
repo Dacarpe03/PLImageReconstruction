@@ -223,7 +223,10 @@ def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
 		model (keras.Sequential): A keras neural network model with the architecture specified
 	"""
 
-	model = Sequential()
+	model = Sequential(
+				name=name
+			)
+	
 	input_shape = input_shape + (1, )
 	output_size = np.prod(output_shape)
 

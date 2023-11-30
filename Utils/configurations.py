@@ -5,6 +5,7 @@ from keras.losses import MeanSquaredError as LossesMeanSquaredError
 from keras.optimizers import Adam
 from keras.metrics import MeanSquaredError as MetricsMeanSquaredError
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from keras.regularizers import L2
 
 
 class ConfigurationElement(ABC):
@@ -582,7 +583,7 @@ def FullyConnectedDropoutAndBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "AmplitudePhaseReconstructor1"
+	model_name = "FullyConnectedDropoutAndBN"
 	use_dropout = True
 	dropout_rate = 0.2
 
@@ -662,6 +663,330 @@ def FullyConnectedDropoutAndBN(
 		-Callbacks:
 			-Early Stop: MSE 50
 			-ReduceLROnPlateau: MSE 15 x0.1
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def FCDropoutOnly(
+	inputs_array,
+	outputs_array
+	):
+	"""
+	Function that creates the model configuration for the first
+	"""
+
+	# Define architecture hyperparmeters
+	input_shape = inputs_array[0].shape
+	output_shape = outputs_array[0].shape
+	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	regularizer = None
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	model_name = "FCDropoutOnly"
+	use_dropout = True
+	dropout_rate = 0.1
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout,
+                                    dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: None
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout} {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.0001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 500
+	batch_size = 128
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=15, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=50, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-Early Stop: MSE 50
+			-ReduceLROnPlateau: MSE 15 x0.1
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def FCDropoutL1(
+	inputs_array,
+	outputs_array
+	):
+	"""
+	Function that creates the model configuration for the first
+	"""
+
+	# Define architecture hyperparmeters
+	input_shape = inputs_array[0].shape
+	output_shape = outputs_array[0].shape
+	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	regularizer = L1(0.05)
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	model_name = "FCDropoutL1"
+	use_dropout = True
+	dropout_rate = 0.1
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout,
+                                    dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: L1 (0.05)
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout} {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.01
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 500
+	batch_size = 128
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=30, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=100, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 30 x0.1
+			-Early Stop: MSE 100
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def FCDropoutL2(
+	inputs_array,
+	outputs_array
+	):
+	"""
+	Function that creates the model configuration for the first
+	"""
+
+	# Define architecture hyperparmeters
+	input_shape = inputs_array[0].shape
+	output_shape = outputs_array[0].shape
+	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	regularizer = L2(0.001)
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	model_name = "FCDropoutL2"
+	use_dropout = True
+	dropout_rate = 0.1
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout,
+                                    dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: L1 (0.05)
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout} {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.01
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 500
+	batch_size = 128
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=30, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=100, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 30 x0.1
+			-Early Stop: MSE 100
 	"""
 
 	model_configuration = Configuration(

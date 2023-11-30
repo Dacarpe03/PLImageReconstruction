@@ -83,7 +83,8 @@ def plot_fully_connected_amp_phase_prediction(
         amplitude_prediction,
         phase_prediction,
         original_amplitude,
-        original_phase
+        original_phase,
+        model.name
     )
 
 
@@ -115,7 +116,8 @@ def plot_conv_amp_phase_prediction(
         amplitude_prediction,
         phase_prediction,
         original_amplitude,
-        original_phase
+        original_phase,
+        model.name
     )
 
 
@@ -126,7 +128,8 @@ def plot_amp_phase_prediction(
     predicted_amplitude,
     predicted_phase,
     original_amplitude,
-    original_phase
+    original_phase,
+    model_name
     ):
     # Create a subplot with 2 rows and 2 columns
     fig = make_subplots(rows=2, cols=2, subplot_titles=("Original Amplitude", "Original Phase", "Reconstructed Amplitude", "Reconstructed Phase"))
@@ -159,7 +162,7 @@ def plot_amp_phase_prediction(
     fig.add_trace(re_phase_heatmap, row=2, col=2)
 
     fig.update_layout(
-    title_text='Amplitude and Phase Reconstruction',
+    title_text=f"Amplitude and Phase Reconstruction {model_name}",
     height=800,  # Set the height of the figure
     width=800    # Set the width of the figure
     )
