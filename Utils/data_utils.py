@@ -152,11 +152,46 @@ def fuse_amplitude_and_phase(
 	return amp_phase_array
 
 
+def trim_data(
+	data_array
+	):
+	"""
+	This function asumes that the important information of the imaged is in the circle inscribed in the 2d matrix, 
+	so every cell outside of it turns its value to 0
+
+	Input:
+		data_array (np.array): A 3d array containing the original 2d images to trim
+
+	Returns:
+		data_array (np.array): A 3d array containing the trimmed 2d images
+	"""
+
+	circle_diameter = data_array[0].shape[0]
+	circle_radius = circle_diameter/2
+
+	# Create a list of x and y coordinates of the image pixels
+	x, y = np.meshgrid(np.arange(circle_diameter), np.arange(circle_diameter))
+
+	# Create a 2d array with the distance of each pixel to the center of the circle
+	distance_from_center = np.sqrt((x - circle_radius)**2 + (y - circle_radius)**2)
+
+	# Now create a mask defining which pixels of the matrix are inside the circle
+	outside_circle_mask = distance_from_center > circle_radius
+
+	# Apply the mask to the original data, turning the value of the pixels outside the circle to 0
+	for i in range(len(data_array)):
+		data_array[i][outside_circle_mask] = 0
+
+	return data_array
+
+
 def process_amp_phase_data(
 	flux_data_filepath,
 	amplitude_data_filepath,
 	phase_data_filepath,
 	n_points=None,
+	trim_amplitude=False,
+	trim_phase=False,
 	normalize_flux=False,
 	normalize_amplitude=False,
 	normalize_phase=False,
@@ -208,6 +243,12 @@ def process_amp_phase_data(
 		amplitudes_array = np.load(amplitude_data_filepath)
 		phases_array = np.load(phase_data_filepath)
 
+	# TRIM DATA
+	if trim_amplitude:
+		amplitudes_array = trim_data(amplitudes_array)
+	if trim_phase:
+		phases_array = trim_data(phases_array)
+
 	# NORMALIZE_DATA
 	scalers = []
 	if normalize_flux:
@@ -254,4 +295,6 @@ def process_amp_phase_data(
 	return fluxes_array, \
 		   amp_phase_array, \
 		   scalers
+
+
 

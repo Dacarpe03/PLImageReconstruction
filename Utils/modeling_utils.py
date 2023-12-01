@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 from keras.models import Sequential
-from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape, Dropout
+from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape, Dropout, UpSampling2D
 
 
 
@@ -101,7 +101,7 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	hidden_activation,
 	output_activation,
 	use_batch_normalization=True,
-	name="AmplitudeReconstructor",
+	name="FCAmplitudePhaseReconstructor",
 	use_dropout=False,
 	dropout_rate=0.1
 	):
@@ -306,6 +306,122 @@ def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
 			output_shape
 		)
 	)
+
+	model.summary()
+	return model
+
+
+def create_autoencoder_for_flux(
+	input_shape,
+	convolutional_layer_sizes,
+	convolutional_layer_kernels,
+	convolutional_activation,
+	output_activation,
+	name="AutoEncoder",
+	padding="same"
+	):
+	input_shape = input_shape + (1, )
+	model = Sequential(
+				name=name
+			)
+
+
+	# INPUT
+	model.add(
+		Conv2D(
+			convolutional_layer_sizes[0],
+			convolutional_layer_kernels[0],
+			activation=convolutional_activation,
+			input_shape=input_shape,
+			padding=padding
+		)
+	)
+
+	model.add(
+			Conv2D(
+				convolutional_layer_sizes[0],
+				convolutional_layer_kernels[0],
+				activation=convolutional_activation,
+				padding=padding
+			)
+	)
+
+	model.add(
+			MaxPooling2D(
+				pool_size=(2,2)
+			)
+	)
+
+	# ENCODER
+	for i in range(1, len(convolutional_layer_sizes)-1):
+		for j in range(2):
+			model.add(
+					Conv2D(
+						convolutional_layer_sizes[i],
+						convolutional_layer_kernels[i],
+						activation=convolutional_activation,
+						padding=padding
+
+					)
+			)
+
+		model.add(
+				MaxPooling2D(
+					pool_size=(2,2)
+				)
+		)
+
+	for j in range(2):
+		model.add(
+				Conv2D(
+					convolutional_layer_sizes[-1],
+					convolutional_layer_kernels[-1],
+					activation=convolutional_activation,
+					padding=padding
+				)
+		)
+	
+	# DECODER
+	convolutional_layer_sizes.reverse()
+	convolutional_layer_kernels.reverse()
+
+	for i in range(1, len(convolutional_layer_sizes)-1):
+		for j in range(2):
+			model.add(
+					Conv2D(
+						convolutional_layer_sizes[i],
+						convolutional_layer_kernels[i],
+						activation=convolutional_activation,
+						padding=padding
+					)
+			)
+
+			model.add(
+					UpSampling2D(
+						size=(2,2)
+					)
+			)
+
+	for i in range(2):
+		model.add(
+					Conv2D(
+						convolutional_layer_sizes[-1],
+						convolutional_layer_kernels[-1],
+						activation=convolutional_activation,
+						padding=padding
+
+					)
+			)
+
+	# OUTPUT
+	model.add(
+			Conv2D(
+				1,
+				(3,3), 
+				activation=output_activation,
+				padding=padding
+			)
+		)
 
 	model.summary()
 	return model

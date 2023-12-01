@@ -136,6 +136,53 @@ class ConvolutionalArchitecture(ConfigurationElement):
 			   self.model_name
 
 
+class AutoEncoderArchitecture(ConfigurationElement):
+	"""This class contains the information of the architecture of a model"""
+	def __init__(
+		self,
+		input_shape,
+		convolutional_layer_sizes,
+		convolutinal_layer_kernels,
+		convolutional_activation,
+		output_activation,
+		model_name="FluxAutoencoder"
+		):
+
+		super(AutoEncoderArchitecture, self).__init__()
+		self.input_shape = input_shape
+		self.convolutional_layer_sizes = convolutional_layer_sizes
+		self.convolutinal_layer_kernels = convolutinal_layer_kernels
+		self.convolutional_activation = convolutional_activation
+		self.output_activation = output_activation
+		self.model_name = model_name
+
+
+	def unpack_hyperparameters(self):
+		"""
+		This method returns all the hyperparameters of the architecture configuration
+
+		Input:
+			None
+		
+		Returns:
+			input_shape (tuple): The shape of the neural network input
+			output_shape (tuple): The shape of the neural network output
+			hidden_layer_shizes (list): The list with sizes of the hidden fully connected linear layers
+			regularizer (keras.regularizers): The regularizer for the hidden layers
+			hidden_activation (string): The name of the activation function in the hidden layers
+			output_activation (string): The name of the activation in the output layer
+			use_batch_normalization (bool): True if use batch normalization between hidden layers
+			model_name (string): The name of the model
+		"""
+
+		return self.input_shape, \
+			   self.convolutional_layer_sizes, \
+			   self.convolutinal_layer_kernels, \
+			   self.convolutional_activation, \
+			   self.output_activation, \
+			   self.model_name
+
+
 class CompilationConfiguration(ConfigurationElement):
 	"""
 	This class contains the model compilation hyperparameters
@@ -987,6 +1034,104 @@ def FCDropoutL2(
 		-Callbacks:
 			-ReduceLROnPlateau: MSE 30 x0.1
 			-Early Stop: MSE 100
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def AutoEncoderConfiguration(
+	inputs_array
+	):
+	"""
+	Function that creates the model configuration for the flux autoencoder
+	"""
+
+	# Define architecture hyperparmeters
+		
+		
+	input_shape = inputs_array[0].shape
+	convolutional_layer_sizes = [512, 128, 16]
+	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
+	convolutional_activation = 'relu'
+	output_activation = 'linear'
+	model_name="FluxAutoencoder"
+
+	architecture_hyperparams = AutoEncoderArchitecture(
+									input_shape,
+									convolutional_layer_sizes,
+									convolutinal_layer_kernels,
+									convolutional_activation,
+									output_activation,
+									model_name="FluxAutoencoder"
+                                )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Convolutional Layers: {convolutional_layer_sizes} (Inverse in the decoder)
+		-Convolutonal Kernels: {convolutinal_layer_kernels} (Inverse in the decoder)
+		-Convolutional Activation: {convolutional_activation}
+		-Output Layer Activation: {output_activation}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.0001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 1000
+	batch_size = 32
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=15, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=50, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-Early Stop: MSE 50
+			-ReduceLROnPlateau: MSE 15 x0.1
 	"""
 
 	model_configuration = Configuration(
