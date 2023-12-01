@@ -1057,8 +1057,8 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = inputs_array[0].shape
-	convolutional_layer_sizes = [512, 128, 16]
-	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
+	convolutional_layer_sizes = [256, 128, 16, 4]
+	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
 	model_name="FluxAutoencoder"
@@ -1075,7 +1075,7 @@ def AutoEncoderConfiguration(
 	description = f"""
 	=== {model_name} ===
 	*ARCHITECTURE HYPERPARAMETERS:
-		-Fully Connected
+		-Autoencoder
 		-Input shape: {input_shape}
 		-Convolutional Layers: {convolutional_layer_sizes} (Inverse in the decoder)
 		-Convolutonal Kernels: {convolutinal_layer_kernels} (Inverse in the decoder)
@@ -1106,17 +1106,17 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1000
-	batch_size = 32
+	epochs = 50
+	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
 					factor=0.1, 
-					patience=15, 
+					patience=8, 
 					verbose=1)
 	early_stop = EarlyStopping(
 					'mean_squared_error',
-					patience=50, 
+					patience=15, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
 
@@ -1130,8 +1130,8 @@ def AutoEncoderConfiguration(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks:
-			-Early Stop: MSE 50
-			-ReduceLROnPlateau: MSE 15 x0.1
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
 	"""
 
 	model_configuration = Configuration(

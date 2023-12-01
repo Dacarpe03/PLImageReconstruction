@@ -185,6 +185,33 @@ def trim_data(
 	return data_array
 
 
+def add_row_padding(
+	data_array,
+	n_rows=1
+	):
+	"""
+	Function to add a row of 0s to each data point in an array
+
+	Input:
+		data_array (np.array): A 3d array containing the 2d data points to pad.
+		n_rows (int): The number of zero rows to add to each data point
+
+
+	Returns:
+		padded_data_array (np.array): The 3d array with the 2d padded data points
+	"""
+	zeros_shape = (data_array[0].shape[1])
+	new_data_array = np.zeros((data_array.shape[0], data_array.shape[1] + n_rows, data_array.shape[2]))
+
+	for i in range(len(data_array)):
+		new_zero_row = np.zeros((n_rows,zeros_shape))
+		new_data_array[i] = np.append(data_array[i],
+							 	  new_zero_row,
+						          axis=0)
+	
+	return new_data_array
+
+
 def process_amp_phase_data(
 	flux_data_filepath,
 	amplitude_data_filepath,

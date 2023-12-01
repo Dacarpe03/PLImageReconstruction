@@ -385,31 +385,20 @@ def create_autoencoder_for_flux(
 	convolutional_layer_sizes.reverse()
 	convolutional_layer_kernels.reverse()
 
-	for i in range(1, len(convolutional_layer_sizes)-1):
+	for i in range(1, len(convolutional_layer_sizes)):
+		model.add(
+				UpSampling2D(
+					size=(2,2)
+				)
+		)
 		for j in range(2):
+
 			model.add(
 					Conv2D(
 						convolutional_layer_sizes[i],
 						convolutional_layer_kernels[i],
 						activation=convolutional_activation,
 						padding=padding
-					)
-			)
-
-			model.add(
-					UpSampling2D(
-						size=(2,2)
-					)
-			)
-
-	for i in range(2):
-		model.add(
-					Conv2D(
-						convolutional_layer_sizes[-1],
-						convolutional_layer_kernels[-1],
-						activation=convolutional_activation,
-						padding=padding
-
 					)
 			)
 

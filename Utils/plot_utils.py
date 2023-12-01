@@ -169,3 +169,47 @@ def plot_amp_phase_prediction(
 
     # Show the plot
     fig.show()
+
+
+def plot_autoencoder(
+    model,
+    original_flux
+    ):
+    """
+    Plots the autoencoder input and output
+
+    Input:
+        model (keras.models): A trained neural network
+        original_flux (np.array): A data point to feed the neural network
+
+    Returns:
+        None
+    """
+    reshaped_input_flux = np.array([original_flux])
+    prediction = model.predict(reshaped_input_flux)
+    reconstructed_flux = prediction[0].reshape(original_flux.shape)
+
+    fig = make_subplots(rows=1, cols=2, subplot_titles=("Original Flux", "Decoded Flux"))
+
+    og_amplitude_heatmap = go.Heatmap(
+                                z=original_flux,
+                                colorbar_x=-0.2, 
+                                colorbar_y=0.8,
+                                colorbar=dict(len=0.5))
+
+    og_phase_heatmap = go.Heatmap(
+                            z=reconstructed_flux, 
+                            colorbar_y = 0.8,
+                            colorbar=dict(len=0.5))
+
+    fig.add_trace(og_amplitude_heatmap, row=1, col=1)
+    fig.add_trace(og_phase_heatmap, row=1, col=2)
+
+    fig.update_layout(
+    title_text=f"Flux AutoEncoder {model.name}",
+    height=800,  # Set the height of the figure
+    width=800    # Set the width of the figure
+    )
+
+    # Show the plot
+    fig.show()
