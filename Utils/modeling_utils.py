@@ -3,7 +3,21 @@ import tensorflow as tf
 from tensorflow import keras
 
 from keras.models import Sequential
-from keras.layers import InputLayer, Conv2D, MaxPooling2D, Flatten, Dense, BatchNormalization, Activation, Reshape, Dropout, UpSampling2D
+
+from keras.layers import InputLayer, \
+						 Conv2D, \
+						 MaxPooling2D, \
+						 Flatten, \
+						 Dense, \
+						 BatchNormalization, \
+						 Activation, \
+						 Reshape, \
+						 Dropout, \
+						 UpSampling2D
+
+from constants import MODELS_FOLDER_PATH, \
+					  KERAS_SUFFIX, \
+					  MODELS_DESCRIPTION_FILE_PATH
 
 
 
@@ -210,7 +224,7 @@ def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
 		input_shape (tuple): The shape a data point in the features dataset
 		output_shape (tuple): The shape of a data point in the labels dataset
 		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
-		convolutinal_layer_kernels (list): A list of integers containing the size of the kernel per convolutional layer
+		convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
 		fully_connected_hidden_layer_sizes (list): A list of integers
 		regularizer (keras.regularizers): A regularizer for the hidden layers (e.g. L1, see keras documentation for more)
 		fully_connected_hidden_activation (string): The name of the activation function of the hidden layers' neurons  (e.g 'relu', see keras documentation for more)
@@ -372,12 +386,17 @@ def create_autoencoder_for_flux(
 		)
 
 	for j in range(2):
+		if j==1:
+			layer_name = "bottleneck"
+		else:
+			layer_name = "pre_bottleneck"
 		model.add(
 				Conv2D(
 					convolutional_layer_sizes[-1],
 					convolutional_layer_kernels[-1],
 					activation=convolutional_activation,
-					padding=padding
+					padding=padding,
+					name=layer_name
 				)
 		)
 	
@@ -414,6 +433,60 @@ def create_autoencoder_for_flux(
 
 	model.summary()
 	return model
+
+
+def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstruction(
+	autoencoder,
+	convolutional_layer_sizes,
+	convolutional_layer_kernels,
+	convolutional_activation,
+	output_activation,
+	padding='same'
+	):
+	"""
+	This function creates a convolutional nn with a freezed encoder input (representing the flux) to reconstruct the amplitude and phase map
+	
+	Input:
+		autoencoder (keras.models): An autoencoder model to decouple and join to a new model
+		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
+		convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+	"""
+
+	# Extract the encoder from the autoencoder
+	encoder = keras.models.Model(autoencoder.input, autoencoder.get_layer('bottleneck').output)
+
+	# Freeze the encoder neurons
+	for layer in encoder.layers:
+		layer.trainable = False
+		if (layer.name == 'bottleneck'):
+			break
+
+	conv_input = encoder.output
+	conv_layers = UpSampling2D(size=(1,2))(conv_input)
+
+	for i in range(len(convolutional_layer_sizes)):
+		for j in range(2):
+			conv_layers = Conv2D(
+								convolutional_layer_sizes[i],
+								convolutional_layer_kernels[i],
+								activation=convolutional_activation,
+								padding=padding
+								)(conv_layers)
+
+		conv_layers = UpSampling2D(
+						size=(2,2)
+						)(conv_layers)
+
+	# OUTPUT_LAYER
+	conv_layers = Conv2D(
+					2,
+					(3,3), 
+					activation=output_activation,
+					padding=padding
+					)(conv_layers)
+
+	conv_model = keras.Model(inputs=encoder.input, outputs=conv_layers)
+	return conv_model
 
 
 def compile_model(
@@ -480,5 +553,30 @@ def train_model(
 	return history
 
 
+def store_model(
+	model,
+	model_name,
+	description):
+	"""
+	Stores the model in the DATA_FOLDER with the name with a description in the neural network descriptions file
 
+	Input:
+		model (keras.models): The model to save in the models folder
+		model_name (string): The name of the model
+		description (string): The description of the model 
 
+	Returns:
+		None
+	"""
+	# Create the model path
+	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
+	# Save the model
+	model.save(model_file_path)
+
+	# Save its description
+	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
+		f.write(f"===={model_name}====\n")
+		f.write(description)
+		f.write("\n\n")
+
+	return None
