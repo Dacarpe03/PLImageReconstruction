@@ -187,7 +187,8 @@ def trim_data(
 
 def add_row_padding(
 	data_array,
-	n_rows=1
+	top_rows=0,
+	bottom_rows=0
 	):
 	"""
 	Function to add a row of 0s to each data point in an array
@@ -201,15 +202,26 @@ def add_row_padding(
 		padded_data_array (np.array): The 3d array with the 2d padded data points
 	"""
 	zeros_shape = (data_array[0].shape[1])
-	new_data_array = np.zeros((data_array.shape[0], data_array.shape[1] + n_rows, data_array.shape[2]))
+	new_data_array = np.zeros((data_array.shape[0], data_array.shape[1] + top_rows, data_array.shape[2]))
 
 	for i in range(len(data_array)):
-		new_zero_row = np.zeros((n_rows,zeros_shape))
-		new_data_array[i] = np.append(data_array[i],
-							 	  new_zero_row,
-						          axis=0)
+		new_zero_row = np.zeros((top_rows,zeros_shape))
+		new_data_array[i] = np.append(new_zero_row,
+							 	  	  data_array[i],
+						          	  axis=0)
+
+
+	final_data_array = np.zeros((new_data_array.shape[0], 
+								 new_data_array.shape[1] + bottom_rows, 
+								 new_data_array.shape[2]))
+
+	for i in range(len(new_data_array)):
+		new_zero_row = np.zeros((bottom_rows,zeros_shape))
+		final_data_array[i] = np.append(new_data_array[i],
+							 	  	    new_zero_row,
+						          	    axis=0)
 	
-	return new_data_array
+	return final_data_array
 
 
 def process_amp_phase_data(
@@ -225,7 +237,11 @@ def process_amp_phase_data(
 	shuffle=False,
 	flatten_fluxes=False,
 	split=False,
-	val_ratio=0.1
+	val_ratio=0.1,
+	flux_top_padding=0,
+	flux_bottom_padding=0,
+	amp_phase_top_padding=0,
+	amp_phase_bottom_padding=0,
 	):
 	"""
 	Function that retrieves numpy data given a path and processes it
@@ -242,7 +258,7 @@ def process_amp_phase_data(
 		flatten_fluxes (bool): Indicates whether or not flatten the flux array
 		split (bool): Indicates whether or not split the datasets into train and validation sets
 		val_ratio (float): The ratio of size between the original array and the validation array
-
+		
 	Returns:
 		If split is True:
 			train_fluxes_array (np.array): The array containing the fluxes training set
@@ -275,6 +291,21 @@ def process_amp_phase_data(
 		amplitudes_array = trim_data(amplitudes_array)
 	if trim_phase:
 		phases_array = trim_data(phases_array)
+
+	# PADDING DATA
+	if flux_top_padding > 0 or flux_bottom_padding > 0:
+		fluxes_array = add_row_padding(fluxes_array,
+									   flux_top_padding,
+									   flux_bottom_padding)
+
+	if amp_phase_top_padding > 0 or amp_phase_bottom_padding > 0:
+		amplitudes_array = add_row_padding(amplitudes_array,
+									   	   amp_phase_top_padding,
+									   	   amp_phase_bottom_padding)
+
+		phases_array = add_row_padding(phases_array,
+									   amp_phase_top_padding,
+									   amp_phase_bottom_padding)
 
 	# NORMALIZE_DATA
 	scalers = []

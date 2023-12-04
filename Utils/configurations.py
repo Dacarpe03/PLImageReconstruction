@@ -1193,7 +1193,7 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [32, 64, 128, 256]
+	convolutional_layer_sizes = [16, 32, 32, 128]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'

@@ -441,6 +441,7 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 	convolutional_layer_kernels,
 	convolutional_activation,
 	output_activation,
+	model_name,
 	padding='same'
 	):
 	"""
@@ -486,6 +487,7 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 					)(conv_layers)
 
 	conv_model = keras.Model(inputs=encoder.input, outputs=conv_layers)
+	conv_model.summary()
 	return conv_model
 
 

@@ -19,8 +19,8 @@ def plot_map(
 		None
 	"""
 	# Input the data into the figure
-	fig = px.imshow(whatever_map)
-	# Show the figure
+	fig = go.Figure(data=go.Heatmap(
+                    z=whatever_map))
 	fig.show()
 	return None
 
@@ -92,7 +92,8 @@ def plot_conv_amp_phase_prediction(
     model,
     input_flux,
     original_amplitude,
-    original_phase
+    original_phase,
+    og_shape=None
     ):
     """
     Plots a 4 figure diagram with the predictions of the convolutional model
@@ -213,3 +214,40 @@ def plot_autoencoder(
 
     # Show the plot
     fig.show()
+
+
+def plot_enc_conv_amp_phase_prediction(
+    model,
+    input_flux,
+    original_amplitude,
+    original_phase,
+    og_shape=None
+    ):
+    """
+    Plots a 4 figure diagram with the predictions of the convolutional model
+
+    Input:
+        model (keras.models): A trained neural network
+        input_flux (np.array): A data point to feed the neural network
+        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
+        original_phase (np.array): Original 2d array containing the phase information in the pupil
+
+    Returns:
+        None
+    """
+
+    reshaped_input_flux = np.array([input_flux])
+    prediction = model.predict(reshaped_input_flux)
+    prediction = np.swapaxes(prediction, 1, 2)
+    prediction = np.swapaxes(prediction, 1, 3)
+    
+    amplitude_prediction = prediction[0][0]
+    phase_prediction = prediction[0][1]
+    
+    plot_amp_phase_prediction(
+        amplitude_prediction,
+        phase_prediction,
+        original_amplitude,
+        original_phase,
+        model.name
+    )
