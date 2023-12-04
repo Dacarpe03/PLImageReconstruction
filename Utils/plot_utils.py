@@ -122,9 +122,6 @@ def plot_conv_amp_phase_prediction(
     )
 
 
-
-
-
 def plot_amp_phase_prediction(
     predicted_amplitude,
     predicted_phase,

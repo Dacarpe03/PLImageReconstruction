@@ -18,7 +18,7 @@ class ConfigurationElement(ABC):
 
 
 class FullyConnectedArchitecture(ConfigurationElement):
-	"""This class contains the information of the architecture of a model"""
+	"""This class contains the information of a fully connected model architecture"""
 	def __init__(
 		self, 
 		input_shape,
@@ -61,6 +61,8 @@ class FullyConnectedArchitecture(ConfigurationElement):
 			output_activation (string): The name of the activation in the output layer
 			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
+			use_dropout (bool): True if using dropout
+			dropout_rate (float): The dropout rate of the hidden layers during training
 		"""
 
 		return self.input_shape, \
@@ -76,7 +78,7 @@ class FullyConnectedArchitecture(ConfigurationElement):
 
 
 class ConvolutionalArchitecture(ConfigurationElement):
-	"""This class contains the information of the architecture of a model"""
+	"""This class contains the information of a convolutional model architecture"""
 	def __init__(
 		self, 
 		input_shape,
@@ -115,9 +117,12 @@ class ConvolutionalArchitecture(ConfigurationElement):
 		Returns:
 			input_shape (tuple): The shape of the neural network input
 			output_shape (tuple): The shape of the neural network output
-			hidden_layer_shizes (list): The list with sizes of the hidden fully connected linear layers
+			convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
+			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+			fully_connected_hidden_layer_sizes (list): The list with sizes of the hidden fully connected linear layers
 			regularizer (keras.regularizers): The regularizer for the hidden layers
-			hidden_activation (string): The name of the activation function in the hidden layers
+			convolutional_activation (string): The name of the activation function in the convolutional layers
+			fully_connected_hidden_activation (string): The name of the activation function in the fully connected layers
 			output_activation (string): The name of the activation in the output layer
 			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
@@ -137,7 +142,7 @@ class ConvolutionalArchitecture(ConfigurationElement):
 
 
 class AutoEncoderArchitecture(ConfigurationElement):
-	"""This class contains the information of the architecture of a model"""
+	"""This class contains the information of the architecture of an autoencoder model"""
 	def __init__(
 		self,
 		input_shape,
@@ -166,10 +171,9 @@ class AutoEncoderArchitecture(ConfigurationElement):
 		
 		Returns:
 			input_shape (tuple): The shape of the neural network input
-			output_shape (tuple): The shape of the neural network output
-			hidden_layer_shizes (list): The list with sizes of the hidden fully connected linear layers
-			regularizer (keras.regularizers): The regularizer for the hidden layers
-			hidden_activation (string): The name of the activation function in the hidden layers
+			convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
+			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+			convolutional_activation (string): The name of the activation function in the convolutional layers		
 			output_activation (string): The name of the activation in the output layer
 			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
@@ -184,7 +188,7 @@ class AutoEncoderArchitecture(ConfigurationElement):
 
 
 class EncoderConvolutionalArchitecture(ConfigurationElement):
-	"""This class contains the information of the architecture of a model"""
+	"""This class contains the information of a encoder + convolution model architecture"""
 	def __init__(
 		self,
 		convolutional_layer_sizes,
@@ -210,7 +214,9 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 			None
 		
 		Returns:
-			convolutional_layer_shizes (list): The list with sizes of the hidden fully connected linear layers
+			convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
+			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+			convolutional_activation (string): The name of the activation function in the convolutional layers		
 			output_activation (string): The name of the activation in the output layer
 			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
@@ -336,7 +342,7 @@ def FirstWorkingModel(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for the first working model (a fully connected one)
 	"""
 
 	# Define architecture hyperparmeters
@@ -390,7 +396,7 @@ def FirstWorkingModel(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -419,9 +425,9 @@ def FirstWorkingModel(
 	* TRAINING HYPERPARAMETERS:
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
-		-Callbacks:
-			-Early Stop: MSE 50
+		-Callbacks: 
 			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
@@ -434,21 +440,17 @@ def FirstWorkingModel(
 	return model_configuration
 
 
-
 def FirstConvolutionalModelWithBN(
 	inputs_array,
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for the first convolutional model
 	"""
 
 	# Define architecture hyperparmeters
-		
-		
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
-	print(output_shape)
 	convolutional_layer_sizes = [128, 64]
 	convolutinal_layer_kernels = [(5,5), (3,3)]
 	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
@@ -476,7 +478,7 @@ def FirstConvolutionalModelWithBN(
 	description = f"""
 	=== {model_name} ===
 	*ARCHITECTURE HYPERPARAMETERS:
-		-Fully Connected
+		-Convolutional
 		-Input shape: {input_shape}
 		-Output shape: {output_shape}
 		-Convolutional Layers: {convolutional_layer_sizes}
@@ -506,7 +508,7 @@ def FirstConvolutionalModelWithBN(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -536,8 +538,8 @@ def FirstConvolutionalModelWithBN(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks:
-			-Early Stop: MSE 50
 			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
@@ -556,7 +558,7 @@ def FirstWorkingModelWithBN(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for the first working model adding batch normalization
 	"""
 
 	# Define architecture hyperparmeters
@@ -610,7 +612,7 @@ def FirstWorkingModelWithBN(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -640,8 +642,8 @@ def FirstWorkingModelWithBN(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks:
-			-Early Stop: MSE 50
 			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
@@ -659,7 +661,7 @@ def FullyConnectedDropoutAndBN(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for a fully connected model with dropout and batch normalization
 	"""
 
 	# Define architecture hyperparmeters
@@ -718,7 +720,7 @@ def FullyConnectedDropoutAndBN(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -748,8 +750,8 @@ def FullyConnectedDropoutAndBN(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks:
-			-Early Stop: MSE 50
 			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
@@ -767,7 +769,7 @@ def FCDropoutOnly(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for a fully connected archictecture with dropout as the only regularizing tool
 	"""
 
 	# Define architecture hyperparmeters
@@ -826,7 +828,7 @@ def FCDropoutOnly(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -875,7 +877,7 @@ def FCDropoutL1(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for a fully connected model with dropout and L1 regularization
 	"""
 
 	# Define architecture hyperparmeters
@@ -983,7 +985,7 @@ def FCDropoutL2(
 	outputs_array
 	):
 	"""
-	Function that creates the model configuration for the first
+	Function that creates the model configuration for a fully connected model with dropout and L2 regularization
 	"""
 
 	# Define architecture hyperparmeters
@@ -1090,7 +1092,7 @@ def AutoEncoderConfiguration(
 	inputs_array
 	):
 	"""
-	Function that creates the model configuration for the flux autoencoder
+	Function that creates the model configuration for a flux autoencoder
 	"""
 
 	# Define architecture hyperparmeters
@@ -1140,7 +1142,7 @@ def AutoEncoderConfiguration(
 
 	description += f"""
 	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
 		-Loss Function: MSE
 		-Metric: MSE
 	"""
@@ -1187,7 +1189,7 @@ def AutoEncoderConfiguration(
 def EncoderConvolutionalConfiguration(
 	):
 	"""
-	Function that creates the model configuration for the flux autoencoder
+	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for amplitude and phase
 	"""
 
 	# Define architecture hyperparmeters
@@ -1211,8 +1213,8 @@ def EncoderConvolutionalConfiguration(
 	=== {model_name} ===
 	*ARCHITECTURE HYPERPARAMETERS:
 		-Encoder + Convolutional
-		-Convolutional Layers: {convolutional_layer_sizes} (Inverse in the decoder)
-		-Convolutonal Kernels: {convolutinal_layer_kernels} (Inverse in the decoder)
+		-Convolutional Layers: {convolutional_layer_sizes}
+		-Convolutonal Kernels: {convolutinal_layer_kernels}
 		-Convolutional Activation: {convolutional_activation}
 		-Output Layer Activation: {output_activation}
 	"""
@@ -1240,7 +1242,7 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1
+	epochs = 10
 	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
