@@ -32,7 +32,7 @@ def create_linear_architecture_for_amplitude_reconstruction(
 	name="AmplitudeReconstructor"
 	):
 	"""
-	Defines de architecture of the neural network
+	Instantiates the architecture of a fully connected neural network for amplitude reconstruction
 
 	Input:
 		input_shape (tuple): The shape a data point in the features dataset
@@ -120,7 +120,7 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	dropout_rate=0.1
 	):
 	"""
-	Defines de architecture of the neural network
+	Instantiates the architecture of a fully connected neural network for amplitude and phase reconstruction
 
 	Input:
 		input_shape (tuple): The shape a data point in the features dataset
@@ -218,17 +218,17 @@ def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
 	):
 
 	"""
-	Defines de architecture of the convolutional neural network
+	Instantiates the architecture of a convolutional neural network for amplitude and phase reconstruction
 
 	Input:
 		input_shape (tuple): The shape a data point in the features dataset
 		output_shape (tuple): The shape of a data point in the labels dataset
-		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
+		convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
 		convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
 		fully_connected_hidden_layer_sizes (list): A list of integers
 		regularizer (keras.regularizers): A regularizer for the hidden layers (e.g. L1, see keras documentation for more)
-		fully_connected_hidden_activation (string): The name of the activation function of the hidden layers' neurons  (e.g 'relu', see keras documentation for more)
 		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		fully_connected_hidden_activation (string): The name of the activation function of the hidden layers' neurons  (e.g 'relu', see keras documentation for more)
 		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
 		use_batch_normalization (bool): If True, then add batch normalization to the hidder layers
 		name (string): The name of the model
@@ -334,6 +334,23 @@ def create_autoencoder_for_flux(
 	name="AutoEncoder",
 	padding="same"
 	):
+	"""
+	Instantiates the architecture of a convolutional neural network for amplitude and phase reconstruction
+
+	Input:
+		input_shape (tuple): The shape a data point in the features dataset
+		convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
+		convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
+		name (string): The name of the model
+		padding (string): The padding used in convolutional layers
+
+	Returns:
+		model (keras.Sequential): A keras neural network model with the architecture specified
+	"""
+
+	# Add a single dimension to the array for the max pooling to be possible
 	input_shape = input_shape + (1, )
 	model = Sequential(
 				name=name
@@ -450,11 +467,17 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 	Input:
 		autoencoder (keras.models): An autoencoder model to decouple and join to a new model
 		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
-		convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+		convolutional_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
+		model_name (string): The name of the model
+		padding (string): The padding used in convolutional layers
 	"""
 
 	# Extract the encoder from the autoencoder
-	encoder = keras.models.Model(autoencoder.input, autoencoder.get_layer('bottleneck').output)
+	encoder = keras.models.Model(autoencoder.input,
+								 autoencoder.get_layer('bottleneck').output, 
+								 name=model_name)
 
 	# Freeze the encoder neurons
 	for layer in encoder.layers:
@@ -472,7 +495,7 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 								convolutional_layer_kernels[i],
 								activation=convolutional_activation,
 								padding=padding
-								)(conv_layers)
+							)(conv_layers)
 
 		conv_layers = UpSampling2D(
 						size=(2,2)

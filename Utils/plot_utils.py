@@ -129,6 +129,16 @@ def plot_amp_phase_prediction(
     original_phase,
     model_name
     ):
+    """
+    Creates a four figure plot with the predicted and original maps of amplitude and phase
+
+    Input:
+        predicted_amplitude (np.array): The model amplitude map reconstruction
+        predicted_phase (np.array): The model phase map reconstruction
+        original_amplitude (np.array): The original amplitude map
+        original_phase (np.array): The original phase map
+ 
+    """
     # Create a subplot with 2 rows and 2 columns
     fig = make_subplots(rows=2, cols=2, subplot_titles=("Original Amplitude", "Original Phase", "Reconstructed Amplitude", "Reconstructed Phase"))
 
@@ -218,10 +228,9 @@ def plot_enc_conv_amp_phase_prediction(
     input_flux,
     original_amplitude,
     original_phase,
-    og_shape=None
     ):
     """
-    Plots a 4 figure diagram with the predictions of the convolutional model
+    Plots a 4 figure diagram with the predictions of the encoder+convolutional model
 
     Input:
         model (keras.models): A trained neural network

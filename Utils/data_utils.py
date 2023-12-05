@@ -195,8 +195,8 @@ def add_row_padding(
 
 	Input:
 		data_array (np.array): A 3d array containing the 2d data points to pad.
-		n_rows (int): The number of zero rows to add to each data point
-
+		top_rows (int): The number of zero rows to add to each data point on top of the image
+		bottom_rows (int): The number of zero rows to add to each data point at bottom of the image
 
 	Returns:
 		padded_data_array (np.array): The 3d array with the 2d padded data points
