@@ -402,7 +402,7 @@ def FirstWorkingModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1000
+	epochs = 20
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1148,7 +1148,7 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1
+	epochs = 5
 	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1195,7 +1195,7 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [16, 32, 32, 128]
+	convolutional_layer_sizes = [32, 128, 512, 1024]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'

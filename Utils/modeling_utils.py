@@ -199,7 +199,8 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 			output_shape
 			)
 		)
-
+		
+	model.summary()
 	return model
 
 
