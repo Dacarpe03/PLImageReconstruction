@@ -1149,15 +1149,15 @@ def AutoEncoderConfiguration(
 
 	# Define training hyperparameters
 	epochs = 5
-	batch_size = 16
+	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=8, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=15, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -1195,7 +1195,7 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [32, 128, 512, 1024]
+	convolutional_layer_sizes = [32, 128, 256, 512]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
@@ -1242,8 +1242,8 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 10
-	batch_size = 16
+	epochs = 50
+	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
