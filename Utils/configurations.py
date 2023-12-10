@@ -5,7 +5,7 @@ from keras.losses import MeanSquaredError as LossesMeanSquaredError
 from keras.optimizers import Adam
 from keras.metrics import MeanSquaredError as MetricsMeanSquaredError
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
-from keras.regularizers import L2
+from keras.regularizers import L1, L2
 
 
 class ConfigurationElement(ABC):
@@ -667,7 +667,7 @@ def FullyConnectedDropoutAndBN(
 	# Define architecture hyperparmeters
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
-	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
@@ -730,12 +730,12 @@ def FullyConnectedDropoutAndBN(
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=15, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=50, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -780,8 +780,8 @@ def FCDropoutOnly(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "FCDropoutOnly"
-	use_dropout = True
+	model_name = "FCDropoutL1"
+	use_dropout = False
 	dropout_rate = 0.1
 
 	architecture_hyperparams = FullyConnectedArchitecture(
@@ -884,7 +884,7 @@ def FCDropoutL1(
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
-	regularizer = L1(0.05)
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
@@ -946,12 +946,12 @@ def FCDropoutL1(
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=30, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=100, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]

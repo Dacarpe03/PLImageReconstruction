@@ -1,6 +1,11 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
+from constants import FLUXES_FOLDER, \
+					  SLM_FOLDER, \
+					  FLUXES_FILE, \
+					  AMPLITUDE_FILE, \
+					  PHASE_FILE
 
 def load_numpy_data(
 	data_filepath,
@@ -225,9 +230,6 @@ def add_row_padding(
 
 
 def process_amp_phase_data(
-	flux_data_filepath,
-	amplitude_data_filepath,
-	phase_data_filepath,
 	n_points=None,
 	trim_amplitude=False,
 	trim_phase=False,
@@ -275,16 +277,29 @@ def process_amp_phase_data(
 
 	# LOAD DATA
 	# If a number of points to sample has been specified, then get the first n_points
-	if n_points is not None:
-		fluxes_array = np.load(flux_data_filepath)[0:n_points]
-		amplitudes_array = np.load(amplitude_data_filepath)[0:n_points]
-		phases_array = np.load(phase_data_filepath)[0:n_points]
 
-	# Else load the whole file
-	else:
-		fluxes_array = np.load(flux_data_filepath)
-		amplitudes_array = np.load(amplitude_data_filepath)
-		phases_array = np.load(phase_data_filepath)
+	flux_data_filepath = f"{FLUXES_FOLDER}/{FLUXES_FILE}"
+	fluxes_array = np.load(flux_data_filepath)
+
+	my_amps = []
+	my_phases = []
+	for i in range(8):
+		amp_name = f"{SLM_FOLDER}0{i}/{AMPLITUDE_FILE}"
+		amp_array = np.load(amp_name)
+		my_amps.append(amp_array)
+
+		phase_name = f"{SLM_FOLDER}0{i}/{PHASE_FILE}"
+		phase_array = np.load(phase_name)
+		my_phases.append(phase_array)
+
+	amplitudes_array = np.concatenate(my_amps, axis=0)
+	phases_array = np.concatenate(my_phases, axis=0)
+
+	if n_points is not None:
+		fluxes_array = fluxes_array[0:n_points]
+		amplitudes_array = amplitudes_array[0:n_points]
+		phases_array = phases_array[0:n_points]
+
 
 	# TRIM DATA
 	if trim_amplitude:
