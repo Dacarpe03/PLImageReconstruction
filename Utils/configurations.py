@@ -440,118 +440,6 @@ def SimpleFCModel(
 	return model_configuration
 
 
-def ConvolutionalModelWithBN(
-	inputs_array,
-	outputs_array
-	):
-	"""
-	Function that creates the model configuration for the first convolutional model
-	"""
-
-	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
-	convolutional_layer_sizes = [128, 64]
-	convolutinal_layer_kernels = [(5,5), (3,3)]
-	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
-	regularizer = None
-	convolutional_activation = 'relu'
-	fully_connected_hidden_activation = 'relu'
-	output_activation = 'linear'
-	use_batch_normalization = True
-	model_name="ConvolutionalAmplitudePhaseReconstructor"
-
-	architecture_hyperparams = ConvolutionalArchitecture(
-									input_shape, 
-                                    output_shape,
-                                    convolutional_layer_sizes,
-                                    convolutinal_layer_kernels,
-                                    fully_connected_hidden_layer_sizes, 
-                                    regularizer,
-                                    convolutional_activation,
-                                    fully_connected_hidden_activation,
-                                    output_activation,
-                                    use_batch_normalization,
-                                    model_name
-                                    )
-
-	description = f"""
-	=== {model_name} ===
-	*ARCHITECTURE HYPERPARAMETERS:
-		-Convolutional
-		-Input shape: {input_shape}
-		-Output shape: {output_shape}
-		-Convolutional Layers: {convolutional_layer_sizes}
-		-Convolutonal Kernels: {convolutinal_layer_kernels}
-		-Fully Connected Hidden layers: {fully_connected_hidden_layer_sizes}
-		-Regularizer: None
-		-Convolutional Activation: {convolutional_activation}
-		-Hidden Layers Activation: {fully_connected_hidden_activation}
-		-Output Layer Activation: {output_activation}
-		-Batch Normalization: {use_batch_normalization}
-	"""
-
-	# Define compilation hyperparameters
-	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
-	optimizer = Adam(
-		learning_rate=learning_rate,
-		beta_1=0.9,
-		beta_2=0.999
-		)
-	metric = MetricsMeanSquaredError()
-
-	compilation_hyperparams = CompilationConfiguration(
-								loss_function, 
-								optimizer, 
-								metric)
-
-	description += f"""
-	*COMPILATION HYPERPARAMETERS:
-		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
-		-Loss Function: MSE
-		-Metric: MSE
-	"""
-
-	# Define training hyperparameters
-	epochs = 1000
-	batch_size = 32
-	
-	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
-					factor=0.1, 
-					patience=15, 
-					verbose=1)
-	early_stop = EarlyStopping(
-					'mean_squared_error',
-					patience=50, 
-					verbose=1)
-	callbacks = [reduce_lr, early_stop]
-
-	training_hyperparameters = TrainingConfiguration(
-									epochs,
-									batch_size,
-									callbacks)
-
-	description += f"""
-	* TRAINING HYPERPARAMETERS:
-		-Epochs: {epochs}
-		-Batch size: {batch_size}
-		-Callbacks:
-			-ReduceLROnPlateau: MSE 15 x0.1
-			-Early Stop: MSE 50
-	"""
-
-	model_configuration = Configuration(
-							architecture_hyperparams,
-							compilation_hyperparams,
-							training_hyperparameters,
-							description
-							)
-
-	return model_configuration
-
-
 
 def SimpleFCWithBN(
 	inputs_array,
@@ -622,12 +510,12 @@ def SimpleFCWithBN(
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=15, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=50, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -780,7 +668,7 @@ def FCDropoutOnly(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "FCDropoutL1"
+	model_name = "FCDropoutOnly"
 	use_dropout = False
 	dropout_rate = 0.1
 
@@ -838,12 +726,12 @@ def FCDropoutOnly(
 	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=15, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=50, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -921,7 +809,7 @@ def FCDropoutL1(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.01
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -942,8 +830,8 @@ def FCDropoutL1(
 	"""
 
 	# Define training hyperparameters
-	epochs = 500
-	batch_size = 128
+	epochs = 300
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
@@ -1029,7 +917,7 @@ def FCDropoutL2(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.001
+	learning_rate = 0.0001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -1050,16 +938,16 @@ def FCDropoutL2(
 	"""
 
 	# Define training hyperparameters
-	epochs = 500
-	batch_size = 128
+	epochs = 200
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=30, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=100, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -1076,6 +964,118 @@ def FCDropoutL2(
 		-Callbacks:
 			-ReduceLROnPlateau: MSE 30 x0.1
 			-Early Stop: MSE 100
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def SimpleConvolutional(
+	inputs_array,
+	outputs_array
+	):
+	"""
+	Function that creates the model configuration for the first convolutional model
+	"""
+
+	# Define architecture hyperparmeters
+	input_shape = inputs_array[0].shape
+	output_shape = outputs_array[0].shape
+	convolutional_layer_sizes = [128, 256, 512]
+	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
+	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	regularizer = None
+	convolutional_activation = 'relu'
+	fully_connected_hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = True
+	model_name="SimpleConvolutional"
+
+	architecture_hyperparams = ConvolutionalArchitecture(
+									input_shape, 
+                                    output_shape,
+                                    convolutional_layer_sizes,
+                                    convolutinal_layer_kernels,
+                                    fully_connected_hidden_layer_sizes, 
+                                    regularizer,
+                                    convolutional_activation,
+                                    fully_connected_hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Convolutional Layers: {convolutional_layer_sizes}
+		-Convolutonal Kernels: {convolutinal_layer_kernels}
+		-Fully Connected Hidden layers: {fully_connected_hidden_layer_sizes}
+		-Regularizer: None
+		-Convolutional Activation: {convolutional_activation}
+		-Hidden Layers Activation: {fully_connected_hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.0001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 200
+	batch_size = 32
+	
+	reduce_lr = ReduceLROnPlateau(
+					'val_mean_squared_error', 
+					factor=0.1, 
+					patience=15, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'val_mean_squared_error',
+					patience=50, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
@@ -1246,12 +1246,12 @@ def EncoderConvolutionalConfiguration(
 	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=8, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=15, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
