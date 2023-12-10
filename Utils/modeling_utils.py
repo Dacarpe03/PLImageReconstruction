@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -581,7 +583,7 @@ def train_model(
 
 def store_model(
 	model,
-	model_name,
+	model_name,			
 	description):
 	"""
 	Stores the model in the DATA_FOLDER with the name with a description in the neural network descriptions file
@@ -594,15 +596,59 @@ def store_model(
 	Returns:
 		None
 	"""
-	# Create the model path
-	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
-	# Save the model
-	model.save(model_file_path)
+
+	# To not overwrite other model, look for the number of models with the same configuration to add a version number at the end of the file
+	model_files = os.listdir(MODELS_FOLDER_PATH)
+	version = sum(1 for file in model_files if file.startswith(model_name))+1
 
 	# Save its description
 	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
-		f.write(f"===={model_name}====\n")
+		f.write(f"===={model_name}_{version}====\n")
 		f.write(description)
 		f.write("\n\n")
 
+
+	# Create the model path
+	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}_{version}{KERAS_SUFFIX}"
+
+	# Save the model
+	model.save(model_file_path)
+
 	return None
+
+
+def load_model(
+	model_name):
+	"""
+	Loads a model given its name
+
+	Input:
+		model_name (string): The name of the model to load
+
+	Returns:
+		model (keras.models): The loaded model
+	"""
+	model_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
+	model = keras.models.load_model(model_path)
+	return model
+
+
+def evaluate_model(
+	model,
+	features,
+	labels
+	):
+	"""
+	Evaluates a model and prints its mean squared error
+	
+	Input:
+		model (keras.models): The model to evaluate
+		features (np.array): The array with the features to predict
+		labels (np.array): The labels of the features to evaluate
+
+	Returns:
+		None
+	"""
+	results = model.evaluate(features, labels)
+	print("MSE:", results[1])
+	return results

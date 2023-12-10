@@ -1278,5 +1278,3 @@ def EncoderConvolutionalConfiguration(
 							)
 
 	return model_configuration
-
-
