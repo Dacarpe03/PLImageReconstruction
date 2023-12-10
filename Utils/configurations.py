@@ -337,7 +337,7 @@ class Configuration(ABC):
 
 
 
-def FirstWorkingModel(
+def SimpleFCModel(
 	inputs_array,
 	outputs_array
 	):
@@ -348,12 +348,12 @@ def FirstWorkingModel(
 	# Define architecture hyperparmeters
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
-	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	hidden_layer_sizes = [2048, 512, 2048, 4096]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "AmplitudePhaseReconstructor1"
+	model_name = "SimpleFCModel"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -381,7 +381,7 @@ def FirstWorkingModel(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.001
+	learning_rate = 0.0001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -402,16 +402,16 @@ def FirstWorkingModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 20
-	batch_size = 128
+	epochs = 200
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
-					'mean_squared_error', 
+					'val_mean_squared_error', 
 					factor=0.1, 
 					patience=15, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'mean_squared_error',
+					'val_mean_squared_error',
 					patience=50, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -440,7 +440,7 @@ def FirstWorkingModel(
 	return model_configuration
 
 
-def FirstConvolutionalModelWithBN(
+def ConvolutionalModelWithBN(
 	inputs_array,
 	outputs_array
 	):
@@ -553,7 +553,7 @@ def FirstConvolutionalModelWithBN(
 
 
 
-def FirstWorkingModelWithBN(
+def SimpleFCWithBN(
 	inputs_array,
 	outputs_array
 	):
@@ -564,7 +564,7 @@ def FirstWorkingModelWithBN(
 	# Define architecture hyperparmeters
 	input_shape = inputs_array[0].shape
 	output_shape = outputs_array[0].shape
-	hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	hidden_layer_sizes = [2048, 512, 2048, 4096]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
