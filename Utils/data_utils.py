@@ -473,3 +473,10 @@ def load_validation_data(
 	return fluxes_array, \
 		   amp_phase_array, \
 		   scalers
+
+
+def load_flux_data():
+	"""
+	"""
+	flux_data_filepath = 
+	return
