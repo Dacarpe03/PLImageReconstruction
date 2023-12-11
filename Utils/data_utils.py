@@ -7,6 +7,7 @@ from constants import FLUXES_FOLDER, \
 					  AMPLITUDE_FILE, \
 					  PHASE_FILE
 
+
 def load_numpy_data(
 	data_filepath,
 	n_points=None
@@ -473,10 +474,3 @@ def load_validation_data(
 	return fluxes_array, \
 		   amp_phase_array, \
 		   scalers
-
-
-def load_flux_data():
-	"""
-	"""
-	flux_data_filepath = 
-	return
