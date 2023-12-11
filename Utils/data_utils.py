@@ -372,7 +372,6 @@ def process_amp_phase_data(
 
 
 def load_validation_data(
-	n_points=None,
 	trim_amplitude=False,
 	trim_phase=False,
 	normalize_flux=False,
@@ -389,10 +388,6 @@ def load_validation_data(
 	Function that retrieves numpy data given a path and processes it
 
 	Input:
-		flux_data_filepath (string): The feature data file path
-		amplitude_data_filepath (string): The amplitude data file path
-		phase_data_filepath (string): The phase data file path
-		n_points (int): The number of points to load
 		normalize_flux (bool): Indicates wheter or not apply normalization to the flux data
 		normalize_amplitude (bool): Indicates wheter or not apply normalization to the amplitude data
 		normalize_phase (bool): Indicates whether or not apply normalization to the phase data
@@ -417,18 +412,13 @@ def load_validation_data(
 	# If a number of points to sample has been specified, then get the first n_points
 
 	flux_data_filepath = f"{FLUXES_FOLDER}/{FLUXES_FILE}"
-	fluxes_array = np.load(flux_data_filepath)
+	fluxes_array = np.load(flux_data_filepath)[70000:80000]
 
 	amp_data_filepath = f"{SLM_FOLDER}07/{AMPLITUDE_FILE}"
 	phase_data_filepath = f"{SLM_FOLDER}07/{PHASE_FILE}"
 
 	amplitudes_array = np.load(amp_data_filepath)
 	phases_array = np.load(phase_data_filepath)
-
-	if n_points is not None:
-		fluxes_array = fluxes_array[0:n_points]
-		amplitudes_array = amplitudes_array[0:n_points]
-		phases_array = phases_array[0:n_points]
 
 
 	# TRIM DATA
@@ -479,21 +469,6 @@ def load_validation_data(
 	# MERGE PHASE AND AMPLITUDE
 	amp_phase_array = fuse_amplitude_and_phase(amplitudes_array,
                       					       phases_array)
-
-	# SPLIT DATA
-	if split_data:
-		train_fluxes_array, val_fluxes_array = split_data(fluxes_array,
-                                                                    val_ratio)
-
-		train_amp_phase_array, val_amp_phase_array = split_data(amp_phase_array,
-                                                        		val_ratio)
-
-		return train_fluxes_array, \
-			   val_fluxes_array, \
-			   train_amp_phase_array, \
-			   val_amp_phase_array, \
-			   scalers
-
 
 	return fluxes_array, \
 		   amp_phase_array, \

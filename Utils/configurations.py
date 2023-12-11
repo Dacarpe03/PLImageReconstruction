@@ -1099,7 +1099,7 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = inputs_array[0].shape
-	convolutional_layer_sizes = [256, 128, 16, 4]
+	convolutional_layer_sizes = [512, 256, 64, 32]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
@@ -1242,7 +1242,7 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 50
+	epochs = 20
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
