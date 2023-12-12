@@ -527,7 +527,7 @@ def save_numpy_array(
 	single_precision_array = np.float32(array)
 
 	# Save the array in a numpy file
-	np.save(filepath, array)
+	np.save(filepath, single_precision_array)
 
 	return None
 
