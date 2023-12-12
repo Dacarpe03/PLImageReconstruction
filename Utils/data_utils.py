@@ -1,5 +1,8 @@
 import numpy as np
+
 from sklearn.preprocessing import StandardScaler
+
+from pickle import dump
 
 from constants import FLUXES_FOLDER, \
 					  SLM_FOLDER, \
@@ -110,6 +113,34 @@ def split_data(
 	val_array = data_array[train_length:]
 
 	return train_array, val_array
+
+
+def split_fluxes(
+		fluxes_array,
+		train_size,
+		validation_size,
+		test_size
+	):
+	"""
+	Function to split the flux data into train, validation and test sets
+
+	Input:
+		fluxes_array (np.array): The fluxes array to be splitted
+		train_size (int): The number of data points in the training set
+		validation_size (int): The number of data points in the validation set
+		test_size (int): The number of data points in the test set
+	
+	Returns:
+		train_fluxes (np.array): The array containing the training fluxes
+		validation_fluxes (np.array): The array containing the validation fluxes
+		test_fluxes (np.array): The array containing the test fluxes
+
+	"""
+	train_fluxes = fluxes_array[0: train_size]
+	validation_fluxes = fluxes_array[train_size: train_size + validation_size]
+	test_fluxes = [train_size + validation_size: train_size + validation_size + test_size]
+
+	return train_fluxes, validation_fluxes, test_fluxes
 
 
 def shuffle_arrays(
@@ -474,3 +505,47 @@ def load_validation_data(
 	return fluxes_array, \
 		   amp_phase_array, \
 		   scalers
+
+
+def save_numpy_array(
+	array,
+	filepath
+	):
+
+	"""
+	Function that stores a numpy array to a file in float32 precision
+
+	Input:
+		array (np.array): The numpy array to store in a file
+		filepath (string): The path to the file where the array will be saved
+
+	Returns:
+		None
+	"""
+
+	# Change the type of the array
+	single_precision_array = np.float32(array)
+
+	# Save the array in a numpy file
+	np.save(filepath, array)
+
+	return None
+
+
+def save_scaler(
+	scaler,
+	filepath
+	):
+	"""
+	Saves a scaler
+
+	Input:
+		scaler (sklearn.preprocessing.StandardScaler): A scaler used to normalize a dataset
+		filepath (string): The path to the scaler
+
+	Returns:
+		None
+	"""
+
+	# Save the scaler in a pickle file
+	dump(scaler, open(filepath, 'wb'))
