@@ -138,7 +138,7 @@ def split_fluxes(
 	"""
 	train_fluxes = fluxes_array[0: train_size]
 	validation_fluxes = fluxes_array[train_size: train_size + validation_size]
-	test_fluxes = [train_size + validation_size: train_size + validation_size + test_size]
+	test_fluxes = fluxes_array[train_size + validation_size: train_size + validation_size + test_size]
 
 	return train_fluxes, validation_fluxes, test_fluxes
 
