@@ -8,7 +8,8 @@ from constants import FLUXES_FOLDER, \
 					  SLM_FOLDER, \
 					  FLUXES_FILE, \
 					  AMPLITUDE_FILE, \
-					  PHASE_FILE
+					  PHASE_FILE, \
+					  NUMPY_SUFFIX
 
 
 def load_numpy_data(
@@ -549,3 +550,94 @@ def save_scaler(
 
 	# Save the scaler in a pickle file
 	dump(scaler, open(filepath, 'wb'))
+
+
+def train_generator(
+	features_path,
+	labels_path,
+	batch_size,
+	do_shuffe=False
+	):
+	"""
+	This is the train data generator, loads batches dynamically to train with bigger sizes of data
+
+	Input:
+		features_path (string): The path to the feature files, in this case it will be the FLUX_PATH_PREFIX
+		labels_path (string): The path to the label files, in this case it will be the AMP_PHASE_PATH_PREFIX
+		batch_size (int): The size of the arrays
+		do_shuffle (bool): If True, then shuffle the data
+	"""
+	while True:
+		start_index = 0
+		end_index = 0 + batch_size
+		current_file = 0
+
+		current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
+																						 labels_path,
+																						 batch_size,
+																						 do_shuffe)
+		# Go through the subfiles
+		while end_index < 70000:
+			# Compute the indexes in the subfiles
+			batch_start = start_index%10000
+			batch_end = end_index%10000
+
+			# If we need to load another file then do it 
+			if batch_start < batch_end:
+				# Load the last part of the current file
+				first_partial_fluxes = current_fluxes_array[batch_start:]
+				first_partial_amp_phase = current_amp_phase_array[batch_start:]
+
+				current_file += 1
+				current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
+																						 		 labels_path,
+																						 		 current_file,
+																						 		 do_shuffe)
+
+				second_partial_fluxes = current_fluxes_array[:batch_end]
+				second_partial_amp_phase = current_amp_phase_array[:batch_end]
+
+				fluxes_batch = np.concatenate([first_partial_fluxes, second_partial_fluxes], axis=0)
+				amp_phase_batch = np.concatenate([first_partial_amp_phase, second_partial_amp_phase], axis=0)
+
+			else:
+				fluxes_batch = current_fluxes_array[batch_start:batch_end]
+				amp_phase_batch = current_amp_phase_array[batch_start:batch_end]
+
+
+			start_index += batch_size
+			end_index += batch_size
+
+			yield fluxes_batch, amp_phase_batch
+			
+
+def load_subfile_for_train_generator(feature_path_prefix,
+									 labels_path_prefix,
+									 subfile_number,
+									 do_shuffe=False):
+	"""
+	Loads the numpy arrays of a subfile
+
+	Input:
+		features_path (string): The path to the feature files, in this case it will be the FLUX_PATH_PREFIX
+		labels_path (string): The path to the label files, in this case it will be the AMP_PHASE_PATH_PREFIX
+		subfile_number (string): The identifier of the current subfile that we are reading
+
+	Returns:
+		current_fluxes_array (np.array): The array containing the fluxes
+		current_amp_phase_array (np.array): The array containing the amplitude and phases
+	"""
+
+	# Create the file names
+	current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+	current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+
+	# Load the new arrays
+	current_fluxes_array = np.load(current_features_filename)
+	current_amp_phase_array = np.load(current_labels_filename)
+
+	# Shuffle if needed
+	if do_shuffe:
+		current_fluxex_array, current_amp_phase_array = shuffle_arrays([current_fluxes_array, current_amp_phase_array])
+
+	return current_fluxes_array, current_amp_phase_array
