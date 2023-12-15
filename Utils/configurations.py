@@ -8,6 +8,11 @@ from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.regularizers import L1, L2
 
 
+from constants import FC_INPUT_SHAPE, \
+					  FC_OUTPUT_SHAPE, \
+					  CNN_INPUT_SHAPE, \
+					  CNN_OUTPUT_SHAPE
+
 class ConfigurationElement(ABC):
 	@abstractmethod
 	def unpack_hyperparameters(self):
@@ -338,16 +343,14 @@ class Configuration(ABC):
 
 
 def SimpleFCModel(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first working model (a fully connected one)
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2048, 512, 2048, 4096]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -442,16 +445,14 @@ def SimpleFCModel(
 
 
 def SimpleFCWithBN(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first working model adding batch normalization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2048, 512, 2048, 4096]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -545,16 +546,14 @@ def SimpleFCWithBN(
 
 
 def FullyConnectedDropoutAndBN(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and batch normalization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -653,16 +652,14 @@ def FullyConnectedDropoutAndBN(
 
 
 def FCDropoutOnly(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected archictecture with dropout as the only regularizing tool
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -701,7 +698,7 @@ def FCDropoutOnly(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.01
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -722,8 +719,8 @@ def FCDropoutOnly(
 	"""
 
 	# Define training hyperparameters
-	epochs = 500
-	batch_size = 128
+	epochs = 200
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
@@ -761,16 +758,14 @@ def FCDropoutOnly(
 
 
 def FCDropoutL1(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and L1 regularization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
@@ -831,7 +826,7 @@ def FCDropoutL1(
 
 	# Define training hyperparameters
 	epochs = 300
-	batch_size = 64
+	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
@@ -869,16 +864,14 @@ def FCDropoutL1(
 
 
 def FCDropoutL2(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and L2 regularization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = L2(0.0001)
 	hidden_activation = 'relu'
@@ -976,17 +969,16 @@ def FCDropoutL2(
 	return model_configuration
 
 
+# CONVOLUTIONAL MODELS
 def SimpleConvolutional(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first convolutional model
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = CNN_INPUT_SHAPE
+	output_shape = CNN_OUTPUT_SHAPE
 	convolutional_layer_sizes = [128, 256, 512]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
 	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
