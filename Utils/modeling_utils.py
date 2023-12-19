@@ -187,11 +187,12 @@ def create_convolutional_architecture_for_amplitude_and_phase_reconstruction(
 				)
 		)
 
-		model.add(
-				MaxPooling2D(
-					pool_size=(2,2)
-				)
-		)
+		if i%2 == 1:
+			model.add(
+					MaxPooling2D(
+						pool_size=(2,2)
+					)
+			)
 
 	model.add(
 			Flatten()
@@ -269,7 +270,7 @@ def create_autoencoder_for_flux(
 	"""
 
 	# Add a single dimension to the array for the max pooling to be possible
-	input_shape = input_shape + (1, )
+	input_shape = input_shape
 	model = Sequential(
 				name=name
 			)

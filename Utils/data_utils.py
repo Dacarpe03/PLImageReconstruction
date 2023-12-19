@@ -6,6 +6,7 @@ from pickle import dump
 
 from constants import NUMPY_SUFFIX
 
+from plot_utils import plot_map
 
 def load_numpy_data(
 	data_filepath,
@@ -562,6 +563,66 @@ def train_generator(
 		batch_size (int): The size of the arrays
 		do_shuffle (bool): If True, then shuffle the data
 	"""
+	while True:
+		start_index = 0
+		end_index = 0 + batch_size
+		current_file = 0
+
+		current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
+																						 labels_path,
+																						 current_file,
+																						 do_shuffle)
+		# Go through the subfiles
+		while end_index < 70000:
+			# Compute the indexes in the subfiles
+			batch_start = start_index%10000
+			batch_end = end_index%10000
+
+			# If we need to load another file then do it 
+			if batch_start > batch_end:
+				# Load the last part of the current file
+				first_partial_fluxes = current_fluxes_array[batch_start:]
+				first_partial_amp_phase = current_amp_phase_array[batch_start:]
+
+				current_file += 1
+				current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
+																						 		 labels_path,
+																						 		 current_file,
+																						 		 do_shuffle)
+
+				second_partial_fluxes = current_fluxes_array[:batch_end]
+				second_partial_amp_phase = current_amp_phase_array[:batch_end]
+
+				fluxes_batch = np.concatenate([first_partial_fluxes, second_partial_fluxes], axis=0)
+				amp_phase_batch = np.concatenate([first_partial_amp_phase, second_partial_amp_phase], axis=0)
+
+			else:
+				fluxes_batch = current_fluxes_array[batch_start:batch_end]
+				amp_phase_batch = current_amp_phase_array[batch_start:batch_end]
+
+
+			start_index += batch_size
+			end_index += batch_size
+
+			yield fluxes_batch, amp_phase_batch
+
+
+def train_generator(
+	features_path,
+	labels_path,
+	batch_size,
+	do_shuffle=False
+	):
+	"""
+	This is the train data generator, loads batches dynamically to train with bigger sizes of data
+
+	Input:
+		features_path (string): The path to the feature files, in this case it will be the FLUX_PATH_PREFIX
+		labels_path (string): The path to the label files, in this case it will be the AMP_PHASE_PATH_PREFIX
+		batch_size (int): The size of the arrays
+		do_shuffle (bool): If True, then shuffle the data
+	"""
+	
 	while True:
 		start_index = 0
 		end_index = 0 + batch_size

@@ -11,7 +11,8 @@ from keras.regularizers import L1, L2
 from constants import FC_INPUT_SHAPE, \
 					  FC_OUTPUT_SHAPE, \
 					  CNN_INPUT_SHAPE, \
-					  CNN_OUTPUT_SHAPE
+					  CNN_OUTPUT_SHAPE, \
+					  AUTOENCODER_INPUT_SHAPE
 
 class ConfigurationElement(ABC):
 	@abstractmethod
@@ -341,7 +342,7 @@ class Configuration(ABC):
 		return self.description
 
 
-
+################################################################################## FULLY CONNECTED
 def SimpleFCModel(
 	):
 	"""
@@ -351,7 +352,7 @@ def SimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
-	hidden_layer_sizes = [2048, 512, 2048, 4096]
+	hidden_layer_sizes = [512, 512, 256, 256, 512, 512, 1024, 1024, 2048]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
@@ -969,7 +970,7 @@ def FCDropoutL2(
 	return model_configuration
 
 
-# CONVOLUTIONAL MODELS
+########################################################################################### CONVOLUTIONAL MODELS
 def SimpleConvolutional(
 	):
 	"""
@@ -979,8 +980,8 @@ def SimpleConvolutional(
 	# Define architecture hyperparmeters
 	input_shape = CNN_INPUT_SHAPE
 	output_shape = CNN_OUTPUT_SHAPE
-	convolutional_layer_sizes = [128, 256, 512]
-	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
+	convolutional_layer_sizes = [1024, 512, 256, 1024]
+	convolutinal_layer_kernels = [(3,1), (3,1), (3,1), (3,1)]
 	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = None
 	convolutional_activation = 'relu'
@@ -1081,7 +1082,6 @@ def SimpleConvolutional(
 
 
 def AutoEncoderConfiguration(
-	inputs_array
 	):
 	"""
 	Function that creates the model configuration for a flux autoencoder
@@ -1090,7 +1090,7 @@ def AutoEncoderConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	input_shape = inputs_array[0].shape
+	input_shape = AUTOENCODER_INPUT_SHAPE
 	convolutional_layer_sizes = [512, 256, 64, 32]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
@@ -1141,7 +1141,7 @@ def AutoEncoderConfiguration(
 
 	# Define training hyperparameters
 	epochs = 5
-	batch_size = 32
+	batch_size = 128
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
