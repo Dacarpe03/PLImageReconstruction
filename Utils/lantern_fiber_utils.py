@@ -106,17 +106,27 @@ class LanternFiber:
         """
         Finds LP modes for the specified fiber.
 
-        Parameters
+        Input:
+            max_l (int): The maximum number of l modes to find
+            return_n_unique (bool):
+            verbose (bool): If True, display debugging messages
         ----------
         max_l
             Maximum number of l modes to find (can be arbitrarily large)
         """
+
+        # Compute numerical aperture of optic fiber, the sine of the largest angle an incident ray can have for total internal reflectance in the core.
         self.NA = ofiber.numerical_aperture(self.n_core, self.n_cladding)
+
+        # Computes the V number that determines the number of modes the optical fiber can guide
         self.V = ofiber.V_parameter(self.core_radius, self.NA, self.wavelength)
 
+        # Initialize the modes lists
         allmodes_b = []
         allmodes_l = []
         allmodes_m = []
+
+        # Find modes until the max is found or no more LP modes found
         for l in range(max_l):
             cur_b = ofiber.LP_mode_values(self.V, l)
             if len(cur_b) == 0:
