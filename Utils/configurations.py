@@ -8,6 +8,12 @@ from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.regularizers import L1, L2
 
 
+from constants import FC_INPUT_SHAPE, \
+					  FC_OUTPUT_SHAPE, \
+					  CNN_INPUT_SHAPE, \
+					  CNN_OUTPUT_SHAPE, \
+					  AUTOENCODER_INPUT_SHAPE
+
 class ConfigurationElement(ABC):
 	@abstractmethod
 	def unpack_hyperparameters(self):
@@ -150,7 +156,9 @@ class AutoEncoderArchitecture(ConfigurationElement):
 		convolutinal_layer_kernels,
 		convolutional_activation,
 		output_activation,
-		model_name="FluxAutoencoder"
+		model_name="FluxAutoencoder",
+		padding="same",
+		use_batch_normalization=True
 		):
 
 		super(AutoEncoderArchitecture, self).__init__()
@@ -160,6 +168,8 @@ class AutoEncoderArchitecture(ConfigurationElement):
 		self.convolutional_activation = convolutional_activation
 		self.output_activation = output_activation
 		self.model_name = model_name
+		self.padding = padding
+		self.use_batch_normalization = use_batch_normalization
 
 
 	def unpack_hyperparameters(self):
@@ -184,7 +194,9 @@ class AutoEncoderArchitecture(ConfigurationElement):
 			   self.convolutinal_layer_kernels, \
 			   self.convolutional_activation, \
 			   self.output_activation, \
-			   self.model_name
+			   self.model_name, \
+			   self.padding, \
+			   self.use_batch_normalization
 
 
 class EncoderConvolutionalArchitecture(ConfigurationElement):
@@ -195,7 +207,9 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 		convolutinal_layer_kernels,
 		convolutional_activation,
 		output_activation,
-		model_name="EncoderConvolutionalArchitecture"
+		model_name="EncoderConvolutionalArchitecture",
+		padding="same",
+		use_batch_normalization=True
 		):
 
 		super(EncoderConvolutionalArchitecture, self).__init__()
@@ -204,6 +218,8 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 		self.convolutional_activation = convolutional_activation
 		self.output_activation = output_activation
 		self.model_name = model_name
+		self.padding = padding
+		self.use_batch_normalization = use_batch_normalization
 
 
 	def unpack_hyperparameters(self):
@@ -226,7 +242,9 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 			   self.convolutinal_layer_kernels, \
 			   self.convolutional_activation, \
 			   self.output_activation, \
-			   self.model_name
+			   self.model_name, \
+			   self.padding, \
+			   self.use_batch_normalization
 
 
 class CompilationConfiguration(ConfigurationElement):
@@ -336,19 +354,17 @@ class Configuration(ABC):
 		return self.description
 
 
-
+################################################################################## FULLY CONNECTED
 def SimpleFCModel(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first working model (a fully connected one)
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
-	hidden_layer_sizes = [2048, 512, 2048, 4096]
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
+	hidden_layer_sizes = [512, 512, 256, 256, 512, 512, 1024, 1024, 2048]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
@@ -442,16 +458,14 @@ def SimpleFCModel(
 
 
 def SimpleFCWithBN(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first working model adding batch normalization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2048, 512, 2048, 4096]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -545,16 +559,14 @@ def SimpleFCWithBN(
 
 
 def FullyConnectedDropoutAndBN(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and batch normalization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -653,16 +665,14 @@ def FullyConnectedDropoutAndBN(
 
 
 def FCDropoutOnly(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected archictecture with dropout as the only regularizing tool
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -701,7 +711,7 @@ def FCDropoutOnly(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.01
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -722,8 +732,8 @@ def FCDropoutOnly(
 	"""
 
 	# Define training hyperparameters
-	epochs = 500
-	batch_size = 128
+	epochs = 200
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
@@ -761,16 +771,14 @@ def FCDropoutOnly(
 
 
 def FCDropoutL1(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and L1 regularization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
@@ -831,7 +839,7 @@ def FCDropoutL1(
 
 	# Define training hyperparameters
 	epochs = 300
-	batch_size = 64
+	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
@@ -869,16 +877,14 @@ def FCDropoutL1(
 
 
 def FCDropoutL2(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for a fully connected model with dropout and L2 regularization
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = FC_INPUT_SHAPE
+	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [1024, 2048, 2048, 2048]
 	regularizer = L2(0.0001)
 	hidden_activation = 'relu'
@@ -976,17 +982,16 @@ def FCDropoutL2(
 	return model_configuration
 
 
+########################################################################################### CONVOLUTIONAL MODELS
 def SimpleConvolutional(
-	inputs_array,
-	outputs_array
 	):
 	"""
 	Function that creates the model configuration for the first convolutional model
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = inputs_array[0].shape
-	output_shape = outputs_array[0].shape
+	input_shape = CNN_INPUT_SHAPE
+	output_shape = CNN_OUTPUT_SHAPE
 	convolutional_layer_sizes = [128, 256, 512]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
 	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
@@ -1050,7 +1055,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 200
+	epochs = 70
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1089,7 +1094,6 @@ def SimpleConvolutional(
 
 
 def AutoEncoderConfiguration(
-	inputs_array
 	):
 	"""
 	Function that creates the model configuration for a flux autoencoder
@@ -1098,12 +1102,14 @@ def AutoEncoderConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	input_shape = inputs_array[0].shape
-	convolutional_layer_sizes = [512, 256, 64, 32]
+	input_shape = AUTOENCODER_INPUT_SHAPE
+	convolutional_layer_sizes = [256, 64, 32, 16]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
 	model_name="FluxAutoencoder"
+	padding="same"
+	use_batch_normalization=True
 
 	architecture_hyperparams = AutoEncoderArchitecture(
 									input_shape,
@@ -1111,7 +1117,9 @@ def AutoEncoderConfiguration(
 									convolutinal_layer_kernels,
 									convolutional_activation,
 									output_activation,
-									model_name=model_name
+									model_name=model_name,
+									padding=padding,
+									use_batch_normalization=use_batch_normalization
                                 )
 
 	description = f"""
@@ -1123,11 +1131,13 @@ def AutoEncoderConfiguration(
 		-Convolutonal Kernels: {convolutinal_layer_kernels} (Inverse in the decoder)
 		-Convolutional Activation: {convolutional_activation}
 		-Output Layer Activation: {output_activation}
+		-Padding: {padding}
+		-Use Batch Normalization: {use_batch_normalization}
 	"""
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -1149,15 +1159,15 @@ def AutoEncoderConfiguration(
 
 	# Define training hyperparameters
 	epochs = 5
-	batch_size = 32
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
-					'val_mean_squared_error', 
+					'mean_squared_error', 
 					factor=0.1, 
-					patience=8, 
+					patience=5, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'val_mean_squared_error',
+					'mean_squared_error',
 					patience=15, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
@@ -1242,16 +1252,16 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 20
+	epochs = 15
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
-					'val_mean_squared_error', 
+					'mean_squared_error', 
 					factor=0.1, 
-					patience=8, 
+					patience=5, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'val_mean_squared_error',
+					'mean_squared_error',
 					patience=15, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
