@@ -251,7 +251,8 @@ def create_autoencoder_for_flux(
 	convolutional_activation,
 	output_activation,
 	name="AutoEncoder",
-	padding="same"
+	padding="same",
+	use_batch_normalization=True
 	):
 	"""
 	Instantiates the architecture of a convolutional neural network for amplitude and phase reconstruction
@@ -264,6 +265,7 @@ def create_autoencoder_for_flux(
 		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
 		name (string): The name of the model
 		padding (string): The padding used in convolutional layers
+		use_batch_normalization (bool): If True, then add batch normalization to the hidder layers
 
 	Returns:
 		model (keras.Sequential): A keras neural network model with the architecture specified
@@ -315,6 +317,11 @@ def create_autoencoder_for_flux(
 					)
 			)
 
+		if use_batch_normalization:
+			model.add(
+				BatchNormalization()
+			)
+
 		model.add(
 				MaxPooling2D(
 					pool_size=(2,2)
@@ -357,6 +364,11 @@ def create_autoencoder_for_flux(
 					)
 			)
 
+		if use_batch_normalization:
+			model.add(
+				BatchNormalization()
+			)
+
 	# OUTPUT
 	model.add(
 			Conv2D(
@@ -378,7 +390,8 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 	convolutional_activation,
 	output_activation,
 	model_name,
-	padding='same'
+	padding='same',
+	use_batch_normalization=True
 	):
 	"""
 	This function creates a convolutional nn with a freezed encoder input (representing the flux) to reconstruct the amplitude and phase map
@@ -390,7 +403,8 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
 		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
 		model_name (string): The name of the model
-		padding (string): The padding used in convolutional layers
+		padding (string): The padding used in convolutional layer
+		use_batch_normalization (bool): If True, then add batch normalization to the hidder layers
 	"""
 
 	# Extract the encoder from the autoencoder
@@ -415,6 +429,9 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 								activation=convolutional_activation,
 								padding=padding
 							)(conv_layers)
+
+		if use_batch_normalization:
+			conv_layers = BatchNormalization()(conv_layers)
 
 		conv_layers = UpSampling2D(
 						size=(2,2)
@@ -504,7 +521,8 @@ def train_model_with_generator(model,
 						 	   validation_amplitudes,
 						 	   epochs,
 						 	   batch_size,
-						 	   callbacks
+						 	   callbacks,
+						 	   n_samples=70000
 						 	   ):
 	"""
 	Fits the model to the train instances of the data.
@@ -525,10 +543,11 @@ def train_model_with_generator(model,
 	train_gen = train_generator(fluxes_path,
 								amplitudes_path,
 								batch_size,
-								do_shuffle=True)
+								do_shuffle=False,
+								n_samples=n_samples)
 
-	steps_per_epoch = math.ceil(70000/batch_size)
-	validation_steps = math.ceil(10000/batch_size)
+	steps_per_epoch = math.ceil(n_samples/batch_size)
+	validation_steps = math.ceil(len(validation_amplitudes)/batch_size)
 
 	history = model.fit_generator(train_gen, 
 								  steps_per_epoch=steps_per_epoch,

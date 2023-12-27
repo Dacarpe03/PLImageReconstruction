@@ -611,7 +611,8 @@ def train_generator(
 	features_path,
 	labels_path,
 	batch_size,
-	do_shuffle=False
+	do_shuffle=False,
+	n_samples=70000
 	):
 	"""
 	This is the train data generator, loads batches dynamically to train with bigger sizes of data
@@ -633,7 +634,7 @@ def train_generator(
 																						 current_file,
 																						 do_shuffle)
 		# Go through the subfiles
-		while end_index < 70000:
+		while end_index < n_samples:
 			# Compute the indexes in the subfiles
 			batch_start = start_index%10000
 			batch_end = end_index%10000
