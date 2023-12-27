@@ -13,7 +13,7 @@ import polarTransform
 from scipy import ndimage
 from pathlib import Path
 
-class lanternfiber:
+class LanternFiber:
     def __init__(self, 
                  n_core=None, 
                  n_cladding=None, 
@@ -1826,7 +1826,7 @@ class lanternfiber:
         return_output=False, 
         amp_phase=False, 
         limit_modes=None):
-    
+
         simdata_inputs, simdata_outputs = self.make_sim_data(ndata, amp_range=amp_range,
                                                  limit_modes=limit_modes, phase_range=phase_range)
 
