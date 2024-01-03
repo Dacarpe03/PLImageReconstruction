@@ -167,18 +167,12 @@ class LanternFiber:
         """
         Calculate the LP mode fields, and store as polar and cartesian amplitude maps
 
-        Parameters
-        ----------
-        max_r
-            Maximum radius to calculate mode field, where r=1 is the core diameter
-        npix
-            Half-width of mode field calculation in pixels
-        zlim
-            Maximum value to plot
-        show_plots : bool
-            Whether to produce a plot for each mode
-        normtosum : bool
-            If True, normalise each mode field so summed power = 1
+        Inputs:
+            max_r (int): Maximum radius to calculate mode field, where r=1 is the core diameter
+            npix (int): Half-width of mode field calculation in pixels
+            zlim (float): Maximum value to plot
+            show_plots (bool): Whether to produce a plot for each mode
+            normtosum (bool): If True, normalise each mode field so summed power = 1
         """
 
         r = np.linspace(0, max_r, npix) # Radial positions, normalised so core_radius = 1
