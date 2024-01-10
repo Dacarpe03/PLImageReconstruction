@@ -168,7 +168,8 @@ def shuffle_arrays(
 
 def fuse_amplitude_and_phase(
 	amplitudes_array,
-	phases_array
+	phases_array,
+	axis=1
 	):
 	"""
 	Function that stacks the amplitudes and phase arrays into one
@@ -181,7 +182,7 @@ def fuse_amplitude_and_phase(
 	"""
 	# Stack both arrays
 	amp_phase_array = np.stack([amplitudes_array, phases_array],
-								axis=1)
+								axis=axis)
 
 	return amp_phase_array
 

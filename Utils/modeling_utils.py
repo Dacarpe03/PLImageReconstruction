@@ -8,6 +8,7 @@ from keras.models import Sequential
 
 from keras.layers import InputLayer, \
 						 Conv2D, \
+						 Conv1D, \
 						 MaxPooling2D, \
 						 Flatten, \
 						 Dense, \
@@ -448,6 +449,112 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 	conv_model = keras.Model(inputs=encoder.input, outputs=conv_layers)
 	conv_model.summary()
 	return conv_model
+
+
+def create_convolutional_architecture_for_psf_reconstruction(
+	fc_layer_sizes,
+	fc_activation,
+	convolutional_layer_sizes,
+	convolutional_layer_kernels,
+	convolutional_activation,
+	output_activation,
+	regularizer,
+	model_name,
+	padding='same',
+	use_batch_normalization=True,
+	use_dropout=False
+	):
+	"""
+	This function creates a convolutional nn with a freezed encoder input (representing the flux) to reconstruct the amplitude and phase map
+	
+	Input:
+		fc_layer_sizes (list): A list of integers containing the number of neurons per layer in the fully connected part
+		convolutional_layer_sizes (list): A list of integers containing the number of filter per convolutional layer
+		convolutional_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+		convolutional_activation (string): The name of the activation function of the convolutional hidden layers' neurons  (e.g 'relu', see keras documentation for more)
+		output_activation (string): The name of the activation function of the output layers (e.g 'linear', see keras documentation for more)
+		model_name (string): The name of the model
+		padding (string): The padding used in convolutional layer
+		use_batch_normalization (bool): If True, then add batch normalization to the hidder layers
+	"""
+
+	# Add a single dimension to the array for the max pooling to be possible
+	input_shape = (19, 1)
+	model = Sequential(
+				name=model_name
+			)
+
+	# Create input layer
+	model.add(
+		InputLayer(
+			input_shape=input_shape,
+			batch_size=None)
+			)
+
+	# Create the hidden layers of the neural network
+	for neurons in fc_layer_sizes:
+
+		# Define layer
+		model.add(
+			Dense(
+				neurons,
+				# kernel_regularizer=regularizer,
+				# kernel_initializer=keras.initializers.HeNormal(seed=None),
+				kernel_regularizer=regularizer,
+				use_bias=False
+				)
+			)
+
+		# Add normalization
+		if use_batch_normalization:
+			model.add(
+				BatchNormalization()
+				)
+
+		# Define the activation function
+		model.add(
+			Activation(
+				fc_activation
+				)
+			)
+
+		if use_dropout:
+			model.add(
+				Dropout(
+					0.1
+				)
+			)
+
+	for i in range(len(convolutional_layer_sizes)):
+
+		model.add(
+				Conv1D(
+					convolutional_layer_sizes[i],
+					convolutional_layer_kernels[i],
+					activation=convolutional_activation,
+					padding=padding
+				)					
+			)
+
+		if use_batch_normalization:
+			model.add(
+				BatchNormalization()
+			)
+
+
+	# OUTPUT
+	model.add(
+			Conv1D(
+				2,
+				3, 
+				activation=output_activation,
+				padding=padding
+			)
+		)
+
+	model.summary()
+	return model
+
 
 
 def compile_model(
