@@ -8,6 +8,11 @@ from constants import NUMPY_SUFFIX
 
 from plot_utils import plot_map
 
+import os
+
+from hcipy.atmosphere import *
+
+
 def load_numpy_data(
 	data_filepath,
 	n_points=None
@@ -507,7 +512,8 @@ def load_validation_data(
 
 def save_numpy_array(
 	array,
-	filepath
+	filepath,
+	single_precision=True
 	):
 
 	"""
@@ -520,12 +526,20 @@ def save_numpy_array(
 	Returns:
 		None
 	"""
+	if os.path.isFile(filepath):
+		print(f"ERROR: {filepath} already exists.")
+		return None
 
-	# Change the type of the array
-	single_precision_array = np.float32(array)
+	if single_precision:
+		# Change the type of the array
+		single_precision_array = np.float32(array)
 
-	# Save the array in a numpy file
-	np.save(filepath, single_precision_array)
+		# Save the array in a numpy file
+		np.save(filepath, single_precision_array)
+
+	else:
+		np.save(filepath, array)
+
 
 	return None
 
@@ -700,3 +714,31 @@ def load_subfile_for_train_generator(feature_path_prefix,
 		current_fluxex_array, current_amp_phase_array = shuffle_arrays([current_fluxes_array, current_amp_phase_array])
 
 	return current_fluxes_array, current_amp_phase_array
+
+
+def create_atmospheric_layers(
+	r0,
+	wavelength,
+	L0,
+	velocity,
+	height,
+	stencil_length,
+	oversampling,
+	pupil_grid,
+	focal_grid):
+
+	layers = []
+	layer = InfiniteAtmosphericLayer(pupil_grid, 
+									 Cn_squared_from_fried_parameter(r0, wavelength), 
+									 L0,
+									 velocity,
+									 0,
+									 stencil_length)
+	layers.append(layer)
+
+	atmosphere = MultiLayerAtmosphere(layers, False)
+	atmosphere.Cn_squared = Cn_squared_from_fried_parameter(1/40, wavelength)
+	prop = FraunhoferPropagator(pupil_grid, focal_grid.scaled(wavelength))
+
+	
+

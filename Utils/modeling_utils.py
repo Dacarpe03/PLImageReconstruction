@@ -301,7 +301,7 @@ def create_autoencoder_for_flux(
 
 	model.add(
 			MaxPooling2D(
-				pool_size=(2,2)
+				pool_size=(2,1)
 			)
 	)
 
@@ -325,7 +325,7 @@ def create_autoencoder_for_flux(
 
 		model.add(
 				MaxPooling2D(
-					pool_size=(2,2)
+					pool_size=(2,1)
 				)
 		)
 
@@ -351,7 +351,7 @@ def create_autoencoder_for_flux(
 	for i in range(1, len(convolutional_layer_sizes)):
 		model.add(
 				UpSampling2D(
-					size=(2,2)
+					size=(2,1)
 				)
 		)
 		for j in range(2):
@@ -374,7 +374,7 @@ def create_autoencoder_for_flux(
 	model.add(
 			Conv2D(
 				1,
-				(3,3), 
+				(3,1), 
 				activation=output_activation,
 				padding=padding
 			)

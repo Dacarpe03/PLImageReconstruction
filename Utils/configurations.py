@@ -1163,10 +1163,10 @@ def AutoEncoderConfiguration(
 		
 	input_shape = AUTOENCODER_INPUT_SHAPE
 	convolutional_layer_sizes = [256, 64, 32, 16]
-	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
+	convolutinal_layer_kernels = [(1,3), (1,3), (1,3), (1,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="FluxAutoencoder"
+	model_name="FluxAutoencoder1DConv"
 	padding="same"
 	use_batch_normalization=True
 
@@ -1217,8 +1217,8 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 5
-	batch_size = 64
+	epochs = 100
+	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
