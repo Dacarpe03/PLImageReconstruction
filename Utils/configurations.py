@@ -1162,11 +1162,11 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = AUTOENCODER_INPUT_SHAPE
-	convolutional_layer_sizes = [256, 64, 32, 16]
-	convolutinal_layer_kernels = [(1,3), (1,3), (1,3), (1,3)]
+	convolutional_layer_sizes = [512, 128, 64, 16]
+	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="FluxAutoencoder1DConv"
+	model_name="FluxAutoencoder2DConv"
 	padding="same"
 	use_batch_normalization=True
 
