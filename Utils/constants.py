@@ -4,7 +4,7 @@ NUMPY_SUFFIX = ".npy"
 PICKLE_SUFFIX = ".pkl"
 
 # DATA  FOLDER
-PL_AMP_PHASE_DATA_PATH = "../../Data/AmpPhaseReconstruction"
+PL_AMP_PHASE_DATA_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/Data/AmpPhaseReconstruction"
 
 # ORIGINAL DATA FOLDERS
 ORIGINAL_FOLDER_DATA_PATH = f"{PL_AMP_PHASE_DATA_PATH}/OriginalData"
@@ -102,6 +102,8 @@ CNN_INPUT_SHAPE = (55, 24, 1)
 CNN_OUTPUT_SHAPE = (2, 96, 96)
 
 AUTOENCODER_INPUT_SHAPE = (56, 24, 1)
+
+SUBFILE_ARRAYS_LENGTH = 10000
 
 
 ### PSF RECONSTRUCTION ###

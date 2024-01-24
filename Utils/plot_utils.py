@@ -257,3 +257,19 @@ def plot_enc_conv_amp_phase_prediction(
         original_phase,
         model.name
     )
+
+
+def plot_diffusion_output(
+    original_amp_phase,
+    diffusion_output):
+
+    pred_amp = diffusion_output[0]
+    pred_phase = diffusion_output[1]
+    original_amp = original_amp_phase[0]
+    original_phase = original_amp_phase[1]
+
+    plot_amp_phase_prediction(pred_amp,
+                              pred_phase,
+                              original_amp,
+                              original_phase,
+                              "Diffusion model")
