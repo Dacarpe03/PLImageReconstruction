@@ -718,27 +718,7 @@ def load_subfile_for_train_generator(feature_path_prefix,
 	return current_fluxes_array, current_amp_phase_array
 
 
-def create_atmospheric_layers(
-	r0,
-	wavelength,
-	L0,
-	velocity,
-	height,
-	stencil_length,
-	oversampling,
-	pupil_grid,
-	focal_grid):
-
-	layers = []
-	layer = InfiniteAtmosphericLayer(pupil_grid, 
-									 Cn_squared_from_fried_parameter(r0, wavelength), 
-									 L0,
-									 velocity,
-									 0,
-									 stencil_length)
-	layers.append(layer)
-
-	atmosphere = MultiLayerAtmosphere(layers, False)
-	atmosphere.Cn_squared = Cn_squared_from_fried_parameter(1/40, wavelength)
-	prop = FraunhoferPropagator(pupil_grid, focal_grid.scaled(wavelength))
-	return prop, atmosphere
+def generate_psf_complex_fields(
+	n_samples=):
+	
+	return
