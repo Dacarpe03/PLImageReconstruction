@@ -27,8 +27,10 @@ class DynamicCustomDataset(Dataset):
 		idx = idx%SUBFILE_ARRAYS_LENGTH
 		sample = self.data[idx]
 		self.item_counter += 1
+
 		# Convert numpy array to torch tensor if needed
 		sample = torch.from_numpy(sample)
+
 		if self.item_counter > SUBFILE_ARRAYS_LENGTH-1:
 			self.load_next_file()
 		return sample

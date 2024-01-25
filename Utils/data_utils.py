@@ -12,6 +12,8 @@ import os
 
 from hcipy.atmosphere import *
 
+from hcipy.propagation import FraunhoferPropagator
+
 
 def load_numpy_data(
 	data_filepath,
@@ -739,6 +741,4 @@ def create_atmospheric_layers(
 	atmosphere = MultiLayerAtmosphere(layers, False)
 	atmosphere.Cn_squared = Cn_squared_from_fried_parameter(1/40, wavelength)
 	prop = FraunhoferPropagator(pupil_grid, focal_grid.scaled(wavelength))
-
-	
-
+	return prop, atmosphere
