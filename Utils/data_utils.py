@@ -4,7 +4,10 @@ from sklearn.preprocessing import StandardScaler
 
 from pickle import dump
 
-from constants import NUMPY_SUFFIX, SUBFILE_SAMPLES
+from constants import NUMPY_SUFFIX, \
+					  SUBFILE_SAMPLES, \
+					  PSF_DATA_PATH, \
+					  LANTERN_FIBER_FILENAME
 
 from plot_utils import plot_map
 
@@ -14,6 +17,10 @@ from hcipy.atmosphere import *
 from hcipy import *
 
 import matplotlib.pyplot as plt
+
+from lantern_fiber_utils import LanternFiber
+from skimage.transform import resize, rescale
+
 
 def load_numpy_data(
 	data_filepath,
@@ -824,3 +831,80 @@ def save_wavefronts_complex_fields(
 		complex_fields[i] = comp_amp_phase
 
 	save_numpy_array(complex_fields, filepath, single_precision=False)
+
+
+def compute_output_fluxes_from_complex_field(
+	complex_fields_file_path,
+	output_fluxes_file_path
+	):
+	
+	# Create the lantern fiber
+	n_core = 1.44
+	n_cladding = 1.4345
+	wavelength = 1.5 # microns
+	core_radius = 32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+	show_plots = False
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength)
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+
+	input_complex_fields = np.load(complex_fields_file_path)
+	n_fields = input_complex_fields.shape[0]
+	transfer_matrix = load_transfer_matrix()
+
+	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=False, 
+			show_plots=False, 
+			fignum=2,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+
+		# Now get the complex amplitudes of the PL outputs:
+		pl_outputs = transfer_matrix @ mode_coupling_complex
+
+		# In real life, we just measure the intensities of the outputs:
+		pl_output_fluxes = np.abs(pl_outputs)**2
+		output_fluxes[k] = pl_output_fluxes
+
+	save_numpy_array(output_fluxes, output_fluxes_file_path)
+
+
+def load_transfer_matrix(
+	lanter_fiber_directory=PSF_DATA_PATH,
+	lantern_fiber_filename=LANTERN_FIBER_FILENAME):
+
+	lantern_fiber = LanternFiber(datadir=PSF_DATA_PATH, nmodes=19, nwgs=19)
+	lantern_fiber.load_savedvalues(LANTERN_FIBER_FILENAME)
+	lantern_fiber.make_transfer_matrix_mm2sm(show_plots=True)
+
+	transfer_matrix = lantern_fiber.Cmat # This is the complex transfer matrix
+	return transfer_matrix
+
