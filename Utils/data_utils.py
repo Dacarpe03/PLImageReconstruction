@@ -4,16 +4,16 @@ from sklearn.preprocessing import StandardScaler
 
 from pickle import dump
 
-from constants import NUMPY_SUFFIX
+from constants import NUMPY_SUFFIX, SUBFILE_SAMPLES
 
 from plot_utils import plot_map
 
 import os
 
 from hcipy.atmosphere import *
+from hcipy import *
 
-from hcipy.propagation import FraunhoferPropagator
-
+import matplotlib.pyplot as plt
 
 def load_numpy_data(
 	data_filepath,
@@ -528,7 +528,7 @@ def save_numpy_array(
 	Returns:
 		None
 	"""
-	if os.path.isFile(filepath):
+	if os.path.isfile(filepath) or os.path.exists(filepath):
 		print(f"ERROR: {filepath} already exists.")
 		return None
 
@@ -718,7 +718,109 @@ def load_subfile_for_train_generator(feature_path_prefix,
 	return current_fluxes_array, current_amp_phase_array
 
 
+### PSF RELATED
 def generate_psf_complex_fields(
-	n_samples=):
+	filepath,
+	telescope_diameter=1,
+	wavelength=1e-6,
+	pupil_grid_size=256,
+	focal_q=8,
+	num_airy=8,
+	fried_parameter=0.2,
+	outer_scale=20,
+	velocity=10,
+	n_samples=SUBFILE_SAMPLES,
+	plot=False
+	):
+	"""
+	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
 	
-	return
+	Input:
+		filepath (string): The path of file to store the psf
+		teslecope_diameter (float): The diameter of the aperture
+		wavelength (float): The wavelength of the light
+		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+		focal_q (int)
+		num_airy=16
+	"""
+
+	D_tel = 0.5
+	wavelength = 1e-6
+
+	pupil_grid = make_pupil_grid(256, D_tel)
+	focal_grid = make_focal_grid(q=8, num_airy=8, spatial_resolution=wavelength/D_tel)
+	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
+
+	aperture = make_circular_aperture(D_tel)(pupil_grid)
+
+	fried_parameter = 0.2 # meter
+	outer_scale = 20 # meter
+	velocity = 10 # meter/sec
+
+	Cn_squared = Cn_squared_from_fried_parameter(fried_parameter, wavelength)
+	atmosphere = InfiniteAtmosphericLayer(pupil_grid, Cn_squared, outer_scale, velocity)
+
+	wf = Wavefront(aperture, wavelength)
+
+	propagated_wavefronts = propagate_wavefronts(n_samples,
+												 wf,
+												 propagator,
+												 atmosphere,
+												 plot=plot)
+
+	save_wavefronts_complex_fields(propagated_wavefronts,
+								   filepath)
+	return None
+
+
+def propagate_wavefronts(
+	n_samples,
+	wavefront,
+	propagator,
+	atmosphere,
+	plot=False
+	):
+	"""
+	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	"""
+	wavefronts = []
+
+	for t in range(n_samples):
+		atmosphere.reset()
+		propagated_wavefront = propagator(atmosphere(wavefront))
+		wavefronts.append(propagated_wavefront)
+
+		if plot:
+			original_psf = propagator(wavefront)
+			plt.clf()
+			plt.subplot(1,4,1)
+			imshow_field(propagated_wavefront.phase, vmin=-6)
+			plt.subplot(1,4,2)
+			imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
+			plt.subplot(1,4,3)
+			imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+			plt.subplot(1,4,4)
+			imshow_field(np.log10(original_psf.intensity/ original_psf.intensity.max()), vmin=-6)
+			plt.draw()
+
+	return wavefronts
+
+
+def save_wavefronts_complex_fields(
+	propagated_wavefronts,
+	filepath
+	):
+	
+	n_fields = len(propagated_wavefronts)
+	# Compute the rows (or columns as the wf is a square grid)
+	square_side = int(np.sqrt(propagated_wavefronts[0].amplitude.shape))
+	complex_fields = np.zeros((n_fields, square_side, square_side), dtype='complex')
+
+	for i in range(n_fields):
+		amplitude = np.array([propagated_wavefronts[i].amplitude])
+		phase = np.array([propagated_wavefronts[i].phase])
+		comp_amp_phase = amplitude + phase*1j
+		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
+		complex_fields[i] = comp_amp_phase
+
+	save_numpy_array(complex_fields, filepath, single_precision=False)
