@@ -899,6 +899,22 @@ def compute_output_fluxes_from_complex_field(
 		pl_output_fluxes = np.abs(pl_outputs)**2
 		output_fluxes[k] = pl_output_fluxes
 
+		if plot:
+			# Plot input mode coefficients and output fluxes
+			xlabels = np.arange(lantern_fiber.nmodes)
+			plt.figure(1)
+			plt.clf()
+			plt.subplot(311)
+			plt.bar(xlabels, np.abs(mode_coupling_complex))
+			plt.title('Input mode amplitudes')
+			plt.subplot(312)
+			plt.bar(xlabels, np.angle(mode_coupling_complex))
+			plt.title('Input mode phases')
+			plt.subplot(313)
+			plt.bar(xlabels, pl_output_fluxes)
+			plt.title('Output fluxes')
+			plt.tight_layout()
+
 	save_numpy_array(output_fluxes, output_fluxes_file_path)
 
 
