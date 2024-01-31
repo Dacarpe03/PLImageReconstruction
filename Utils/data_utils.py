@@ -1,6 +1,6 @@
 import numpy as np
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 from pickle import dump
 
@@ -70,26 +70,29 @@ def flatten_data(
 
 
 def normalize_data(
-	data
+	data,
+	min_max=None,
 	):
 	"""
 	This function scales the data so that it has mean=0 an standard deviation=1
 
 	Input:
 		data (np.array): The array to normalize
+		min_max (tuple): The range of the values
 
 	Returns:
 		normalized_data (np.array): The normalized data
 		scaler (sklearn.preprocessing.StandardScaler): The scaler in case we need to unnormalize the data
 	"""
 
-	array_dimensions = len(data.shape)
 	# Reshape the data into a 1d array
-	flattened_data = data.reshape(-1, array_dimensions)
-
-    # Create a StandardScaler object with mean=0 and std=1
-	scaler = StandardScaler(with_mean=True, 
-							with_std=True)
+	flattened_data = np.expand_dims(data.flatten(), 1)
+	# Create a StandardScaler object with mean=0 and std=1
+	if min_max is None:
+		scaler = StandardScaler(with_mean=True, 
+								with_std=True)
+	else:
+		scaler = MinMaxScaler(feature_range=min_max)
 
 	# Fit the scaler on the data and transform it (normalize)
 	flattened_normalized_data = scaler.fit_transform(flattened_data)
@@ -835,7 +838,9 @@ def save_wavefronts_complex_fields(
 
 def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
-	output_fluxes_file_path
+	output_fluxes_file_path,
+	plot=False,
+	verbose=False
 	):
 	
 	# Create the lantern fiber
@@ -880,8 +885,8 @@ def compute_output_fluxes_from_complex_field(
 
 		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
 			mode_field_numbers=modes_to_measure,
-			verbose=False, 
-			show_plots=False, 
+			verbose=verbose, 
+			show_plots=plot, 
 			fignum=2,
 			complex=True,
 			ylim=0.3,

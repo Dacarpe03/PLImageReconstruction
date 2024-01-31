@@ -117,7 +117,7 @@ LANTERN_FIBER_FILENAME = f"/extractedvals_probeset_19LP__Good202107.npz"
 
 TRAIN_DATA_FOLDER_NAME = "TrainData"
 VALIDATION_DATA_FOLDER_NAME = "ValidationData"
-TEST_DATA_FOLDER_NAME = "TetsData"
+TEST_DATA_FOLDER_NAME = "TestData"
 
 COMPLEX_FIELDS_FILE_NAME = "complex_fields"
 OUTPUT_FLUXES_FILE_NAME = "output_fluxes"
