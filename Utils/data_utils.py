@@ -805,12 +805,16 @@ def propagate_wavefronts(
 			plt.clf()
 			plt.subplot(1,4,1)
 			imshow_field(propagated_wavefront.phase, vmin=-6)
+			plt.colorbar()
 			plt.subplot(1,4,2)
 			imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
+			plt.colorbar()
 			plt.subplot(1,4,3)
 			imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+
 			plt.subplot(1,4,4)
 			imshow_field(np.log10(original_psf.intensity/ original_psf.intensity.max()), vmin=-6)
+			plt.colorbar()
 			plt.draw()
 
 	return wavefronts
@@ -829,7 +833,7 @@ def save_wavefronts_complex_fields(
 	for i in range(n_fields):
 		amplitude = np.array([propagated_wavefronts[i].amplitude])
 		phase = np.array([propagated_wavefronts[i].phase])
-		comp_amp_phase = amplitude + phase*1j
+		comp_amp_phase = amplitude * np.exp(phase*1j)
 		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
 		complex_fields[i] = comp_amp_phase
 
@@ -882,12 +886,13 @@ def compute_output_fluxes_from_complex_field(
 		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
 
 		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
 
 		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
 			mode_field_numbers=modes_to_measure,
 			verbose=verbose, 
 			show_plots=plot, 
-			fignum=2,
+			fignum=11,
 			complex=True,
 			ylim=0.3,
 			return_abspower=True)
@@ -899,6 +904,7 @@ def compute_output_fluxes_from_complex_field(
 		pl_output_fluxes = np.abs(pl_outputs)**2
 		output_fluxes[k] = pl_output_fluxes
 
+		print(np.angle(mode_coupling_complex))
 		if plot:
 			# Plot input mode coefficients and output fluxes
 			xlabels = np.arange(lantern_fiber.nmodes)

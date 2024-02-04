@@ -25,6 +25,35 @@ def plot_map(
 	return None
 
 
+def plot_fluxes(original_flux,
+                process_flux):
+    process_flux = process_flux.reshape(original_flux.shape)
+
+    fig = make_subplots(rows=1, cols=2, subplot_titles=("Original Flux", "Processed  Flux"))
+
+    og_flux_heatmap = go.Heatmap(
+                                z=original_flux,
+                                colorbar_x=-0.2, 
+                                colorbar_y=0.8,
+                                colorbar=dict(len=0.5))
+
+    process_flux_heatmap = go.Heatmap(
+                            z=process_flux, 
+                            colorbar_y = 0.8,
+                            colorbar=dict(len=0.5))
+
+    fig.add_trace(og_flux_heatmap, row=1, col=1)
+    fig.add_trace(process_flux_heatmap, row=1, col=2)
+
+    fig.update_layout(
+    title_text=f"Flux Comparison",
+    height=800,  # Set the height of the figure
+    width=800    # Set the width of the figure
+    )
+
+    # Show the plot
+    fig.show()
+
 def plot_model_history(
     history
     ):
@@ -113,7 +142,7 @@ def plot_conv_amp_phase_prediction(
     amplitude_prediction = prediction[0][0]
     phase_prediction = prediction[0][1]
 
-    plot_amp_phase_prediction(
+    a(
         amplitude_prediction,
         phase_prediction,
         original_amplitude,
@@ -141,6 +170,7 @@ def plot_amp_phase_prediction(
     """
     # Create a subplot with 2 rows and 2 columns
     fig = make_subplots(rows=2, cols=2, subplot_titles=("Original Amplitude", "Original Phase", "Reconstructed Amplitude", "Reconstructed Phase"))
+
 
     og_amplitude_heatmap = go.Heatmap(
                                 z=original_amplitude,
@@ -170,7 +200,7 @@ def plot_amp_phase_prediction(
     fig.add_trace(re_phase_heatmap, row=2, col=2)
 
     fig.update_layout(
-    title_text=f"Amplitude and Phase Reconstruction {model_name}",
+    title_text=f"Amplitude and Phase Reconstruction from {model_name} model",
     height=800,  # Set the height of the figure
     width=800    # Set the width of the figure
     )
