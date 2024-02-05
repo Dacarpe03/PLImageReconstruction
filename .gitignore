@@ -1,4 +1,5 @@
 .ipynb_checkpoints/
 *.npy
+*.npz
 __pycache__/
 Models/

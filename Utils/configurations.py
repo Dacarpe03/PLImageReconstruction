@@ -247,6 +247,65 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 			   self.use_batch_normalization
 
 
+class PSFConvolutionalArchitecture(ConfigurationElement):
+	"""This class contains the information of a encoder + convolution model architecture"""
+	def __init__(
+		self,
+		fc_layer_sizes,
+		fc_activation,
+		convolutional_layer_sizes,
+		convolutinal_layer_kernels,
+		convolutional_activation,
+		output_activation,
+		regularizer,
+		model_name="PSFConvolutionalArchitecture",
+		padding="same",
+		use_batch_normalization=True,
+		use_dropout=False
+		):
+
+		super(PSFConvolutionalArchitecture, self).__init__()
+		self.fc_layer_sizes = fc_layer_sizes
+		self.fc_activation = fc_activation
+		self.convolutional_layer_sizes = convolutional_layer_sizes
+		self.convolutinal_layer_kernels = convolutinal_layer_kernels
+		self.convolutional_activation = convolutional_activation
+		self.output_activation = output_activation
+		self.regularizer = regularizer
+		self.model_name = model_name
+		self.padding = padding
+		self.use_batch_normalization = use_batch_normalization
+		self.use_dropout = use_dropout
+
+
+	def unpack_hyperparameters(self):
+		"""
+		This method returns all the hyperparameters of the architecture configuration
+
+		Input:
+			None
+		
+		Returns:
+			convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
+			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
+			convolutional_activation (string): The name of the activation function in the convolutional layers		
+			output_activation (string): The name of the activation in the output layer
+			use_batch_normalization (bool): True if use batch normalization between hidden layers
+			model_name (string): The name of the model
+		"""
+
+		return self.fc_layer_sizes, \
+			   self.fc_activation, \
+			   self.convolutional_layer_sizes, \
+			   self.convolutinal_layer_kernels, \
+			   self.convolutional_activation, \
+			   self.output_activation, \
+			   self.regularizer, \
+			   self.model_name, \
+			   self.padding, \
+			   self.use_batch_normalization
+
+
 class CompilationConfiguration(ConfigurationElement):
 	"""
 	This class contains the model compilation hyperparameters
@@ -364,12 +423,14 @@ def SimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
-	hidden_layer_sizes = [512, 512, 256, 256, 512, 512, 1024, 1024, 2048]
+	hidden_layer_sizes = [2000, 2000, 2000, 2000]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "SimpleFCModel"
+	use_dropout = False
+	dropout_rate = 0.1
+	model_name = "OriginalDataSimpleFCModel"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -379,7 +440,8 @@ def SimpleFCModel(
                                     hidden_activation,
                                     output_activation,
                                     use_batch_normalization,
-                                    model_name
+                                    model_name,
+                                    use_dropout=use_dropout
                                     )
 
 	description = f"""
@@ -393,6 +455,7 @@ def SimpleFCModel(
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
 	"""
 
 	# Define compilation hyperparameters
@@ -994,13 +1057,13 @@ def SimpleConvolutional(
 	output_shape = CNN_OUTPUT_SHAPE
 	convolutional_layer_sizes = [128, 256, 512]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	fully_connected_hidden_layer_sizes = [1000, 1000, 1000]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SimpleConvolutional"
+	model_name="RetrainedSimpleConvolutional"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1055,7 +1118,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 70
+	epochs = 30
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1103,11 +1166,11 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = AUTOENCODER_INPUT_SHAPE
-	convolutional_layer_sizes = [256, 64, 32, 16]
+	convolutional_layer_sizes = [512, 128, 64, 16]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="FluxAutoencoder"
+	model_name="FluxAutoencoder2DConv"
 	padding="same"
 	use_batch_normalization=True
 
@@ -1158,8 +1221,8 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 5
-	batch_size = 64
+	epochs = 100
+	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
@@ -1288,3 +1351,113 @@ def EncoderConvolutionalConfiguration(
 							)
 
 	return model_configuration
+
+
+def PSFConvolutionalConfiguration():
+	"""
+	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for amplitude and phase
+	"""
+
+	# Define architecture hyperparmeters
+		
+	fc_layer_sizes = [2048, 2048, 2048, 2048, 2048]
+	fc_activation = 'elu'
+	convolutional_layer_sizes = [512, 128, 32]
+	convolutinal_layer_kernels = [3, 3, 3]
+	convolutional_activation = 'relu'
+	output_activation = 'linear'
+	regularizer = None
+	model_name = "PSFConvolutional"
+	use_batch_normalization = True
+	use_dropout = False
+
+	architecture_hyperparams = PSFConvolutionalArchitecture(
+									fc_layer_sizes,
+									fc_activation,
+									convolutional_layer_sizes,
+									convolutinal_layer_kernels,
+									convolutional_activation,
+									output_activation,
+									regularizer,
+									model_name=model_name,
+									use_batch_normalization=use_batch_normalization,
+									use_dropout=use_dropout
+                                )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-PSF Convolutional
+		-Fully connected Layers: {fc_layer_sizes}
+		-Fully connected Activation: {fc_activation}
+		-Convolutional Layers: {convolutional_layer_sizes}
+		-Convolutonal Kernels: {convolutinal_layer_kernels}
+		-Convolutional Activation: {convolutional_activation}
+		-Output Layer Activation: {output_activation}
+		-Regularizer: None
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout} 
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 100
+	batch_size = 16
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=5, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=15, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+

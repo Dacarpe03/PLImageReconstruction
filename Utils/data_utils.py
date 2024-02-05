@@ -1,12 +1,26 @@
 import numpy as np
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 from pickle import dump
 
-from constants import NUMPY_SUFFIX
+from constants import NUMPY_SUFFIX, \
+					  SUBFILE_SAMPLES, \
+					  PSF_DATA_PATH, \
+					  LANTERN_FIBER_FILENAME
 
 from plot_utils import plot_map
+
+import os
+
+from hcipy.atmosphere import *
+from hcipy import *
+
+import matplotlib.pyplot as plt
+
+from lantern_fiber_utils import LanternFiber
+from skimage.transform import resize, rescale
+
 
 def load_numpy_data(
 	data_filepath,
@@ -56,26 +70,29 @@ def flatten_data(
 
 
 def normalize_data(
-	data
+	data,
+	min_max=None,
 	):
 	"""
 	This function scales the data so that it has mean=0 an standard deviation=1
 
 	Input:
 		data (np.array): The array to normalize
+		min_max (tuple): The range of the values
 
 	Returns:
 		normalized_data (np.array): The normalized data
 		scaler (sklearn.preprocessing.StandardScaler): The scaler in case we need to unnormalize the data
 	"""
 
-	array_dimensions = len(data.shape)
 	# Reshape the data into a 1d array
-	flattened_data = data.reshape(-1, array_dimensions)
-
-    # Create a StandardScaler object with mean=0 and std=1
-	scaler = StandardScaler(with_mean=True, 
-							with_std=True)
+	flattened_data = np.expand_dims(data.flatten(), 1)
+	# Create a StandardScaler object with mean=0 and std=1
+	if min_max is None:
+		scaler = StandardScaler(with_mean=True, 
+								with_std=True)
+	else:
+		scaler = MinMaxScaler(feature_range=min_max)
 
 	# Fit the scaler on the data and transform it (normalize)
 	flattened_normalized_data = scaler.fit_transform(flattened_data)
@@ -163,12 +180,14 @@ def shuffle_arrays(
 	for array in array_list:
 		shuffled_array_list.append(array[shuffled_indices])
 
+	# print(array_list[0][0][0], shuffled_array_list[0][0][0])
 	return shuffled_array_list
 
 
 def fuse_amplitude_and_phase(
 	amplitudes_array,
-	phases_array
+	phases_array,
+	axis=1
 	):
 	"""
 	Function that stacks the amplitudes and phase arrays into one
@@ -181,7 +200,7 @@ def fuse_amplitude_and_phase(
 	"""
 	# Stack both arrays
 	amp_phase_array = np.stack([amplitudes_array, phases_array],
-								axis=1)
+								axis=axis)
 
 	return amp_phase_array
 
@@ -506,7 +525,8 @@ def load_validation_data(
 
 def save_numpy_array(
 	array,
-	filepath
+	filepath,
+	single_precision=False
 	):
 
 	"""
@@ -519,12 +539,20 @@ def save_numpy_array(
 	Returns:
 		None
 	"""
+	if os.path.isfile(filepath) or os.path.exists(filepath):
+		print(f"ERROR: {filepath} already exists.")
+		return None
 
-	# Change the type of the array
-	single_precision_array = np.float32(array)
+	if single_precision:
+		# Change the type of the array
+		single_precision_array = np.float32(array)
 
-	# Save the array in a numpy file
-	np.save(filepath, single_precision_array)
+		# Save the array in a numpy file
+		np.save(filepath, single_precision_array)
+
+	else:
+		np.save(filepath, array)
+
 
 	return None
 
@@ -552,65 +580,6 @@ def train_generator(
 	features_path,
 	labels_path,
 	batch_size,
-	do_shuffle=False
-	):
-	"""
-	This is the train data generator, loads batches dynamically to train with bigger sizes of data
-
-	Input:
-		features_path (string): The path to the feature files, in this case it will be the FLUX_PATH_PREFIX
-		labels_path (string): The path to the label files, in this case it will be the AMP_PHASE_PATH_PREFIX
-		batch_size (int): The size of the arrays
-		do_shuffle (bool): If True, then shuffle the data
-	"""
-	while True:
-		start_index = 0
-		end_index = 0 + batch_size
-		current_file = 0
-
-		current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
-																						 labels_path,
-																						 current_file,
-																						 do_shuffle)
-		# Go through the subfiles
-		while end_index < 70000:
-			# Compute the indexes in the subfiles
-			batch_start = start_index%10000
-			batch_end = end_index%10000
-
-			# If we need to load another file then do it 
-			if batch_start > batch_end:
-				# Load the last part of the current file
-				first_partial_fluxes = current_fluxes_array[batch_start:]
-				first_partial_amp_phase = current_amp_phase_array[batch_start:]
-
-				current_file += 1
-				current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
-																						 		 labels_path,
-																						 		 current_file,
-																						 		 do_shuffle)
-
-				second_partial_fluxes = current_fluxes_array[:batch_end]
-				second_partial_amp_phase = current_amp_phase_array[:batch_end]
-
-				fluxes_batch = np.concatenate([first_partial_fluxes, second_partial_fluxes], axis=0)
-				amp_phase_batch = np.concatenate([first_partial_amp_phase, second_partial_amp_phase], axis=0)
-
-			else:
-				fluxes_batch = current_fluxes_array[batch_start:batch_end]
-				amp_phase_batch = current_amp_phase_array[batch_start:batch_end]
-
-
-			start_index += batch_size
-			end_index += batch_size
-
-			yield fluxes_batch, amp_phase_batch
-
-
-def train_generator(
-	features_path,
-	labels_path,
-	batch_size,
 	do_shuffle=False,
 	n_samples=70000
 	):
@@ -632,7 +601,7 @@ def train_generator(
 		current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
 																						 labels_path,
 																						 current_file,
-																						 do_shuffle)
+																						 do_shuffle=do_shuffle)
 		# Go through the subfiles
 		while end_index < n_samples:
 			# Compute the indexes in the subfiles
@@ -649,7 +618,7 @@ def train_generator(
 				current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
 																						 		 labels_path,
 																						 		 current_file,
-																						 		 do_shuffle)
+																						 		 do_shuffle=do_shuffle)
 
 				second_partial_fluxes = current_fluxes_array[:batch_end]
 				second_partial_amp_phase = current_amp_phase_array[:batch_end]
@@ -696,6 +665,217 @@ def load_subfile_for_train_generator(feature_path_prefix,
 
 	# Shuffle if needed
 	if do_shuffle:
-		current_fluxex_array, current_amp_phase_array = shuffle_arrays([current_fluxes_array, current_amp_phase_array])
+		shuf_current_fluxex_array, shuf_current_amp_phase_array = shuffle_arrays([current_fluxes_array, current_amp_phase_array])
+		return shuf_current_fluxex_array, shuf_current_amp_phase_array
 
-	return current_fluxes_array, current_amp_phase_array
+	else:
+		return current_fluxes_array, current_amp_phase_array
+
+
+### PSF RELATED
+def generate_psf_complex_fields(
+	filepath,
+	telescope_diameter=1,
+	wavelength=1e-6,
+	pupil_grid_size=256,
+	focal_q=8,
+	num_airy=8,
+	fried_parameter=0.2,
+	outer_scale=20,
+	velocity=10,
+	n_samples=SUBFILE_SAMPLES,
+	plot=False
+	):
+	"""
+	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
+	
+	Input:
+		filepath (string): The path of file to store the psf
+		teslecope_diameter (float): The diameter of the aperture
+		wavelength (float): The wavelength of the light
+		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+		focal_q (int)
+		num_airy=16
+	"""
+
+	D_tel = 0.5
+	wavelength = 1e-6
+
+	pupil_grid = make_pupil_grid(256, D_tel)
+	focal_grid = make_focal_grid(q=8, num_airy=8, spatial_resolution=wavelength/D_tel)
+	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
+
+	aperture = make_circular_aperture(D_tel)(pupil_grid)
+
+	fried_parameter = 0.2 # meter
+	outer_scale = 20 # meter
+	velocity = 10 # meter/sec
+
+	Cn_squared = Cn_squared_from_fried_parameter(fried_parameter, wavelength)
+	atmosphere = InfiniteAtmosphericLayer(pupil_grid, Cn_squared, outer_scale, velocity)
+
+	wf = Wavefront(aperture, wavelength)
+
+	propagated_wavefronts = propagate_wavefronts(n_samples,
+												 wf,
+												 propagator,
+												 atmosphere,
+												 plot=plot)
+
+	save_wavefronts_complex_fields(propagated_wavefronts,
+								   filepath)
+	return None
+
+
+def propagate_wavefronts(
+	n_samples,
+	wavefront,
+	propagator,
+	atmosphere,
+	plot=False
+	):
+	"""
+	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	"""
+	wavefronts = []
+
+	for t in range(n_samples):
+		atmosphere.reset()
+		propagated_wavefront = propagator(atmosphere(wavefront))
+		wavefronts.append(propagated_wavefront)
+
+		if plot:
+			original_psf = propagator(wavefront)
+			plt.clf()
+			plt.subplot(1,4,1)
+			imshow_field(propagated_wavefront.phase, vmin=-6)
+			plt.colorbar()
+			plt.subplot(1,4,2)
+			imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
+			plt.colorbar()
+			plt.subplot(1,4,3)
+			imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+
+			plt.subplot(1,4,4)
+			imshow_field(np.log10(original_psf.intensity/ original_psf.intensity.max()), vmin=-6)
+			plt.colorbar()
+			plt.draw()
+
+	return wavefronts
+
+
+def save_wavefronts_complex_fields(
+	propagated_wavefronts,
+	filepath
+	):
+	
+	n_fields = len(propagated_wavefronts)
+	# Compute the rows (or columns as the wf is a square grid)
+	square_side = int(np.sqrt(propagated_wavefronts[0].amplitude.shape))
+	complex_fields = np.zeros((n_fields, square_side, square_side), dtype='complex')
+
+	for i in range(n_fields):
+		amplitude = np.array([propagated_wavefronts[i].amplitude])
+		phase = np.array([propagated_wavefronts[i].phase])
+		comp_amp_phase = amplitude * np.exp(phase*1j)
+		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
+		complex_fields[i] = comp_amp_phase
+
+	save_numpy_array(complex_fields, filepath, single_precision=False)
+
+
+def compute_output_fluxes_from_complex_field(
+	complex_fields_file_path,
+	output_fluxes_file_path,
+	plot=False,
+	verbose=False
+	):
+	
+	# Create the lantern fiber
+	n_core = 1.44
+	n_cladding = 1.4345
+	wavelength = 1.5 # microns
+	core_radius = 32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+	show_plots = False
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength)
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+
+	input_complex_fields = np.load(complex_fields_file_path)
+	n_fields = input_complex_fields.shape[0]
+	transfer_matrix = load_transfer_matrix()
+
+	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=verbose, 
+			show_plots=plot, 
+			fignum=11,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+
+		# Now get the complex amplitudes of the PL outputs:
+		pl_outputs = transfer_matrix @ mode_coupling_complex
+
+		# In real life, we just measure the intensities of the outputs:
+		pl_output_fluxes = np.abs(pl_outputs)**2
+		output_fluxes[k] = pl_output_fluxes
+
+		print(np.angle(mode_coupling_complex))
+		if plot:
+			# Plot input mode coefficients and output fluxes
+			xlabels = np.arange(lantern_fiber.nmodes)
+			plt.figure(1)
+			plt.clf()
+			plt.subplot(311)
+			plt.bar(xlabels, np.abs(mode_coupling_complex))
+			plt.title('Input mode amplitudes')
+			plt.subplot(312)
+			plt.bar(xlabels, np.angle(mode_coupling_complex))
+			plt.title('Input mode phases')
+			plt.subplot(313)
+			plt.bar(xlabels, pl_output_fluxes)
+			plt.title('Output fluxes')
+			plt.tight_layout()
+
+	save_numpy_array(output_fluxes, output_fluxes_file_path)
+
+
+def load_transfer_matrix(
+	lanter_fiber_directory=PSF_DATA_PATH,
+	lantern_fiber_filename=LANTERN_FIBER_FILENAME):
+
+	lantern_fiber = LanternFiber(datadir=PSF_DATA_PATH, nmodes=19, nwgs=19)
+	lantern_fiber.load_savedvalues(LANTERN_FIBER_FILENAME)
+	lantern_fiber.make_transfer_matrix_mm2sm(show_plots=True)
+
+	transfer_matrix = lantern_fiber.Cmat # This is the complex transfer matrix
+	return transfer_matrix
+
