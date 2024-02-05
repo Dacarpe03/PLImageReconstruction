@@ -423,12 +423,14 @@ def SimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
-	hidden_layer_sizes = [512, 512, 256, 256, 512, 512, 1024, 1024, 2048]
+	hidden_layer_sizes = [2000, 2000, 2000, 2000]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "SimpleFCModel"
+	use_dropout = False
+	dropout_rate = 0.1
+	model_name = "OriginalDataSimpleFCModel"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -438,7 +440,8 @@ def SimpleFCModel(
                                     hidden_activation,
                                     output_activation,
                                     use_batch_normalization,
-                                    model_name
+                                    model_name,
+                                    use_dropout=use_dropout
                                     )
 
 	description = f"""
@@ -452,6 +455,7 @@ def SimpleFCModel(
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
 	"""
 
 	# Define compilation hyperparameters
@@ -1053,13 +1057,13 @@ def SimpleConvolutional(
 	output_shape = CNN_OUTPUT_SHAPE
 	convolutional_layer_sizes = [128, 256, 512]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	fully_connected_hidden_layer_sizes = [1000, 1000, 1000]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SimpleConvolutional"
+	model_name="RetrainedSimpleConvolutional"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1114,7 +1118,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 70
+	epochs = 30
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
