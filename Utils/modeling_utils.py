@@ -629,7 +629,8 @@ def train_model_with_generator(model,
 						 	   epochs,
 						 	   batch_size,
 						 	   callbacks,
-						 	   n_samples=70000
+						 	   n_samples=70000,
+						 	   do_shuffle=False
 						 	   ):
 	"""
 	Fits the model to the train instances of the data.
@@ -650,18 +651,18 @@ def train_model_with_generator(model,
 	train_gen = train_generator(fluxes_path,
 								amplitudes_path,
 								batch_size,
-								do_shuffle=False,
+								do_shuffle=do_shuffle,
 								n_samples=n_samples)
 
 	steps_per_epoch = math.ceil(n_samples/batch_size)
 	validation_steps = math.ceil(len(validation_amplitudes)/batch_size)
 
-	history = model.fit_generator(train_gen, 
-								  steps_per_epoch=steps_per_epoch,
-								  validation_data=(validation_fluxes, validation_amplitudes),
-								  epochs=epochs,
-								  callbacks=callbacks,
-								  verbose=1)
+	history = model.fit(train_gen, 
+						steps_per_epoch=steps_per_epoch,
+						validation_data=(validation_fluxes, validation_amplitudes),
+						epochs=epochs,
+						callbacks=callbacks,
+						verbose=1)
 
 
 	return history

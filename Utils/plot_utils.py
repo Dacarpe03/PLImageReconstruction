@@ -54,6 +54,7 @@ def plot_fluxes(original_flux,
     # Show the plot
     fig.show()
 
+
 def plot_model_history(
     history
     ):
@@ -120,9 +121,7 @@ def plot_fully_connected_amp_phase_prediction(
 def plot_conv_amp_phase_prediction(
     model,
     input_flux,
-    original_amplitude,
-    original_phase,
-    og_shape=None
+    original_amp_phase
     ):
     """
     Plots a 4 figure diagram with the predictions of the convolutional model
@@ -138,11 +137,14 @@ def plot_conv_amp_phase_prediction(
     """
 
     reshaped_input_flux = np.array([input_flux])
-    prediction = model.predict(reshaped_input_flux)
-    amplitude_prediction = prediction[0][0]
-    phase_prediction = prediction[0][1]
+    prediction = model.predict(reshaped_input_flux)[0]
+    reshaped_prediction = np.transpose(prediction, (2,0,1))
+    amplitude_prediction = reshaped_prediction[0]
+    phase_prediction = reshaped_prediction[1]
+    original_amplitude = np.transpose(original_amp_phase, (2,0,1))[0]
+    original_phase = np.transpose(original_amp_phase, (2,0,1))[1]
 
-    a(
+    plot_amp_phase_prediction(
         amplitude_prediction,
         phase_prediction,
         original_amplitude,
