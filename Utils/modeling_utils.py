@@ -671,7 +671,9 @@ def train_model_with_generator(model,
 def store_model(
 	model,
 	model_name,			
-	description):
+	description,
+	mse,
+	val_mse):
 	"""
 	Stores the model in the DATA_FOLDER with the name with a description in the neural network descriptions file
 
@@ -692,6 +694,8 @@ def store_model(
 	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
 		f.write(f"===={model_name}_{version}====\n")
 		f.write(description)
+		f.write("\n")
+		f.write(f"    * RESULTS:\n        -Train MSE: {mse}\n        -Validation MSE: {val_mse}")
 		f.write("\n\n")
 
 

@@ -424,13 +424,13 @@ def SimpleFCModel(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2000, 2000, 2000, 2000]
-	regularizer = None
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
-	use_batch_normalization = False
-	use_dropout = False
-	dropout_rate = 0.1
-	model_name = "OriginalDataSimpleFCModel"
+	use_batch_normalization = True
+	use_dropout = True
+	dropout_rate = 0.2
+	model_name = "FCBNDRL170000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -441,7 +441,8 @@ def SimpleFCModel(
                                     output_activation,
                                     use_batch_normalization,
                                     model_name,
-                                    use_dropout=use_dropout
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
                                     )
 
 	description = f"""
@@ -534,7 +535,7 @@ def SimpleFCWithBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "AmplitudePhaseReconstructor1"
+	model_name = "RetrainedSimpleFC"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -631,7 +632,7 @@ def FullyConnectedDropoutAndBN(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
-	regularizer = None
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
@@ -659,7 +660,7 @@ def FullyConnectedDropoutAndBN(
 		-Input shape: {input_shape}
 		-Output shape: {output_shape}
 		-Hidden layers: {hidden_layer_sizes}
-		-Regularizer: {regularizer}
+		-Regularizer: L1 0.0001
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
