@@ -207,7 +207,7 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 		convolutinal_layer_kernels,
 		convolutional_activation,
 		output_activation,
-		model_name="EncoderConvolutionalArchitecture",
+		model_name="EncoderConvolutionalArchitecture70000",
 		padding="same",
 		use_batch_normalization=True
 		):
@@ -1064,7 +1064,7 @@ def SimpleConvolutional(
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SC70000"
+	model_name="SC70000Shuffle"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 

@@ -286,7 +286,8 @@ def create_autoencoder_for_flux(
 			convolutional_layer_kernels[0],
 			activation=convolutional_activation,
 			input_shape=input_shape,
-			padding=padding
+			padding=padding,
+			name="conv_1"
 		)
 	)
 
@@ -295,7 +296,8 @@ def create_autoencoder_for_flux(
 				convolutional_layer_sizes[0],
 				convolutional_layer_kernels[0],
 				activation=convolutional_activation,
-				padding=padding
+				padding=padding,
+				name="conv_2"
 			)
 	)
 
@@ -313,7 +315,8 @@ def create_autoencoder_for_flux(
 						convolutional_layer_sizes[i],
 						convolutional_layer_kernels[i],
 						activation=convolutional_activation,
-						padding=padding
+						padding=padding,
+						name=f"conv_{i}-{j}"
 
 					)
 			)
@@ -361,7 +364,8 @@ def create_autoencoder_for_flux(
 						convolutional_layer_sizes[i],
 						convolutional_layer_kernels[i],
 						activation=convolutional_activation,
-						padding=padding
+						padding=padding,
+						name=f"deconv_{i}-{j}"
 					)
 			)
 
@@ -376,7 +380,8 @@ def create_autoencoder_for_flux(
 				1,
 				(3,3), 
 				activation=output_activation,
-				padding=padding
+				padding=padding,
+				name=f"output_autoencoder_conv"
 			)
 		)
 
@@ -420,7 +425,7 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 			break
 
 	conv_input = encoder.output
-	conv_layers = UpSampling2D(size=(1,2))(conv_input)
+	conv_layers = UpSampling2D(size=(1,2), name="bottleneck_upsampling")(conv_input)
 
 	for i in range(len(convolutional_layer_sizes)):
 		for j in range(2):
@@ -428,14 +433,16 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 								convolutional_layer_sizes[i],
 								convolutional_layer_kernels[i],
 								activation=convolutional_activation,
-								padding=padding
+								padding=padding,
+								name=f"enc_conv_{i}-{j}"
 							)(conv_layers)
 
 		if use_batch_normalization:
-			conv_layers = BatchNormalization()(conv_layers)
+			conv_layers = BatchNormalization(name=f"enc_batch_norm{i}")(conv_layers)
 
 		conv_layers = UpSampling2D(
-						size=(2,2)
+						size=(2,2),
+						name=f"enc_upsampling_{i}"
 						)(conv_layers)
 
 	# OUTPUT_LAYER
@@ -443,7 +450,8 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 					2,
 					(3,3), 
 					activation=output_activation,
-					padding=padding
+					padding=padding,
+					name=f"output_enc_conv"
 					)(conv_layers)
 
 	conv_model = keras.Model(inputs=encoder.input, outputs=conv_layers)
