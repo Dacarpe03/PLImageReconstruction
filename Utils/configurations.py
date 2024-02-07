@@ -430,7 +430,7 @@ def SimpleFCModel(
 	use_batch_normalization = True
 	use_dropout = True
 	dropout_rate = 0.2
-	model_name = "FCBNDRL170000"
+	model_name = "FCBNDRL130000Original"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -1056,15 +1056,15 @@ def SimpleConvolutional(
 	# Define architecture hyperparmeters
 	input_shape = CNN_INPUT_SHAPE
 	output_shape = CNN_OUTPUT_SHAPE
-	convolutional_layer_sizes = [128, 256, 512]
+	convolutional_layer_sizes = [512, 256, 128]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [1000, 1000, 1000]
+	fully_connected_hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="RetrainedSimpleConvolutional"
+	model_name="SC70000"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1119,7 +1119,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 30
+	epochs = 200
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

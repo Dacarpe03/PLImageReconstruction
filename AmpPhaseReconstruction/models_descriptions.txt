@@ -1155,3 +1155,159 @@
         -Train MSE: 0.5618036389350891
         -Validation MSE: 0.6759068965911865
 
+====FCBNDRL110000Original_1====
+
+	=== FCBNDRL110000Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+		-Dropout: True, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.2263479232788086
+        -Validation MSE: 0.999286413192749
+
+====FCBNDRL110000Original_2====
+
+	=== FCBNDRL110000Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+		-Dropout: True, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.20683348178863525
+        -Validation MSE: 1.0286670923233032
+
+====SC10000_1====
+
+	=== SC10000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [512, 256, 128]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [256, 256, 256, 256, 256, 256]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 16
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.2195400893688202
+        -Validation MSE: 1.0682666301727295
+
+====SC30000_1====
+
+	=== SC30000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [512, 256, 128]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [256, 256, 256, 256, 256, 256]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.18283383548259735
+        -Validation MSE: 1.1608192920684814
+
+====SC70000_1====
+
+	=== SC70000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [512, 256, 128]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [256, 256, 256, 256, 256, 256]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.5611955523490906
+        -Validation MSE: 0.7047486901283264
+
