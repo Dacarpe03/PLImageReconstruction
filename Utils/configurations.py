@@ -1273,7 +1273,7 @@ def EncoderConvolutionalConfiguration(
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="EncoderAndConvolutional"
+	model_name="EncoderConvolutional70000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,
@@ -1316,7 +1316,7 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 15
+	epochs = 100
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

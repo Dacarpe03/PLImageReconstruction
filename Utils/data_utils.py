@@ -526,7 +526,7 @@ def load_validation_data(
 def save_numpy_array(
 	array,
 	filepath,
-	single_precision=False
+	single_precision=True
 	):
 
 	"""
@@ -668,8 +668,8 @@ def load_subfile_for_train_generator(feature_path_prefix,
 		shuf_current_fluxex_array, shuf_current_amp_phase_array = shuffle_arrays([current_fluxes_array, current_amp_phase_array])
 		return shuf_current_fluxex_array, shuf_current_amp_phase_array
 
-	else:
-		return current_fluxes_array, current_amp_phase_array
+		
+	return current_fluxes_array, current_amp_phase_array
 
 
 ### PSF RELATED
@@ -775,9 +775,9 @@ def save_wavefronts_complex_fields(
 	complex_fields = np.zeros((n_fields, square_side, square_side), dtype='complex')
 
 	for i in range(n_fields):
-		amplitude = np.array([propagated_wavefronts[i].amplitude])
-		phase = np.array([propagated_wavefronts[i].phase])
-		comp_amp_phase = amplitude * np.exp(phase*1j)
+		real_part = np.array([propagated_wavefronts[i].real])
+		imaginary = np.array([propagated_wavefronts[i].imag])
+		comp_amp_phase = real_part + imaginary*1j
 		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
 		complex_fields[i] = comp_amp_phase
 
@@ -848,7 +848,6 @@ def compute_output_fluxes_from_complex_field(
 		pl_output_fluxes = np.abs(pl_outputs)**2
 		output_fluxes[k] = pl_output_fluxes
 
-		print(np.angle(mode_coupling_complex))
 		if plot:
 			# Plot input mode coefficients and output fluxes
 			xlabels = np.arange(lantern_fiber.nmodes)

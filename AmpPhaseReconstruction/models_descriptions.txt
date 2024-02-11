@@ -1427,3 +1427,29 @@
         -Train MSE: 0.22770486772060394
         -Validation MSE: 1.0769436359405518
 
+====model_3====
+
+	=== EncoderConvolutional70000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Encoder + Convolutional
+		-Convolutional Layers: [32, 128, 256, 512]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3), (3, 3)]
+		-Convolutional Activation: relu
+		-Output Layer Activation: linear
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 100
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
+	
+    * RESULTS:
+        -Train MSE: 0.37275591492652893
+        -Validation MSE: 0.676990270614624
+

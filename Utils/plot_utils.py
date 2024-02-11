@@ -277,14 +277,14 @@ def plot_enc_conv_amp_phase_prediction(
     prediction = np.swapaxes(prediction, 1, 2)
     prediction = np.swapaxes(prediction, 1, 3)
 
-    original_amp_phase = np.swapaxes(original_amp_phase, 1, 2)
-    original_amp_phase = np.swapaxes(original_amp_phase, 1, 3)
+    original_amp_phase = np.swapaxes(original_amp_phase, 0, 1)
+    original_amp_phase = np.swapaxes(original_amp_phase, 0, 2)
     
     amplitude_prediction = prediction[0][0]
     phase_prediction = prediction[0][1]
 
-    original_amplitude = original_amp_phase[0][0]
-    original_phaes = original_amp_phase[0][1]
+    original_amplitude = original_amp_phase[0]
+    original_phase = original_amp_phase [1]
     
     plot_amp_phase_prediction(
         amplitude_prediction,
