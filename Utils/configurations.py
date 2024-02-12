@@ -207,7 +207,7 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 		convolutinal_layer_kernels,
 		convolutional_activation,
 		output_activation,
-		model_name="EncoderConvolutionalArchitecture",
+		model_name="EncoderConvolutionalArchitecture70000",
 		padding="same",
 		use_batch_normalization=True
 		):
@@ -424,13 +424,13 @@ def SimpleFCModel(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2000, 2000, 2000, 2000]
-	regularizer = None
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
-	use_batch_normalization = False
-	use_dropout = False
-	dropout_rate = 0.1
-	model_name = "OriginalDataSimpleFCModel"
+	use_batch_normalization = True
+	use_dropout = True
+	dropout_rate = 0.2
+	model_name = "FCBNDRL130000Original"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -441,7 +441,8 @@ def SimpleFCModel(
                                     output_activation,
                                     use_batch_normalization,
                                     model_name,
-                                    use_dropout=use_dropout
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
                                     )
 
 	description = f"""
@@ -534,7 +535,7 @@ def SimpleFCWithBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "AmplitudePhaseReconstructor1"
+	model_name = "RetrainedSimpleFC"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -631,7 +632,7 @@ def FullyConnectedDropoutAndBN(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
-	regularizer = None
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
@@ -659,7 +660,7 @@ def FullyConnectedDropoutAndBN(
 		-Input shape: {input_shape}
 		-Output shape: {output_shape}
 		-Hidden layers: {hidden_layer_sizes}
-		-Regularizer: {regularizer}
+		-Regularizer: L1 0.0001
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
@@ -1055,15 +1056,15 @@ def SimpleConvolutional(
 	# Define architecture hyperparmeters
 	input_shape = CNN_INPUT_SHAPE
 	output_shape = CNN_OUTPUT_SHAPE
-	convolutional_layer_sizes = [128, 256, 512]
+	convolutional_layer_sizes = [128, 256, 512]	
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [1000, 1000, 1000]
+	fully_connected_hidden_layer_sizes = [4096, 2048, 2048, 1024, 1024, 1024]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="RetrainedSimpleConvolutional"
+	model_name="SC70000Shuffle"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1097,7 +1098,7 @@ def SimpleConvolutional(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -1118,7 +1119,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 30
+	epochs = 200
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1268,11 +1269,11 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [32, 128, 256, 512]
+	convolutional_layer_sizes = [1024, 512, 256, 256]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="EncoderAndConvolutional"
+	model_name="BigEncoderConvolutional70000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,
@@ -1315,7 +1316,7 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 15
+	epochs = 100
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

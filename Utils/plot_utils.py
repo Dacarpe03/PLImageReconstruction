@@ -258,8 +258,7 @@ def plot_autoencoder(
 def plot_enc_conv_amp_phase_prediction(
     model,
     input_flux,
-    original_amplitude,
-    original_phase,
+    original_amp_phase
     ):
     """
     Plots a 4 figure diagram with the predictions of the encoder+convolutional model
@@ -267,8 +266,7 @@ def plot_enc_conv_amp_phase_prediction(
     Input:
         model (keras.models): A trained neural network
         input_flux (np.array): A data point to feed the neural network
-        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
-        original_phase (np.array): Original 2d array containing the phase information in the pupil
+        original_amplitude_phase (np.array): Original 3d array containing the amplitude and phase information in the pupil
 
     Returns:
         None
@@ -278,9 +276,15 @@ def plot_enc_conv_amp_phase_prediction(
     prediction = model.predict(reshaped_input_flux)
     prediction = np.swapaxes(prediction, 1, 2)
     prediction = np.swapaxes(prediction, 1, 3)
+
+    original_amp_phase = np.swapaxes(original_amp_phase, 0, 1)
+    original_amp_phase = np.swapaxes(original_amp_phase, 0, 2)
     
     amplitude_prediction = prediction[0][0]
     phase_prediction = prediction[0][1]
+
+    original_amplitude = original_amp_phase[0]
+    original_phase = original_amp_phase [1]
     
     plot_amp_phase_prediction(
         amplitude_prediction,
