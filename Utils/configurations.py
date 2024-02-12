@@ -1056,9 +1056,9 @@ def SimpleConvolutional(
 	# Define architecture hyperparmeters
 	input_shape = CNN_INPUT_SHAPE
 	output_shape = CNN_OUTPUT_SHAPE
-	convolutional_layer_sizes = [512, 256, 128]
+	convolutional_layer_sizes = [128, 256, 512]	
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
+	fully_connected_hidden_layer_sizes = [4096, 2048, 2048, 1024, 1024, 1024]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
@@ -1098,7 +1098,7 @@ def SimpleConvolutional(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -1269,11 +1269,11 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [32, 128, 256, 512]
+	convolutional_layer_sizes = [1024, 512, 256, 256]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="EncoderConvolutional70000"
+	model_name="BigEncoderConvolutional70000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,

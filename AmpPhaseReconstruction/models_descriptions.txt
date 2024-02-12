@@ -1453,3 +1453,93 @@
         -Train MSE: 0.37275591492652893
         -Validation MSE: 0.676990270614624
 
+====SC70000Shuffle_2====
+
+	=== SC70000Shuffle ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [128, 256, 512]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [1024, 2048, 2048, 4096]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.43
+        -Validation MSE: 0.63
+
+====SC70000Shuffle_3====
+
+	=== SC70000Shuffle ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [128, 256, 512]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [4096, 2048, 2048, 1024, 1024, 1024]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.5479724407196045
+        -Validation MSE: 0.6885805130004883
+
+====model_4====
+
+	=== BigEncoderConvolutional70000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Encoder + Convolutional
+		-Convolutional Layers: [1024, 512, 256, 256]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3), (3, 3)]
+		-Convolutional Activation: relu
+		-Output Layer Activation: linear
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 100
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
+	
+    * RESULTS:
+        -Train MSE: 0.16972282528877258
+        -Validation MSE: 0.8326782584190369
+
