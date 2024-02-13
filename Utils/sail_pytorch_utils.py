@@ -119,7 +119,8 @@ def instantiate_diffusion_amp_phase_dataloader(
 
 
 def instantiate_diffusion_psf_dataloader(
- 	batch_size
+ 	batch_size,
+ 	validation=False
  	):
  	file_paths = []
  	for file_number in TRAIN_FILE_SUFFIXES:
