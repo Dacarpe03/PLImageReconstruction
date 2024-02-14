@@ -1543,3 +1543,67 @@
         -Train MSE: 0.16972282528877258
         -Validation MSE: 0.8326782584190369
 
+====SC80000_1====
+
+	=== SC80000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [128, 256, 512]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [4096, 2048, 2048, 1024, 1024, 1024]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.5646789073944092
+        -Validation MSE: 0.6800134778022766
+
+====SC90000_1====
+
+	=== SC90000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Convolutional
+		-Input shape: (55, 24, 1)
+		-Output shape: (96, 96, 2)
+		-Convolutional Layers: [128, 256, 512]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3)]
+		-Fully Connected Hidden layers: [4096, 2048, 2048, 1024, 1024, 1024]
+		-Regularizer: None
+		-Convolutional Activation: relu
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.5800531506538391
+        -Validation MSE: 0.6555277109146118
+
