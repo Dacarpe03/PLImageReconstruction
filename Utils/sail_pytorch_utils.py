@@ -119,12 +119,8 @@ def instantiate_diffusion_amp_phase_dataloader(
 
 
 def instantiate_diffusion_psf_dataloader(
- 	batch_size,
- 	validation=False
+ 	batch_size
  	):
-
-	if validation:
-		file_paths = []
  	file_paths = []
  	for file_number in TRAIN_FILE_SUFFIXES:
  		subfile_path = f"{TRAIN_COMPLEX_FIELDS_PREFIX}{file_number}{NUMPY_SUFFIX}"
@@ -134,3 +130,11 @@ def instantiate_diffusion_psf_dataloader(
  	dynamic_custom_dataloader = DataLoader(psf_dynamic_dataset, batch_size=batch_size)
 
  	return dynamic_custom_dataloader
+
+
+def instantiate_psf_dataloader(
+	batch_size,
+	validation=False
+	):
+
+	return None
