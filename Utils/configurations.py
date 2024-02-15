@@ -424,13 +424,13 @@ def SimpleFCModel(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [2000, 2000, 2000, 2000]
-	regularizer = L1(0.0001)
+	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
-	use_batch_normalization = True
-	use_dropout = True
+	use_batch_normalization = False
+	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "FCBNDRL130000Original"
+	model_name = "FC-08-Original"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -461,7 +461,7 @@ def SimpleFCModel(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -488,11 +488,11 @@ def SimpleFCModel(
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
 					factor=0.1, 
-					patience=15, 
+					patience=10, 
 					verbose=1)
 	early_stop = EarlyStopping(
 					'val_mean_squared_error',
-					patience=50, 
+					patience=25, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
 
@@ -506,8 +506,8 @@ def SimpleFCModel(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks: 
-			-ReduceLROnPlateau: MSE 15 x0.1
-			-Early Stop: MSE 50
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
 	"""
 
 	model_configuration = Configuration(

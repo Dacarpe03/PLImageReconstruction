@@ -1607,3 +1607,273 @@
         -Train MSE: 0.5800531506538391
         -Validation MSE: 0.6555277109146118
 
+====FC-00-Original_1====
+
+	=== FC-00-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 15 x0.1
+			-Early Stop: MSE 50
+	
+    * RESULTS:
+        -Train MSE: 0.1690264791250229
+        -Validation MSE: 1.0640292167663574
+
+====FC-01-Original_1====
+
+	=== FC-01-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.16860570013523102
+        -Validation MSE: 1.0485831499099731
+
+====FC-02-Original_1====
+
+	=== FC-02-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.17277002334594727
+        -Validation MSE: 1.0367083549499512
+
+====FC-03-Original_1====
+
+	=== FC-03-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.6235877871513367
+        -Validation MSE: 0.6256474852561951
+
+====FC-04-Original_1====
+
+	=== FC-04-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.623839795589447
+        -Validation MSE: 0.6261520385742188
+
+====FC-05-Original_1====
+
+	=== FC-05-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.6241261959075928
+        -Validation MSE: 0.626352071762085
+
+====FC-06-Original_1====
+
+	=== FC-06-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.6231329441070557
+        -Validation MSE: 0.6278942227363586
+
+====FC-06-Original_2==== (THIS IS WITH VALIDATION DATA)
+
+	=== FC-06-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.5122347474098206
+        -Validation MSE: 0.5032742619514465
+
+====FC-08-Original_1====
+
+	=== FC-08-Original ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    * RESULTS:
+        -Train MSE: 0.6237215399742126
+        -Validation MSE: 0.6266492605209351
+
