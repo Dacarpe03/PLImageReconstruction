@@ -9,11 +9,11 @@ PL_AMP_PHASE_DATA_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/D
 # ORIGINAL DATA FOLDERS
 ORIGINAL_FOLDER_DATA_PATH = f"{PL_AMP_PHASE_DATA_PATH}/OriginalData"
 
-ORIGINAL_FLUXES_FOLDER = f"{ORIGINAL_FOLDER_DATA_PATH}/plfluxes_simplepoly__pllabdata_20230625a_superK_slmcube_20230625_complsines-01sp_04"
+ORIGINAL_FLUXES_FOLDER = f"{ORIGINAL_FOLDER_DATA_PATH}/plfluxes_simplepoly__pllabdata_20230625a_superK_slmcube_20230625_complsines-01sp_07"
 ORIGINAL_FLUXES_FILE = f"{ORIGINAL_FLUXES_FOLDER}/all_fluxes{NUMPY_SUFFIX}"
 ORIGINAL_COEFFS_FILE = f"{ORIGINAL_FLUXES_FOLDER}/combined_coeffs{NUMPY_SUFFIX}"
 
-ORIGINAL_SLM_FOLDER = f"{ORIGINAL_FOLDER_DATA_PATH}/slmcube_20230625_complsines-01sp_04_PSFWFs_file"
+ORIGINAL_SLM_FOLDER = f"{ORIGINAL_FOLDER_DATA_PATH}/slmcube_20230625_complsines-01sp_07_PSFWFs_file"
 ORIGINAL_AMPLITUDE_FILENAME = "complexsine_pupamp.npy"
 ORIGINAL_PHASE_FILENAME = "complexsine_pupphase.npy"
 
