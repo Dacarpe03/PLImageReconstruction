@@ -430,7 +430,7 @@ def SimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "FC-08-Original"
+	model_name = "NewFC00-Original"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
