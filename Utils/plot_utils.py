@@ -171,7 +171,7 @@ def plot_amp_phase_prediction(
  
     """
     # Create a subplot with 2 rows and 2 columns
-    fig = make_subplots(rows=2, cols=2, subplot_titles=("Original Amplitude", "Original Phase", "Reconstructed Amplitude", "Reconstructed Phase"))
+    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Reconstructed Amplitude", "Original Phase", "Amplitude Residual", "Reconstructed Phase", "Phase Residual"))
 
 
     og_amplitude_heatmap = go.Heatmap(
@@ -181,25 +181,36 @@ def plot_amp_phase_prediction(
                                 colorbar=dict(len=0.5))
 
     og_phase_heatmap = go.Heatmap(
-                            z=original_phase, 
-                            colorbar_y = 0.8,
+                            z=original_phase,
+                            colorbar_x=-0.2,
+                            colorbar_y = 0.2,
                             colorbar=dict(len=0.5))
 
-    re_amplitude_heatmap = go.Heatmap(
+    ai_amplitude_heatmap = go.Heatmap(
                                 z=predicted_amplitude, 
-                                colorbar_x=-0.2, 
-                                colorbar_y=0.2,
-                                colorbar=dict(len=0.5))
+                                showscale=False)
+
+    ai_phase_heatmap = go.Heatmap(
+                            z=predicted_phase,
+                            showscale=False)
+
+    re_amplitude_heatmap = go.Heatmap(
+                            z=original_amplitude - predicted_amplitude,
+                            colorbar_y=0.8,
+                            colorbar=dict(len=0.5))
 
     re_phase_heatmap = go.Heatmap(
-                            z=predicted_phase,
+                            z=original_phase - predicted_phase,
                             colorbar_y=0.2,
                             colorbar=dict(len=0.5))
 
     fig.add_trace(og_amplitude_heatmap, row=1, col=1)
-    fig.add_trace(og_phase_heatmap, row=1, col=2)
-    fig.add_trace(re_amplitude_heatmap, row=2, col=1)
-    fig.add_trace(re_phase_heatmap, row=2, col=2)
+    fig.add_trace(og_phase_heatmap, row=2, col=1)
+    fig.add_trace(ai_amplitude_heatmap, row=1, col=2)
+    fig.add_trace(ai_phase_heatmap, row=2, col=2)
+    fig.add_trace(re_amplitude_heatmap, row=1, col=3)
+    fig.add_trace(re_phase_heatmap, row=2, col=3)
+
 
     fig.update_layout(
     title_text=f"Amplitude and Phase Reconstruction from {model_name} model",

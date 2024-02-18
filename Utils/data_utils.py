@@ -581,7 +581,7 @@ def train_generator(
 	labels_path,
 	batch_size,
 	do_shuffle=False,
-	n_samples=70000
+	n_samples=80000
 	):
 	"""
 	This is the train data generator, loads batches dynamically to train with bigger sizes of data
