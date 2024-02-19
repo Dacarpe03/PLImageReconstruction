@@ -658,8 +658,6 @@ def load_subfile_for_train_generator(feature_path_prefix,
 	# Create the file names
 	current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
 	current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
-	#current_features_filename = f"{feature_path_prefix}01{NUMPY_SUFFIX}"
-	#current_labels_filename = f"{labels_path_prefix}01{NUMPY_SUFFIX}"
 
 	# Load the new arrays
 	current_fluxes_array = np.load(current_features_filename)

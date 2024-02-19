@@ -535,7 +535,7 @@ def SimpleFCWithBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "RetrainedSimpleFC"
+	model_name = "NewConv10000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -1064,7 +1064,7 @@ def SimpleConvolutional(
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SC10000Validation"
+	model_name="NewConv30000"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
