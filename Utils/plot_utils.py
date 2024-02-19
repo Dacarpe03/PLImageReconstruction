@@ -78,7 +78,7 @@ def plot_model_history(
     # Set the y axis title
     plt.ylabel('Mean Squared Error')
     # Limit the error
-    plt.ylim(top=2, bottom=0)
+    plt.ylim(top=0.5, bottom=0)
     # Show the plot
     plt.show()
 

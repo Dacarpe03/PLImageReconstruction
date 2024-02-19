@@ -3,3 +3,10 @@
 *.npz
 __pycache__/
 Models/
+*.aux
+*.bcf
+*.log
+*.xml
+*.gz
+*.toc
+
