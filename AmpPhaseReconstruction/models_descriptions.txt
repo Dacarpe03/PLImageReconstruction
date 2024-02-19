@@ -1937,3 +1937,33 @@
         -Train MSE: 0.035130929201841354
         -Validation MSE: 0.0786573588848114
 
+====NewFC30000-Processed_1====
+
+	=== NewFC30000-Processed ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 1320
+		-Output shape: (2, 96, 96)
+		-Hidden layers: [2000, 2000, 2000, 2000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	
+    *RESULTS:
+        -Train MSE: 0.0357743538916111
+        -Validation MSE: 0.057852283120155334
+

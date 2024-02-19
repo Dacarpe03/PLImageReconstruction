@@ -430,7 +430,7 @@ def SimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "NewFC10000-Processed"
+	model_name = "NewFC80000-Processed"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -502,7 +502,7 @@ def SimpleFCModel(
 									callbacks)
 
 	description += f"""
-	* TRAINING HYPERPARAMETERS:
+	*TRAINING HYPERPARAMETERS:
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks: 

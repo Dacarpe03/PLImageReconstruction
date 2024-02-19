@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.12.9)  19 FEB 2024 10:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.12.9)  19 FEB 2024 12:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -408,24 +408,59 @@ Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 \WF@everypar=\toks40
 Package: wrapfig 2003/01/31  v 3.6
 )
+(/usr/share/texlive/texmf-dist/tex/latex/subfig/subfig.sty
+Package: subfig 2005/06/28 ver: 1.3 subfig package
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2020/10/26 v3.5g Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2020/10/21 v2.2e caption3 kernel (AR)
+\captionmargin=\dimen268
+\captionmargin@=\dimen269
+\captionwidth=\dimen270
+\caption@tempdima=\dimen271
+\caption@indent=\dimen272
+\caption@parindent=\dimen273
+\caption@hangindent=\dimen274
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count311
+\c@continuedfloat=\count312
+Package caption Info: wrapfig package is loaded.
+)
+\c@KVtest=\count313
+\sf@farskip=\skip64
+\sf@captopadj=\dimen275
+\sf@capskip=\skip65
+\sf@nearskip=\skip66
+\c@subfigure=\count314
+\c@subfigure@save=\count315
+\c@lofdepth=\count316
+\c@subtable=\count317
+\c@subtable@save=\count318
+\c@lotdepth=\count319
+\sf@top=\skip67
+\sf@bottom=\skip68
+)
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count311
+\lst@mode=\count320
 \lst@gtempboxa=\box57
 \lst@token=\toks41
-\lst@length=\count312
-\lst@currlwidth=\dimen268
-\lst@column=\count313
-\lst@pos=\count314
-\lst@lostspace=\dimen269
-\lst@width=\dimen270
-\lst@newlines=\count315
-\lst@lineno=\count316
-\lst@maxwidth=\dimen271
+\lst@length=\count321
+\lst@currlwidth=\dimen276
+\lst@column=\count322
+\lst@pos=\count323
+\lst@lostspace=\dimen277
+\lst@width=\dimen278
+\lst@newlines=\count324
+\lst@lineno=\count325
+\lst@maxwidth=\dimen279
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-\c@lstnumber=\count317
-\lst@skipnumbers=\count318
+\c@lstnumber=\count326
+\lst@skipnumbers=\count327
 \lst@framebox=\box58
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
@@ -433,42 +468,61 @@ File: listings.cfg 2020/03/24 1.8d listings configuration
 ))
 Package: listings 2020/03/24 1.8d (Carsten Heinz)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count328
+\Gm@cntv=\count329
+\c@Gm@tempcnt=\count330
+\Gm@bindingoffset=\dimen280
+\Gm@wd@mp=\dimen281
+\Gm@odd@mp=\dimen282
+\Gm@even@mp=\dimen283
+\Gm@layoutwidth=\dimen284
+\Gm@layoutheight=\dimen285
+\Gm@layouthoffset=\dimen286
+\Gm@layoutvoffset=\dimen287
+\Gm@dimlist=\toks42
+)
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count319
+\l__color_backend_stack_int=\count331
 \l__pdf_internal_box=\box59
 )
 (./0_main.aux)
 \openout1 = `0_main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
-LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count320
-\scratchdimen=\dimen272
+\scratchcounter=\count332
+\scratchdimen=\dimen288
 \scratchbox=\box60
-\nofMPsegments=\count321
-\nofMParguments=\count322
-\everyMPshowfont=\toks42
-\MPscratchCnt=\count323
-\MPscratchDim=\dimen273
-\MPnumerator=\count324
-\makeMPintoPDFobject=\count325
-\everyMPtoPDFconversion=\toks43
+\nofMPsegments=\count333
+\nofMParguments=\count334
+\everyMPshowfont=\toks43
+\MPscratchCnt=\count335
+\MPscratchDim=\dimen289
+\MPnumerator=\count336
+\makeMPintoPDFobject=\count337
+\everyMPtoPDFconversion=\toks44
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -478,7 +532,45 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-\c@lstlisting=\count326
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: subfig package v1.3 is loaded.
+Package caption Info: listings package is loaded.
+Package caption Info: End \AtBeginDocument code.
+\c@lstlisting=\count338
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(81.94394pt, 433.62pt, 81.94394pt)
+* v-part:(T,H,B)=(106.75473pt, 578.15999pt, 160.13213pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=433.62pt
+* \textheight=578.15999pt
+* \oddsidemargin=9.67395pt
+* \evensidemargin=9.67395pt
+* \topmargin=-5.51526pt
+* \headheight=15.0pt
+* \headsep=25.0pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=44.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 (./titlepage.tex
 
@@ -531,7 +623,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 24--1
 
  []
 
-[2] (./Experiments/ExperimentTemplate.tex
+[2] (./Experiments/ap-NewFC10000-Processed_2.tex
 Underfull \hbox (badness 10000) in paragraph at lines 1--2
 
  []
@@ -541,12 +633,96 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
 
-))) (./PSFReconstruction/PSFNotes.tex
-Underfull \hbox (badness 10000) in paragraph at lines 5--1
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--6
 
  []
 
-) [3] (./0_main.aux)
+[3]
+<Experiments/ExpImages//ap-NewFC10000-Processed_2-evolution.png, id=20, 703.628
+75pt x 456.70625pt>
+File: Experiments/ExpImages//ap-NewFC10000-Processed_2-evolution.png Graphic fi
+le (type png)
+<use Experiments/ExpImages//ap-NewFC10000-Processed_2-evolution.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC10000-Processed_2-evolu
+tion.png  used on input line 40.
+(pdftex.def)             Requested size: 134.42113pt x 87.24896pt.
+<Experiments/ExpImages//ap-NewFC10000-Processed_2-val.png, id=22, 1003.75pt x 8
+03.0pt>
+File: Experiments/ExpImages//ap-NewFC10000-Processed_2-val.png Graphic file (ty
+pe png)
+<use Experiments/ExpImages//ap-NewFC10000-Processed_2-val.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC10000-Processed_2-val.p
+ng  used on input line 43.
+(pdftex.def)             Requested size: 134.42113pt x 107.53036pt.
+<Experiments/ExpImages//ap-NewFC10000-Processed_2-train.png, id=23, 1003.75pt x
+ 803.0pt>
+File: Experiments/ExpImages//ap-NewFC10000-Processed_2-train.png Graphic file (
+type png)
+<use Experiments/ExpImages//ap-NewFC10000-Processed_2-train.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC10000-Processed_2-train
+.png  used on input line 46.
+(pdftex.def)             Requested size: 134.42113pt x 107.53036pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 40--47
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 49--50
+
+ []
+
+) (./Experiments/ap-NewFC30000-Processed_1.tex
+Underfull \hbox (badness 10000) in paragraph at lines 1--2
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+
+ []
+
+[4 <./Experiments/ExpImages//ap-NewFC10000-Processed_2-evolution.png> <./Experi
+ments/ExpImages//ap-NewFC10000-Processed_2-val.png> <./Experiments/ExpImages//a
+p-NewFC10000-Processed_2-train.png>] [5]
+<Experiments/ExpImages//ap-NewFC30000-Processed_1-evolution.png, id=34, 703.628
+75pt x 456.70625pt>
+File: Experiments/ExpImages//ap-NewFC30000-Processed_1-evolution.png Graphic fi
+le (type png)
+<use Experiments/ExpImages//ap-NewFC30000-Processed_1-evolution.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC30000-Processed_1-evolu
+tion.png  used on input line 40.
+(pdftex.def)             Requested size: 134.42113pt x 87.24896pt.
+<Experiments/ExpImages//ap-NewFC30000-Processed_1-val.png, id=35, 1003.75pt x 8
+03.0pt>
+File: Experiments/ExpImages//ap-NewFC30000-Processed_1-val.png Graphic file (ty
+pe png)
+<use Experiments/ExpImages//ap-NewFC30000-Processed_1-val.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC30000-Processed_1-val.p
+ng  used on input line 43.
+(pdftex.def)             Requested size: 134.42113pt x 107.53036pt.
+<Experiments/ExpImages//ap-NewFC30000-Processed_1-train.png, id=36, 1003.75pt x
+ 803.0pt>
+File: Experiments/ExpImages//ap-NewFC30000-Processed_1-train.png Graphic file (
+type png)
+<use Experiments/ExpImages//ap-NewFC30000-Processed_1-train.png>
+Package pdftex.def Info: Experiments/ExpImages//ap-NewFC30000-Processed_1-train
+.png  used on input line 46.
+(pdftex.def)             Requested size: 134.42113pt x 107.53036pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 40--47
+
+ []
+
+))) (./PSFReconstruction/PSFNotes.tex
+Underfull \hbox (badness 10000) in paragraph at lines 51--1
+
+ []
+
+) [6 <./Experiments/ExpImages//ap-NewFC30000-Processed_1-evolution.png> <./Expe
+riments/ExpImages//ap-NewFC30000-Processed_1-val.png> <./Experiments/ExpImages/
+/ap-NewFC30000-Processed_1-train.png>] (./0_main.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 15.12pt have occurred.
@@ -554,26 +730,27 @@ LaTeX Font Warning: Size substitutions with differences
  )
 (\end occurred inside a group at level 1)
 
-### semi simple group (level 1) entered at line 14 (\begingroup)
+### semi simple group (level 1) entered at line 13 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 12452 strings out of 478287
- 217346 string characters out of 5849289
- 514781 words of memory out of 5000000
- 30434 multiletter control sequences out of 15000+600000
+ 14680 strings out of 478287
+ 257718 string characters out of 5849289
+ 570554 words of memory out of 5000000
+ 32635 multiletter control sequences out of 15000+600000
  477169 words of font info for 58 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 85i,11n,90p,409b,1208s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 100i,12n,147p,409b,2778s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texmf/fonts/type1
-/public/cm-super/sfrm1200.pfb>
-Output written on 0_main.pdf (4 pages, 60365 bytes).
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texmf/fonts/type1/public
+/cm-super/sfrm1200.pfb>
+Output written on 0_main.pdf (7 pages, 718444 bytes).
 PDF statistics:
- 43 PDF objects out of 1000 (max. 8388607)
- 26 compressed objects within 1 object stream
+ 72 PDF objects out of 1000 (max. 8388607)
+ 38 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 31 words of extra memory for PDF output out of 10000 (max. 10000000)
 

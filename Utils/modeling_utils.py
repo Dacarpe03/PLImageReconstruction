@@ -700,15 +700,15 @@ def store_model(
 
 	# Save its description
 	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
-		f.write(f"===={model_name}_{version}====\n")
+		f.write(f"===={model_name}-{version}====\n")
 		f.write(description)
 		f.write("\n")
-		f.write(f"    * RESULTS:\n        -Train MSE: {mse}\n        -Validation MSE: {val_mse}")
+		f.write(f"    *RESULTS:\n        -Train MSE: {mse}\n        -Validation MSE: {val_mse}")
 		f.write("\n\n")
 
 
 	# Create the model path
-	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}_{version}{KERAS_SUFFIX}"
+	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
 
 	# Save the model
 	model.save(model_file_path)
