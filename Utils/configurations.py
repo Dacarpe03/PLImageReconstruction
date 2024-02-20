@@ -1064,7 +1064,7 @@ def SimpleConvolutional(
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="NewConv30000"
+	model_name="NewConv80000"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 

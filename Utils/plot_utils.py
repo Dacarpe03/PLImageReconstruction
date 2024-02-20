@@ -171,7 +171,7 @@ def plot_amp_phase_prediction(
  
     """
     # Create a subplot with 2 rows and 2 columns
-    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Reconstructed Amplitude", "Original Phase", "Amplitude Residual", "Reconstructed Phase", "Phase Residual"))
+    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Reconstructed Amplitude", "Amplitude Residual", "Original Phase", "Reconstructed Phase", "Phase Residual"))
 
 
     og_amplitude_heatmap = go.Heatmap(
