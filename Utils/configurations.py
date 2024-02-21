@@ -1171,7 +1171,7 @@ def AutoEncoderConfiguration(
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="NewFluxAutoencoder10000"
+	model_name="NewFluxAutoencoder80000"
 	padding="same"
 	use_batch_normalization=True
 
@@ -1273,7 +1273,7 @@ def EncoderConvolutionalConfiguration(
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="BigEncoderConvolutional70000"
+	model_name="NewEncConv30000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,

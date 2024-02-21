@@ -2122,3 +2122,58 @@
         -Train MSE: 0.0018673702143132687
         -Validation MSE: 0.005482238717377186
 
+====NewFluxAutoencoder80000-1====
+
+	=== NewFluxAutoencoder80000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Autoencoder
+		-Input shape: (56, 24, 1)
+		-Convolutional Layers: [512, 128, 64, 8] (Inverse in the decoder)
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3), (3, 3)] (Inverse in the decoder)
+		-Convolutional Activation: relu
+		-Output Layer Activation: linear
+		-Padding: same
+		-Use Batch Normalization: True
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 75
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
+	
+    *RESULTS:
+        -Train MSE: 0.024667566642165184
+        -Validation MSE: 0.0158506091684103
+
+====NewEncConv10000-1====
+
+	=== BigEncoderConvolutional70000 ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Encoder + Convolutional
+		-Convolutional Layers: [1024, 512, 256, 256]
+		-Convolutonal Kernels: [(3, 3), (3, 3), (3, 3), (3, 3)]
+		-Convolutional Activation: relu
+		-Output Layer Activation: linear
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	* TRAINING HYPERPARAMETERS:
+		-Epochs: 100
+		-Batch size: 32
+		-Callbacks:
+			-ReduceLROnPlateau: MSE 8 x0.1
+			-Early Stop: MSE 15
+	
+    *RESULTS:
+        -Train MSE: 0.011328332126140594
+        -Validation MSE: 0.06024651601910591
+
