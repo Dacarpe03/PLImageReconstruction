@@ -1273,7 +1273,7 @@ def EncoderConvolutionalConfiguration(
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="NewEncConv30000"
+	model_name="NewEncConv80000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,
