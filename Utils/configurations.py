@@ -430,7 +430,7 @@ def SimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "FC-08-Original"
+	model_name = "NewFC80000-Processed"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -502,7 +502,7 @@ def SimpleFCModel(
 									callbacks)
 
 	description += f"""
-	* TRAINING HYPERPARAMETERS:
+	*TRAINING HYPERPARAMETERS:
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks: 
@@ -535,7 +535,7 @@ def SimpleFCWithBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "RetrainedSimpleFC"
+	model_name = "NewConv10000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -1064,7 +1064,7 @@ def SimpleConvolutional(
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SC10000Validation"
+	model_name="NewConv80000"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1167,11 +1167,11 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = AUTOENCODER_INPUT_SHAPE
-	convolutional_layer_sizes = [512, 128, 64, 16]
+	convolutional_layer_sizes = [512, 128, 64, 8]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="FluxAutoencoder2DConv"
+	model_name="NewFluxAutoencoder80000"
 	padding="same"
 	use_batch_normalization=True
 
@@ -1222,7 +1222,7 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 100
+	epochs = 75
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1273,7 +1273,7 @@ def EncoderConvolutionalConfiguration(
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="BigEncoderConvolutional70000"
+	model_name="NewEncConv80000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,

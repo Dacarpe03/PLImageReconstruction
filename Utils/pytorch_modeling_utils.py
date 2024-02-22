@@ -29,7 +29,6 @@ class SimpleFullyConnectedNN(nn.Module):
 		return x.view(self.output_shape[0], self.output_shape[1])
 
 
-
 def train_epoch(model, 
 				optimizer, 
 				loss_function,
