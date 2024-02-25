@@ -5,9 +5,10 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from pickle import dump
 
 from constants import NUMPY_SUFFIX, \
-					  SUBFILE_SAMPLES, \
-					  PSF_DATA_PATH, \
-					  LANTERN_FIBER_FILENAME
+					  SUBFILE_SAMPLES
+
+from psf_constants import PSF_DATA_PATH, \
+					  	  LANTERN_FIBER_FILENAME
 
 from plot_utils import plot_map
 

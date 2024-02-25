@@ -41,30 +41,29 @@ def train_epoch(model,
 	
 	for step, data in enumerate(training_dataloader):
 
-		#fluxes, complex_fields = data
+		fluxes, complex_fields = data
 
-		#optimizer.zero_grad()
+		optimizer.zero_grad()
 
-		#outputs = model(fluxes)
+		outputs = model(fluxes)
 
-		#loss = loss_function(outputs, complex_fields)
-		#loss.backward()
+		loss = loss_function(outputs, complex_fields)
+		loss.backward()
 
-		#optimizer.step()
+		optimizer.step()
 
-		#running_loss += loss.item()
+		running_loss += loss.item()
 
 		# Report each 100 batches
 		print(' batch {} loss:{}'.format(step+1, last_loss))
-		#if step%10 == 9:
-			#last_loss = running_loss/100
-			#print(' batch {} loss:{}'.format(step+1, last_loss))
-			#tb_x = epoch_index * len(training_loader)+step+1
-			#tb_writer.add_scalar('Loss/train', last_loss, tb_x)
-			#running_loss = 0.
+		if step%10 == 9:
+			last_loss = running_loss/100
+			print(' batch {} loss:{}'.format(step+1, last_loss))
+			tb_x = epoch_index * len(training_loader)+step+1
+			tb_writer.add_scalar('Loss/train', last_loss, tb_x)
+			running_loss = 0.
 
-		#return last_loss
-		return 0
+		return last_loss
 
 
 def train_model(model,

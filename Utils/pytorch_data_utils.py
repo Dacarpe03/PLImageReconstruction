@@ -167,7 +167,7 @@ class DynamicFluxPSFDataset(Dataset):
 			norm_imaginary_part, scaler = normalize_data(imaginary_part)
 
 			processed_complex_field_arrays = np.stack((norm_real_part, norm_imaginary_part), axis=1)
-			processed_complex_field_arrays = processed_complex_field_arrays.reshape((SUBFILE_SAMPLES, 128*128*2))
+			#processed_complex_field_arrays = processed_complex_field_arrays.reshape((SUBFILE_SAMPLES, 128*128*2))
 
 			fluxes_arrays = np.load(self.flux_file_paths[self.next_file], allow_pickle=True)
 			processes_fluxes_arrays, scaler = normalize_data(fluxes_arrays)
