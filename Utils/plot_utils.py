@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+
 def plot_map(
 	whatever_map
 	):
@@ -320,3 +321,99 @@ def plot_diffusion_output(
                               original_amp,
                               original_phase,
                               "Diffusion model")
+
+
+def plot_amplitude_phase_intensity_from_complex_field(complex_field,
+                                                      log_scale=True):
+    """
+    Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
+    
+    Input:
+        complex_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        None
+
+    """
+    amplitudes, phases = compute_amplitude_and_phase_from_complex_field(complex_field)
+    intensities = amplitudes**2
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("Amplitude", "Phase", "Intensity"))
+
+    if log_scale:
+        amplitudes = np.log10((amplitudes/amplitudes.max()))
+        intensities = np.log10((intensities/intensities.max()))
+        
+    amplitude_heatmap = go.Heatmap(
+                                z=amplitudes,
+                                colorscale='viridis',
+                                colorbar=dict(
+                                    orientation='h',
+                                    x=0.14,
+                                    y=-0.4,
+                                    len=0.3,
+                                    thickness=15
+                                ))
+
+    phase_heatmap = go.Heatmap(
+                            z=phases,
+                            colorscale='viridis',
+                            colorbar=dict(
+                                    orientation='h',
+                                    x=0.5,
+                                    y=-0.4,
+                                    len=0.3,
+                                    thickness=15
+                                )
+                            )
+
+    intesity_heatmap = go.Heatmap(
+                                z=intensities,
+                                colorscale='viridis',
+                                colorbar=dict(
+                                    orientation='h',
+                                    x=0.86,
+                                    y=-0.4,
+                                    len=0.3,
+                                    thickness=15
+                                ))
+
+    fig.add_trace(amplitude_heatmap, row=1, col=1)
+    fig.add_trace(phase_heatmap, row=1, col=2)
+    fig.add_trace(intesity_heatmap, row=1, col=3)
+    
+    fig.update_layout(
+    height=350,  # Set the height of the figure
+    width=800    # Set the width of the figure
+    )
+
+    # Show the plot
+    fig.show()
+
+    return None
+
+
+def compute_amplitude_and_phase_from_complex_field(complex_field):
+    """
+    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+
+    Input:
+        complex_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
+        phases (np.array): A numpy array containing the phases of the points in the complex field
+    """
+
+    amplitudes = np.zeros(complex_field.shape)
+    phases = np.zeros(complex_field.shape)
+    
+    # Iterar sobre cada elemento de la matriz de números complejos
+    for i in range(complex_field.shape[0]):
+        for j in range(complex_field.shape[1]):
+
+            complex_number = complex_field[i, j]
+
+            amplitudes[i, j] = abs(complex_number)
+            phases[i, j] = np.angle(complex_number)  
+
+    return amplitudes, phases

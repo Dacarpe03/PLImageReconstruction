@@ -528,7 +528,7 @@ def SimpleFCModel(
 
 	# Define architecture hyperparmeters
 	input_shape = 19
-	output_shape = (2, 128, 128)
+	output_shape = (32768)
 	hidden_layer_sizes = [2000, 2000, 2000, 2000]
 	regularizer = None
 	hidden_activation = 'relu'

@@ -112,11 +112,11 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		)
 
 	# Reshape the linear neurons into the reconstructed image
-	model.add(
-		Reshape(
-			output_shape
-			)
-		)
+	#model.add(
+	#	Reshape(
+	#		output_shape
+	#		)
+	#	)
 		
 	model.summary()
 	return model
