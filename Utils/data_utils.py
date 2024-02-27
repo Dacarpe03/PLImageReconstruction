@@ -8,7 +8,8 @@ from constants import NUMPY_SUFFIX, \
 					  SUBFILE_SAMPLES
 
 from psf_constants import PSF_DATA_PATH, \
-					  	  LANTERN_FIBER_FILENAME
+					  	  LANTERN_FIBER_FILENAME, \
+					  	  COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 
 from plot_utils import plot_map
 
@@ -815,6 +816,7 @@ def compute_output_fluxes_from_complex_field(
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
 
 	input_complex_fields = np.load(complex_fields_file_path)
+	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
 	transfer_matrix = load_transfer_matrix()
 
