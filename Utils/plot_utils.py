@@ -59,7 +59,8 @@ def plot_fluxes(original_flux,
 
 
 def plot_model_history(
-    history
+    history,
+    top_y_lim=0.5
     ):
     """
     Plots the history of the model in a graph
@@ -81,7 +82,7 @@ def plot_model_history(
     # Set the y axis title
     plt.ylabel('Mean Squared Error')
     # Limit the error
-    plt.ylim(top=0.5, bottom=0)
+    plt.ylim(top=top_y_lim, bottom=0)
     # Show the plot
     plt.show()
 
