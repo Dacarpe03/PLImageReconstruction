@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+from data_utils import compute_amplitude_and_phase_from_electric_field
 
 def plot_map(
 	whatever_map
@@ -323,8 +324,10 @@ def plot_diffusion_output(
                               "Diffusion model")
 
 
-def plot_amplitude_phase_intensity_from_complex_field(complex_field,
-                                                      log_scale=True):
+def plot_amplitude_phase_intensity_from_electric_field(
+    original_electric_field,
+    predicted_electric_field,
+    log_scale=True):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
     
@@ -335,7 +338,7 @@ def plot_amplitude_phase_intensity_from_complex_field(complex_field,
         None
 
     """
-    amplitudes, phases = compute_amplitude_and_phase_from_complex_field(complex_field)
+    amplitudes, phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)
     intensities = amplitudes**2
     fig = make_subplots(rows=1, cols=3, subplot_titles=("Amplitude", "Phase", "Intensity"))
 
@@ -392,28 +395,29 @@ def plot_amplitude_phase_intensity_from_complex_field(complex_field,
     return None
 
 
-def compute_amplitude_and_phase_from_complex_field(complex_field):
+def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
+    model,
+    ouput_flux,
+    original_electric_field
+    ):
     """
-    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+    Function that plots the amplitude and phase, both original and predicted
 
     Input:
-        complex_field (np.array): A numpy array containing the electric field complex numbers
+        model (keras.model): The model that will predict the electric field in the pupil plane
+        output_flux (np.array): The input of the model
+        original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
+        pre
 
     Returns:
-        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
-        phases (np.array): A numpy array containing the phases of the points in the complex field
+        None
     """
 
-    amplitudes = np.zeros(complex_field.shape)
-    phases = np.zeros(complex_field.shape)
-    
-    # Iterar sobre cada elemento de la matriz de números complejos
-    for i in range(complex_field.shape[0]):
-        for j in range(complex_field.shape[1]):
+    input_output_flux = np.array([ouput_flux])
+    predicted_electric_field = model.predict(input_output_flux)[0]
 
-            complex_number = complex_field[i, j]
+    reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
+    reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
 
-            amplitudes[i, j] = abs(complex_number)
-            phases[i, j] = np.angle(complex_number)  
-
-    return amplitudes, phases
+    plot_amplitude_phase_intensity_from_complex_field(reshaped_original_electric_field,
+                                                      reshaped_predicted_electric_field)

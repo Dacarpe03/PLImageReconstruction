@@ -881,3 +881,32 @@ def load_transfer_matrix(
 	transfer_matrix = lantern_fiber.Cmat # This is the complex transfer matrix
 	return transfer_matrix
 
+
+def compute_amplitude_and_phase_from_electric_field(
+    electrid_field
+    ):
+    """
+    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+
+    Input:
+        electrid_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
+        phases (np.array): A numpy array containing the phases of the points in the complex field
+    """
+
+    amplitudes = np.zeros(electrid_field.shape)
+    phases = np.zeros(electrid_field.shape)
+    
+    # Iterar sobre cada elemento de la matriz de números complejos
+    for i in range(electrid_field.shape[0]):
+        for j in range(electrid_field.shape[1]):
+
+            complex_number = electrid_field[i, j]
+
+            amplitudes[i, j] = abs(electrid_field)
+            phases[i, j] = np.angle(electrid_field)  
+
+    return amplitudes, phases
+
