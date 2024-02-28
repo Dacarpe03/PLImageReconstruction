@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-from data_utils import compute_amplitude_and_phase_from_electric_field, reshape_fc_electric_field_to_real_imaginary_matrix
+from data_utils import compute_amplitude_and_phase_from_electric_field, \
+                       reshape_fc_electric_field_to_real_imaginary_matrix
 
 def plot_map(
 	whatever_map
@@ -324,9 +325,10 @@ def plot_diffusion_output(
                               "Diffusion model")
 
 
-def plot_amplitude_phase_intensity_from_electric_field(
+def plot_amplitude_phase_from_electric_field(
     original_electric_field,
     predicted_electric_field,
+    model_name,
     log_scale=True):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
@@ -355,7 +357,7 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                             colorbar=dict(
                                                 orientation='h',
                                                 x=0.14,
-                                                y=0.4,
+                                                y=0.47,
                                                 len=0.3,
                                                 thickness=15
                                             ))
@@ -366,7 +368,7 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                             colorbar=dict(
                                                 orientation='h',
                                                 x=0.5,
-                                                y=0.4,
+                                                y=0.47,
                                                 len=0.3,
                                                 thickness=15
                                     ))
@@ -377,7 +379,7 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                             colorbar=dict(
                                                 orientation='h',
                                                 x=0.86,
-                                                y=0.4,
+                                                y=0.47,
                                                 len=0.3,
                                                 thickness=15
                                         ))
@@ -388,7 +390,7 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.14,
-                                                y=-0.4,
+                                                y=-0.14,
                                                 len=0.3,
                                                 thickness=15
                                             )
@@ -400,7 +402,7 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.5,
-                                                y=-0.4,
+                                                y=-0.14,
                                                 len=0.3,
                                                 thickness=15
                                             )
@@ -408,12 +410,12 @@ def plot_amplitude_phase_intensity_from_electric_field(
 
 
     residual_phase_heatmap = go.Heatmap(
-                                z=original_phase_heatmap-predicted_phase_heatmap,
+                                z=original_phases-predicted_phases,
                                 colorscale='viridis',
                                 colorbar=dict(
                                     orientation='h',
                                     x=0.86,
-                                    y=-0.4,
+                                    y=-0.14,
                                     len=0.3,
                                     thickness=15
                                 ))
@@ -426,8 +428,9 @@ def plot_amplitude_phase_intensity_from_electric_field(
     fig.add_trace(residual_phase_heatmap, row=2, col=3)
     
     fig.update_layout(
-    height=700,  # Set the height of the figure
-    width=800    # Set the width of the figure
+        title_text=f"PSF reconstruction from model {model_name}",
+        height=700,  # Set the height of the figure
+        width=800    # Set the width of the figure
     )
 
     # Show the plot
@@ -439,7 +442,8 @@ def plot_amplitude_phase_intensity_from_electric_field(
 def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     model,
     ouput_flux,
-    original_electric_field
+    original_electric_field,
+    log_scale=True
     ):
     """
     Function that plots the amplitude and phase, both original and predicted
@@ -448,7 +452,6 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
         model (keras.model): The model that will predict the electric field in the pupil plane
         output_flux (np.array): The input that the model will predict from
         original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
-        pre
 
     Returns:
         None
@@ -460,7 +463,8 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
     reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
 
-    plot_amplitude_phase_from_complex_field(reshaped_original_electric_field,
-                                                      reshaped_predicted_electric_field)
+    plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
+                                             reshaped_predicted_electric_field,
+                                             model.name)
 
     return None

@@ -681,7 +681,8 @@ def store_model(
 	model_name,			
 	description,
 	mse,
-	val_mse):
+	val_mse,
+	psf_model=False):
 	"""
 	Stores the model in the DATA_FOLDER with the name with a description in the neural network descriptions file
 
@@ -709,7 +710,8 @@ def store_model(
 
 	# Create the model path
 	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
-
+	if psf_model:
+		model_path = f".{model_path}"
 	# Save the model
 	model.save(model_file_path)
 
@@ -717,7 +719,9 @@ def store_model(
 
 
 def load_model(
-	model_name):
+	model_name,
+	psf_model=False
+	):
 	"""
 	Loads a model given its name
 
@@ -728,6 +732,9 @@ def load_model(
 		model (keras.models): The loaded model
 	"""
 	model_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
+	if psf_model:
+		model_path = f".{model_path}"
+		
 	model = keras.models.load_model(model_path)
 	return model
 

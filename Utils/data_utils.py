@@ -11,8 +11,6 @@ from psf_constants import PSF_DATA_PATH, \
 					  	  LANTERN_FIBER_FILENAME, \
 					  	  COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 
-from plot_utils import plot_map
-
 import os
 
 from hcipy.atmosphere import *
@@ -883,30 +881,30 @@ def load_transfer_matrix(
 
 
 def compute_amplitude_and_phase_from_electric_field(
-    electrid_field
+    electric_field
     ):
     """
     Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
 
     Input:
-        electrid_field (np.array): A numpy array containing the electric field complex numbers
+        electric_field (np.array): A numpy array containing the electric field complex numbers
 
     Returns:
         amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
         phases (np.array): A numpy array containing the phases of the points in the complex field
     """
 
-    amplitudes = np.zeros(electrid_field.shape)
-    phases = np.zeros(electrid_field.shape)
+    amplitudes = np.zeros(electric_field.shape)
+    phases = np.zeros(electric_field.shape)
     
     # Iterar sobre cada elemento de la matriz de números complejos
-    for i in range(electrid_field.shape[0]):
-        for j in range(electrid_field.shape[1]):
+    for i in range(electric_field.shape[0]):
+        for j in range(electric_field.shape[1]):
 
-            complex_number = electrid_field[i, j]
+            complex_number = electric_field[i, j]
 
-            amplitudes[i, j] = abs(electrid_field)
-            phases[i, j] = np.angle(electrid_field)  
+            amplitudes[i, j] = abs(complex_number)
+            phases[i, j] = np.angle(complex_number)  
 
     return amplitudes, phases
 
@@ -926,8 +924,8 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	"""
 
 	# Reshape into a 3d matrix of depth 2, at depth one is the real part of the complex number, at depth two, the imaginary part of the complex number
-	electric_field = electrid_field.reshape(2, 128 , 128)
+	electric_field = electric_field.reshape(2, 128 , 128)
 
 	# Reshape into a 2d matrix of complex numbers
-	electric_field = electrid_field[0] + 1j*electrid_field[1]
-	return electrid_field
+	electric_field = electric_field[0] + 1j*electric_field[1]
+	return electric_field
