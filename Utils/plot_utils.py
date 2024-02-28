@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-from data_utils import compute_amplitude_and_phase_from_electric_field
+from data_utils import compute_amplitude_and_phase_from_electric_field, reshape_fc_electric_field_to_real_imaginary_matrix
 
 def plot_map(
 	whatever_map
@@ -340,11 +340,10 @@ def plot_amplitude_phase_intensity_from_electric_field(
     """
     amplitudes, phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)
     intensities = amplitudes**2
-    fig = make_subplots(rows=1, cols=3, subplot_titles=("Amplitude", "Phase", "Intensity"))
+    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Intensity"))
 
     if log_scale:
         amplitudes = np.log10((amplitudes/amplitudes.max()))
-        intensities = np.log10((intensities/intensities.max()))
         
     amplitude_heatmap = go.Heatmap(
                                 z=amplitudes,
@@ -405,7 +404,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
 
     Input:
         model (keras.model): The model that will predict the electric field in the pupil plane
-        output_flux (np.array): The input of the model
+        output_flux (np.array): The input that the model will predict from
         original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
         pre
 
@@ -419,5 +418,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
     reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
 
-    plot_amplitude_phase_intensity_from_complex_field(reshaped_original_electric_field,
+    plot_amplitude_phase_from_complex_field(reshaped_original_electric_field,
                                                       reshaped_predicted_electric_field)
+
+    return None

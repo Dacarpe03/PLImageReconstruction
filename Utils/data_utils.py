@@ -910,3 +910,24 @@ def compute_amplitude_and_phase_from_electric_field(
 
     return amplitudes, phases
 
+
+def reshape_fc_electric_field_to_real_imaginary_matrix(
+	electric_field
+	):
+	"""
+	Function that reshapes the predicted electric field array of a fully connected network, as it is flattened in that stage
+
+	Input:
+		electric_field (np.array): A 1d array with the first half of the elements representing the real part of a complex number and the second half
+								   representing the imaginary part of a complex number
+
+	Returns:
+		electric_field (np.array): A 2d array with its elements being the complex numbers
+	"""
+
+	# Reshape into a 3d matrix of depth 2, at depth one is the real part of the complex number, at depth two, the imaginary part of the complex number
+	electric_field = electrid_field.reshape(2, 128 , 128)
+
+	# Reshape into a 2d matrix of complex numbers
+	electric_field = electrid_field[0] + 1j*electrid_field[1]
+	return electrid_field
