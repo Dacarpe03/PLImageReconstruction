@@ -338,38 +338,77 @@ def plot_amplitude_phase_intensity_from_electric_field(
         None
 
     """
-    amplitudes, phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)
-    intensities = amplitudes**2
-    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Intensity"))
+    original_amplitudes, original_phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)    
+    predicted_amplitudes, predicted_phases = compute_amplitude_and_phase_from_electric_field(predicted_electric_field)
+
+
+    fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Amplitude residual",
+                                                        "Original Phase", "Predicted Phase", "Phase residual"))
 
     if log_scale:
-        amplitudes = np.log10((amplitudes/amplitudes.max()))
+        original_amplitudes = np.log10((original_amplitudes/original_amplitudes.max()))
+        predicted_amplitudes = np.log10((predicted_amplitudes/predicted_amplitudes.max()))
         
-    amplitude_heatmap = go.Heatmap(
-                                z=amplitudes,
-                                colorscale='viridis',
-                                colorbar=dict(
-                                    orientation='h',
-                                    x=0.14,
-                                    y=-0.4,
-                                    len=0.3,
-                                    thickness=15
-                                ))
+    original_amplitude_heatmap = go.Heatmap(
+                                            z=original_amplitudes,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.14,
+                                                y=0.4,
+                                                len=0.3,
+                                                thickness=15
+                                            ))
 
-    phase_heatmap = go.Heatmap(
-                            z=phases,
-                            colorscale='viridis',
-                            colorbar=dict(
-                                    orientation='h',
-                                    x=0.5,
-                                    y=-0.4,
-                                    len=0.3,
-                                    thickness=15
-                                )
-                            )
+    predicted_amplitude_heatmap = go.Heatmap(
+                                            z=predicted_amplitudes,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.5,
+                                                y=0.4,
+                                                len=0.3,
+                                                thickness=15
+                                    ))
 
-    intesity_heatmap = go.Heatmap(
-                                z=intensities,
+    residual_amplitude_heatmap = go.Heatmap(
+                                            z=original_amplitudes - predicted_amplitudes,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.86,
+                                                y=0.4,
+                                                len=0.3,
+                                                thickness=15
+                                        ))
+
+    original_phase_heatmap = go.Heatmap(
+                                        z=original_phases,
+                                        colorscale='viridis',
+                                        colorbar=dict(
+                                                orientation='h',
+                                                x=0.14,
+                                                y=-0.4,
+                                                len=0.3,
+                                                thickness=15
+                                            )
+                                        )
+
+    predicted_phase_heatmap = go.Heatmap(
+                                        z=predicted_phases,
+                                        colorscale='viridis',
+                                        colorbar=dict(
+                                                orientation='h',
+                                                x=0.5,
+                                                y=-0.4,
+                                                len=0.3,
+                                                thickness=15
+                                            )
+                                        )
+
+
+    residual_phase_heatmap = go.Heatmap(
+                                z=original_phase_heatmap-predicted_phase_heatmap,
                                 colorscale='viridis',
                                 colorbar=dict(
                                     orientation='h',
@@ -379,12 +418,15 @@ def plot_amplitude_phase_intensity_from_electric_field(
                                     thickness=15
                                 ))
 
-    fig.add_trace(amplitude_heatmap, row=1, col=1)
-    fig.add_trace(phase_heatmap, row=1, col=2)
-    fig.add_trace(intesity_heatmap, row=1, col=3)
+    fig.add_trace(original_amplitude_heatmap, row=1, col=1)
+    fig.add_trace(predicted_amplitude_heatmap, row=1, col=2)
+    fig.add_trace(residual_amplitude_heatmap, row=1, col=3)
+    fig.add_trace(original_phase_heatmap, row=2, col=1)
+    fig.add_trace(predicted_phase_heatmap, row=2, col=2)
+    fig.add_trace(residual_phase_heatmap, row=2, col=3)
     
     fig.update_layout(
-    height=350,  # Set the height of the figure
+    height=700,  # Set the height of the figure
     width=800    # Set the width of the figure
     )
 
