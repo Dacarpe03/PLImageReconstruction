@@ -114,7 +114,7 @@ def split_data(
 		val_ratio (float): The ratio of size between the original array and the validation array
 	
 	Returns:
-		train_array (np.array): The array containing the training set
+		array (np.array): The array containing the training set
 		val_array (np.array): The array containing the validation set
 	"""
 
@@ -603,7 +603,7 @@ def train_generator(
 																						 current_file,
 																						 do_shuffle=do_shuffle)
 		# Go through the subfiles
-		while end_index < n_samples:
+		while start_index < n_samples:
 			# Compute the indexes in the subfiles
 			batch_start = start_index%10000
 			batch_end = end_index%10000
@@ -635,6 +635,7 @@ def train_generator(
 			end_index += batch_size
 
 			yield fluxes_batch, amp_phase_batch
+			#yield amp_phase_batch, np.sum(amp_phase_batch, axis=1).reshape(-1, 1)
 
 
 def load_subfile_for_train_generator(feature_path_prefix,
@@ -656,8 +657,10 @@ def load_subfile_for_train_generator(feature_path_prefix,
 	"""
 
 	# Create the file names
-	current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
-	current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+	#current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+	#current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+	current_features_filename = f"{feature_path_prefix}"
+	current_labels_filename = f"{labels_path_prefix}"
 
 	# Load the new arrays
 	current_fluxes_array = np.load(current_features_filename)

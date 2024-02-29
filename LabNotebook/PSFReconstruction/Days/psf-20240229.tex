@@ -1,4 +1,19 @@
 \newday{29 February 2024}
-	\action{Create a function to plot amplitude and phase predictions and residuals from a complex field}
-	\action{Create evaluation notebook} 
+	\action{
+		Create a function to plot amplitude and phase predictions and residuals from a complex field
+	}
+	
+	\action{
+		Create evaluation notebook
+	}
+		
+	\action{
+		Since in yesterdays experiment the model does not learn at all, I design two different experiments, to check if there is a problem with the network:
+		\begin{enumerate}
+			\item A model that sums the output flux of the PL
+			\item A model that sums the scalars of the complex numbers array containing the electric fields at the pupil.
+		\end{enumerate}
+	}
+	\input{Experiments/psf-Flux-Sum-1}
+	\input{Experiments/psf-ElectricField-Sum-1}
 \finishday

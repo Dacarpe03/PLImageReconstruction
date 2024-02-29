@@ -24,6 +24,8 @@ from constants import MODELS_FOLDER_PATH, \
 					  KERAS_SUFFIX, \
 					  MODELS_DESCRIPTION_FILE_PATH
 
+from psf_constants import PSF_MODELS_FOLDER_PATH, PSF_MODELS_DESCRIPTION_FILE_PATH
+
 
 def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	input_shape,
@@ -76,7 +78,6 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		model.add(
 			Dense(
 				neurons,
-				# kernel_regularizer=regularizer,
 				# kernel_initializer=keras.initializers.HeNormal(seed=None),
 				kernel_regularizer=regularizer,
 				use_bias=False
@@ -696,11 +697,19 @@ def store_model(
 	"""
 
 	# To not overwrite other model, look for the number of models with the same configuration to add a version number at the end of the file
-	model_files = os.listdir(MODELS_FOLDER_PATH)
+	if psf_model:
+		model_files = os.listdir(PSF_MODELS_FOLDER_PATH)
+	else:
+		model_files = os.listdir(MODELS_FOLDER_PATH)
+
 	version = sum(1 for file in model_files if file.startswith(model_name))+1
 
+	models_description_fp = MODELS_DESCRIPTION_FILE_PATH
+	if psf_model:
+		models_description_fp = PSF_MODELS_DESCRIPTION_FILE_PATH
+		
 	# Save its description
-	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
+	with open(models_description_fp, 'a') as f:
 		f.write(f"===={model_name}-{version}====\n")
 		f.write(description)
 		f.write("\n")
@@ -711,7 +720,7 @@ def store_model(
 	# Create the model path
 	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
 	if psf_model:
-		model_path = f".{model_path}"
+		model_file_path = f"{PSF_MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
 	# Save the model
 	model.save(model_file_path)
 
@@ -734,7 +743,7 @@ def load_model(
 	model_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
 	if psf_model:
 		model_path = f".{model_path}"
-		
+
 	model = keras.models.load_model(model_path)
 	return model
 

@@ -421,16 +421,16 @@ def SimpleFCModel(
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = FC_INPUT_SHAPE
-	output_shape = FC_OUTPUT_SHAPE
-	hidden_layer_sizes = [2000, 2000, 2000, 2000]
+	input_shape = 19
+	output_shape = (1)
+	hidden_layer_sizes = [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
 	regularizer = None
-	hidden_activation = 'relu'
+	hidden_activation = 'rel'
 	output_activation = 'linear'
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "NewFC80000-Processed"
+	model_name = "Flux-Sum"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -520,7 +520,7 @@ def SimpleFCModel(
 	return model_configuration
 
 
-def SimpleFCModel(
+def PSFSimpleFCModel(
 	):
 	"""
 	Function that creates the model configuration for the first working model (a fully connected one)
@@ -529,14 +529,14 @@ def SimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = 19
 	output_shape = (32768)
-	hidden_layer_sizes = [2000, 2000, 2000, 2000]
+	hidden_layer_sizes = [1000, 1000, 1000, 1000]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSF-FC-Reconstructor"
+	model_name = "TestWith1DataPoint"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -567,7 +567,7 @@ def SimpleFCModel(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.001
+	learning_rate = 0.01
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -588,16 +588,16 @@ def SimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 200
+	epochs = 1000
 	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
-					'val_mean_squared_error', 
+					'mean_squared_error', 
 					factor=0.1, 
 					patience=10, 
 					verbose=1)
 	early_stop = EarlyStopping(
-					'val_mean_squared_error',
+					'mean_squared_error',
 					patience=25, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
