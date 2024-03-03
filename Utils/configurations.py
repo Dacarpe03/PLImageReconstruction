@@ -536,7 +536,7 @@ def PSFSimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "TestWith1DataPoint"
+	model_name = "FromArrayToImage128"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -567,7 +567,7 @@ def PSFSimpleFCModel(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.01
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -588,8 +588,8 @@ def PSFSimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1000
-	batch_size = 64
+	epochs = 10000
+	batch_size = 1
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 

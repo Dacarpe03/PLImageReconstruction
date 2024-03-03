@@ -1,0 +1,13 @@
+\newday{04 March 2024}
+	\action{
+		After seeing that with 1 datapoint the model does not learn I decide to make some simpler tests, I will train a model that from a 19 element array predicts images with 2 channels and see if the input is too small for the model to predict anything. Three experiments will be performed:
+		\begin{itemize}
+			\item From a 19 elements array to a 2x128x128 image
+			\item From a 19 elements array to a 2x64x64 image
+			\item From a 19 elements array to a 2x32x32 image
+		\end{itemize}
+	}
+	\input{Experiments/FromArrayToImage128-1}
+	\input{Experiments/FromArrayToImage64-1}
+	\input{Experiments/FromArrayToImage32-1}
+\finishday
