@@ -65,5 +65,5 @@ SUBFILE_SAMPLES = 10000
 COMPLEX_NUMBER_NORMALIZATION_CONSTANT = 50000
 
 # MODELS PATH
-PSF_MODELS_FOLDER_PATH = "./home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models"
+PSF_MODELS_FOLDER_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models"
 PSF_MODELS_DESCRIPTION_FILE_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models/models_descriptions.txt"

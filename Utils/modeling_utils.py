@@ -742,7 +742,7 @@ def load_model(
 	"""
 	model_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
 	if psf_model:
-		model_path = f".{model_path}"
+		model_path = f"{PSF_MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
 
 	model = keras.models.load_model(model_path)
 	return model

@@ -529,7 +529,7 @@ def PSFSimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = 19
 	output_shape = (32768)
-	hidden_layer_sizes = [1000, 1000, 1000, 1000]
+	hidden_layer_sizes = [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
