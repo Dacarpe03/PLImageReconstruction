@@ -528,7 +528,7 @@ def PSFSimpleFCModel(
 
 	# Define architecture hyperparmeters
 	input_shape = 19
-	output_shape = (2*32*32)
+	output_shape = (2*128*128)
 	hidden_layer_sizes = [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
 	regularizer = None
 	hidden_activation = 'relu'
@@ -536,7 +536,7 @@ def PSFSimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "FromArrayToImage32"
+	model_name = "TestWith1DataPoint"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 

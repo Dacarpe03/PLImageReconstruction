@@ -635,7 +635,6 @@ def train_generator(
 			end_index += batch_size
 
 			yield fluxes_batch, amp_phase_batch
-			#yield amp_phase_batch, np.sum(amp_phase_batch, axis=1).reshape(-1, 1)
 
 
 def load_subfile_for_train_generator(feature_path_prefix,
@@ -657,10 +656,8 @@ def load_subfile_for_train_generator(feature_path_prefix,
 	"""
 
 	# Create the file names
-	#current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
-	#current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
-	current_features_filename = f"{feature_path_prefix}"
-	current_labels_filename = f"{labels_path_prefix}"
+	current_features_filename = f"{feature_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
+	current_labels_filename = f"{labels_path_prefix}0{subfile_number}{NUMPY_SUFFIX}"
 
 	# Load the new arrays
 	current_fluxes_array = np.load(current_features_filename)
@@ -927,7 +924,7 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	"""
 
 	# Reshape into a 3d matrix of depth 2, at depth one is the real part of the complex number, at depth two, the imaginary part of the complex number
-	electric_field = electric_field.reshape(2, 32 , 32)
+	electric_field = electric_field.reshape(2, 128 , 128)
 
 	# Reshape into a 2d matrix of complex numbers
 	electric_field = electric_field[0] + 1j*electric_field[1]
