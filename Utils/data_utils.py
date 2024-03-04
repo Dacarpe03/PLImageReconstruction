@@ -418,7 +418,6 @@ def process_amp_phase_data(
 		   scalers
 
 
-
 def load_validation_data(
 	trim_amplitude=False,
 	trim_phase=False,
@@ -724,6 +723,7 @@ def generate_psf_complex_fields(
 
 	save_wavefronts_complex_fields(propagated_wavefronts,
 								   filepath)
+
 	return None
 
 
@@ -866,6 +866,67 @@ def compute_output_fluxes_from_complex_field(
 			plt.tight_layout()
 
 	save_numpy_array(output_fluxes, output_fluxes_file_path)
+
+
+def compute_mode_coefficients_from_complex_field(
+	complex_fields_file_path,
+	plot=False,
+	verbose=False
+	):
+	# Create the lantern fiber
+	n_core = 1.44
+	n_cladding = 1.4345
+	wavelength = 1.5 # microns
+	core_radius = 32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+	show_plots = False
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength)
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+
+	input_complex_fields = np.load(complex_fields_file_path)
+	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
+	n_fields = input_complex_fields.shape[0]
+	transfer_matrix = load_transfer_matrix()
+
+	mode_coefficients_list = []
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=verbose, 
+			show_plots=plot, 
+			fignum=11,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+
+		mode_coefficients_list.append(mode_coupling_complex)
+
+	return mode_coefficients_list
 
 
 def load_transfer_matrix(

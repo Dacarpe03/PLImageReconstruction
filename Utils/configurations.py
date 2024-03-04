@@ -536,7 +536,7 @@ def PSFSimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSFReconstructor-100-64"
+	model_name = "PSFReconstructor-100-16"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -589,7 +589,7 @@ def PSFSimpleFCModel(
 
 	# Define training hyperparameters
 	epochs = 10000
-	batch_size = 64
+	batch_size = 16
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
