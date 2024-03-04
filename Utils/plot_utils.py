@@ -466,6 +466,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
 
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,
-                                             model.name)
+                                             model.name,
+                                             log_scale=log_scale)
 
     return None

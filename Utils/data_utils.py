@@ -614,7 +614,7 @@ def train_generator(
 				first_partial_fluxes = current_fluxes_array[batch_start:]
 				first_partial_amp_phase = current_amp_phase_array[batch_start:]
 
-				current_file += 1
+				current_file = int((current_file+1)%(n_samples/10000))
 				current_fluxes_array, current_amp_phase_array = load_subfile_for_train_generator(features_path,
 																						 		 labels_path,
 																						 		 current_file,
