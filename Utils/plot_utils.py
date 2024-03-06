@@ -470,3 +470,13 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
                                              log_scale=log_scale)
 
     return None
+
+
+def plot_19_mode_pl_flux(flux):
+    """
+    Plots the output flux of the PL, measured only in one wavelength
+    """
+    fig = px.bar(y=flux, x=np.arange(1, len(flux)+1))
+    fig.update_xaxes(title_text='Fiber', tickvals=np.arange(len(flux)+1))
+    fig.update_yaxes(title_text='Output flux')
+    fig.show()
