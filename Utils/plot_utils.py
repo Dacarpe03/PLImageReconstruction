@@ -326,6 +326,61 @@ def plot_diffusion_output(
                               "Diffusion model")
 
 
+def plot_amplitude_phase_intensity(
+    electric_field,
+    log_scale=False
+    ):
+    amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
+    intensity = amplitude**2
+
+    if log_scale:
+        amplitude = np.log10((amplitude/amplitude.max()))
+        intensity = np.log10((intensity/intensity.max()))
+
+    fig = make_subplots(rows=2, cols=3, subplot_titles=("Phase", "Amplitude", "Intensity"))
+
+    phase_heatmap = go.Heatmap(
+                                            z=phase,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.14,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                            ))
+
+    amplitude_heatmap = go.Heatmap(
+                                            z=amplitude,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.5,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                    ))
+
+    intenstity_heatmap = go.Heatmap(
+                                            z=intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.86,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                        ))
+
+    fig.add_trace(phase_heatmap, row=1, col=1)
+    fig.add_trace(amplitude_heatmap, row=1, col=2)
+    fig.add_trace(intenstity_heatmap, row=1, col=3)
+
+    fig.show()
+
+    return None
+
+
 def plot_amplitude_phase_from_electric_field(
     original_electric_field,
     predicted_electric_field,
