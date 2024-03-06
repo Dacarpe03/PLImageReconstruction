@@ -892,7 +892,7 @@ def compute_mode_coefficients_from_complex_field(
 					 			 core_radius,
 					 			 wavelength)
 	lantern_fiber.find_fiber_modes()
-	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r)
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
 
 	input_complex_fields = np.load(complex_fields_file_path)

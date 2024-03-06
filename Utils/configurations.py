@@ -529,14 +529,14 @@ def PSFSimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = 19
 	output_shape = (2*128*128)
-	hidden_layer_sizes = [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
+	hidden_layer_sizes = [256, 256, 256]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSFReconstructor-100-16"
+	model_name = "UnnormalizedCoefficients"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -588,8 +588,8 @@ def PSFSimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 10000
-	batch_size = 16
+	epochs = 100
+	batch_size = 64
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
