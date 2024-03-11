@@ -1,0 +1,51 @@
+\rule{0.5\textwidth}{0.5pt}\\
+
+	{\large \textbf{EXPERIMENT PSFRecontructorFC10000-32-1}}\\
+	
+	{\normalsize HYPERPARAMETERS:}
+	\begin{lstlisting}
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 19
+		-Output shape: 32768
+		-Hidden layers: [256, 256, 256]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: 100
+		-Batch size: 32
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	\end{lstlisting}
+	
+	{\normalsize VISUALIZATION:}
+	\begin{lstlisting}
+    *RESULTS:
+        -Train MSE: 0.03432031720876694
+        -Validation MSE: 0.038697339594364166
+	\end{lstlisting}
+	
+	\begin{figure*}[ht!]
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-PSFRecontructorFC10000-32-1-evolution.png}}
+		\hspace{\fill}
+		\subfloat[Validation datapoint]{%
+		\includegraphics[ width=0.31\textwidth]{psf-PSFRecontructorFC10000-32-1-val.png}}
+		\hspace{\fill}	
+		\subfloat[Train datapoint]{%
+		\includegraphics[ width=0.31\textwidth]{psf-PSFRecontructorFC10000-32-1-train.png}}\\
+		\caption{Results of training the model PSFRecontructorFC10000-32-1}
+	\end{figure*}
+	
+\FloatBarrier	
+\rule{0.5\textwidth}{0.5pt}\\

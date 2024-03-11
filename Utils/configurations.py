@@ -529,14 +529,14 @@ def PSFSimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = 19
 	output_shape = (2*128*128)
-	hidden_layer_sizes = [256, 256, 256]
+	hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSFRecontructorFC30000"
+	model_name = "PSFRecontructorBigFC70000-32"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -588,17 +588,17 @@ def PSFSimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 100
-	batch_size = 64
+	epochs = 200
+	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
 					'mean_squared_error', 
 					factor=0.1, 
-					patience=10, 
+					patience=20, 
 					verbose=1)
 	early_stop = EarlyStopping(
 					'mean_squared_error',
-					patience=25, 
+					patience=50, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
 
@@ -612,8 +612,8 @@ def PSFSimpleFCModel(
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks: 
-			-ReduceLROnPlateau: MSE 10 x0.1
-			-Early Stop: MSE 25
+			-ReduceLROnPlateau: MSE 20 x0.1
+			-Early Stop: MSE 50
 	"""
 
 	model_configuration = Configuration(
