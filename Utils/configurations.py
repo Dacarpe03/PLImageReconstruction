@@ -529,14 +529,14 @@ def PSFSimpleFCModel(
 	# Define architecture hyperparmeters
 	input_shape = 19
 	output_shape = (2*128*128)
-	hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
+	hidden_layer_sizes = [1024, 1024, 1024, 1024, 1024, 1024]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSFRecontructorBigFC70000-32"
+	model_name = "PSFRecontructorSuperBigFC10000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
