@@ -536,7 +536,7 @@ def PSFSimpleFCModel(
 	use_batch_normalization = False
 	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSFRecontructorSuperBigFC10000"
+	model_name = "PSFRecontructorSuperBigFC70000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
