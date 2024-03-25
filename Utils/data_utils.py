@@ -685,7 +685,7 @@ def generate_psf_complex_fields(
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
-	save_wavefront_phase=False,
+	save_wavefront_phase=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -695,8 +695,6 @@ def generate_psf_complex_fields(
 		teslecope_diameter (float): The diameter of the aperture
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
-		focal_q (int)
-		num_airy=16
 	"""
 
 	D_tel = 0.5
@@ -708,7 +706,7 @@ def generate_psf_complex_fields(
 
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
 
-	fried_parameter = 0.2 # meter
+	fried_parameter = fried_parameter # meter
 	outer_scale = 20 # meter
 	velocity = 10 # meter/sec
 
