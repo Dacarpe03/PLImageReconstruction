@@ -683,7 +683,9 @@ def generate_psf_complex_fields(
 	outer_scale=20,
 	velocity=10,
 	n_samples=SUBFILE_SAMPLES,
-	plot=False
+	plot=False,
+	save_complex_fields=True,
+	save_wavefront_phase=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -720,9 +722,15 @@ def generate_psf_complex_fields(
 												 propagator,
 												 atmosphere,
 												 plot=plot)
+	if save_complex_fields:
+		save_wavefronts_complex_fields(propagated_wavefronts,
+		   						   	   filepath)
+		return None
 
-	save_wavefronts_complex_fields(propagated_wavefronts,
-								   filepath)
+	if save_wavefronts_phase:
+		save_wavefronts_phase(propagated_wavefront,
+							  filepath)
+		return None\
 
 	return None
 
@@ -780,6 +788,22 @@ def save_wavefronts_complex_fields(
 		comp_amp_phase = real_part + imaginary*1j
 		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
 		complex_fields[i] = comp_amp_phase
+
+	save_numpy_array(complex_fields, filepath, single_precision=False)
+
+
+def save_wavefronts_complex_fields(
+	propagated_wavefronts,
+	filepath
+	):
+	
+	n_wavefronts = len(propagated_wavefronts)
+	# Compute the rows (or columns as the wf is a square grid)
+	square_side = int(np.sqrt(propagated_wavefronts[0].phase.shape))
+	wavefronts_phase = np.zeros((n_fields, square_side, square_side))
+
+	for i in range(n_fields):
+		complex_fields[i] = propagated_wavefronts[i].phase
 
 	save_numpy_array(complex_fields, filepath, single_precision=False)
 
