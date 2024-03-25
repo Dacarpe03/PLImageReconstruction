@@ -64,6 +64,12 @@ FC_PROCESSED_TEST_OUTPUT_FLUXES_FILE_PATH = f"{PROCESSED_TEST_OUTPUT_FLUXES_FOLD
 SUBFILE_SAMPLES = 10000
 COMPLEX_NUMBER_NORMALIZATION_CONSTANT = 50000
 
+# CODE PATH
+PSF_CODE_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/"
+
 # MODELS PATH
 PSF_MODELS_FOLDER_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models"
 PSF_MODELS_DESCRIPTION_FILE_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models/models_descriptions.txt"
+
+# Temp images folder
+PSF_TEMP_IMAGES = f"{PSF_CODE_PATH}/temp_images"

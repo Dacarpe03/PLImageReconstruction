@@ -588,7 +588,7 @@ def PSFSimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 300
+	epochs = 1
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

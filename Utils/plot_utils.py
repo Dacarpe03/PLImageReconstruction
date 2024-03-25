@@ -9,6 +9,8 @@ import numpy as np
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
                        reshape_fc_electric_field_to_real_imaginary_matrix
 
+from psf_constants import PSF_TEMP_IMAGES
+
 def plot_map(
 	whatever_map
 	):
@@ -60,6 +62,7 @@ def plot_fluxes(original_flux,
 
 def plot_model_history(
     history,
+    model_name,
     top_y_lim=0.5
     ):
     """
@@ -85,6 +88,9 @@ def plot_model_history(
     plt.ylim(top=top_y_lim, bottom=0)
     # Show the plot
     plt.show()
+
+    img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
+    plt.savefig(img_path)
 
     return None
 
@@ -385,7 +391,10 @@ def plot_amplitude_phase_from_electric_field(
     original_electric_field,
     predicted_electric_field,
     model_name,
-    log_scale=True):
+    log_scale=True,
+    save_image=True,
+    validation=False,
+    train=False):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
     
@@ -492,6 +501,14 @@ def plot_amplitude_phase_from_electric_field(
     # Show the plot
     fig.show()
 
+    if save_image:
+        if validation:
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-validation.png"
+        if train:
+            img_path = f"{PSF_TEMP_IMAGES}/psf{model_name}-1-train.png"
+
+        fig.write_image(img_path)
+
     return None
 
 
@@ -499,7 +516,10 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     model,
     ouput_flux,
     original_electric_field,
-    log_scale=True
+    log_scale=True,
+    save_image=True,
+    validation=False,
+    train=False
     ):
     """
     Function that plots the amplitude and phase, both original and predicted
@@ -522,7 +542,10 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,
                                              model.name,
-                                             log_scale=log_scale)
+                                             log_scale=log_scale,
+                                             save_image=save_image,
+                                             validation=validation,
+                                             train=train)
 
     return None
 
