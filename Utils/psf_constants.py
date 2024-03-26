@@ -1,6 +1,8 @@
 NUMPY_SUFFIX = ".npy"
 
-PSF_DATA_PATH = "~/DaniProjects/SAIL/PhotonicLanternProjects/Data/PSFReconstruction"
+HOME = "/home/dani"
+
+PSF_DATA_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/Data/PSFReconstruction"
 COMPLEX_FIELDS_DATA_PATH = f"{PSF_DATA_PATH}/ComplexFields"
 OUTPUT_FLUXES_DATA_PATH = f"{PSF_DATA_PATH}/OutputFluxes"
 
@@ -65,11 +67,11 @@ SUBFILE_SAMPLES = 10000
 COMPLEX_NUMBER_NORMALIZATION_CONSTANT = 50000
 
 # CODE PATH
-PSF_CODE_PATH = "~/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/"
+PSF_CODE_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/"
 
 # MODELS PATH
-PSF_MODELS_FOLDER_PATH = "~/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models"
-PSF_MODELS_DESCRIPTION_FILE_PATH = "~/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models/models_descriptions.txt"
+PSF_MODELS_FOLDER_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models"
+PSF_MODELS_DESCRIPTION_FILE_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/PLImageReconstruction/PSFReconstruction/Models/models_descriptions.txt"
 
 # Temp images folder
 PSF_TEMP_IMAGES = f"{PSF_CODE_PATH}/temp_images"
