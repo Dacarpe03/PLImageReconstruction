@@ -1,0 +1,47 @@
+\newday{05 March 2024}
+	\input{Experiments/psf-PSFReconstructor-100-32-1}
+	
+	\input{Experiments/psf-PSFReconstructor-100-16-1}
+	
+	\action{
+		Apart from the mse, no significant difference can be appreciated for different batch sizes using 100 datapoints.
+	}
+	
+	\action{
+		The goal for today is to study the correlation between the L2 norm of the pupil plane electric field and the L2 norm of the LP modes complex coefficients.
+	}
+		
+	\action{
+		First compute the L2 norm of the LP modes complex coefficients from the validation psf electric fields.
+	}
+	
+	\action{
+		Done!, here it is what it looks like
+		\begin{figure}[!ht]
+		\centering
+			\includegraphics[scale=0.2]{L2-norms-mode-coefficients.png}
+			\caption{L2 norms for the overlap integral mode coefficients of the validation PSFs}
+			\end{figure}
+	}
+	
+	\FloatBarrier
+	\action{
+		Let's do the same for the electric fields of the PSF
+	}
+	
+	\action{
+		Done!, here are the results:
+		\begin{figure}[!ht]
+		\centering
+			\includegraphics[scale=0.2]{L2-norms-PSFs.png}
+			\caption{L2 norms of the validation PSFs electric fields}
+			\end{figure}
+	}
+	\FloatBarrier
+	
+	\action{
+		After doing a correlation analysis the result is the following:\\
+		\filename{Pearson correlation coefficient: 0.1451513895198259}\\
+		Which means that there is no correlation
+	}
+\finishday

@@ -1,0 +1,50 @@
+\rule{0.5\textwidth}{0.5pt}\\
+
+	{\large \textbf{EXPERIMENT FromArrayToImage32-1}}\\
+	
+	{\normalsize HYPERPARAMETERS:}
+	\begin{lstlisting}	
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 19
+		-Output shape: 2048
+		-Hidden layers: [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: 10000
+		-Batch size: 1
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	\end{lstlisting}
+	
+	{\normalsize VISUALIZATION:}
+	\begin{lstlisting}
+	*RESULTS:
+        -Train MSE: 5.556200267164968e-05
+	\end{lstlisting}
+	
+	\begin{figure*}[ht!]
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-FromArrayToImage32-1-evolution.png}}
+		\hspace{\fill}
+		\subfloat[Train example]{%
+		\includegraphics[ width=0.31\textwidth]{psf-FromArrayToImage32-1-train.png}}
+		\hspace{\fill}
+		\subfloat[Train example]{%
+		\includegraphics[ width=0.31\textwidth]{psf-FromArrayToImage32-1-train.png}}\\
+		\caption{Results of training the model FromArrayToImage32-1}
+	\end{figure*}
+	
+\FloatBarrier	
+\rule{0.5\textwidth}{0.5pt}\\
