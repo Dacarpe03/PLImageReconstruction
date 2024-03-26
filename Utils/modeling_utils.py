@@ -24,6 +24,8 @@ from constants import MODELS_FOLDER_PATH, \
 					  KERAS_SUFFIX, \
 					  MODELS_DESCRIPTION_FILE_PATH
 
+from psf_constants import PSF_MODELS_FOLDER_PATH, PSF_MODELS_DESCRIPTION_FILE_PATH
+
 
 def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 	input_shape,
@@ -76,7 +78,6 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		model.add(
 			Dense(
 				neurons,
-				# kernel_regularizer=regularizer,
 				# kernel_initializer=keras.initializers.HeNormal(seed=None),
 				kernel_regularizer=regularizer,
 				use_bias=False
@@ -112,11 +113,11 @@ def create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
 		)
 
 	# Reshape the linear neurons into the reconstructed image
-	model.add(
-		Reshape(
-			output_shape
-			)
-		)
+	#model.add(
+	#	Reshape(
+	#		output_shape
+	#		)
+	#	)
 		
 	model.summary()
 	return model
@@ -286,7 +287,8 @@ def create_autoencoder_for_flux(
 			convolutional_layer_kernels[0],
 			activation=convolutional_activation,
 			input_shape=input_shape,
-			padding=padding
+			padding=padding,
+			name="conv_1"
 		)
 	)
 
@@ -295,7 +297,8 @@ def create_autoencoder_for_flux(
 				convolutional_layer_sizes[0],
 				convolutional_layer_kernels[0],
 				activation=convolutional_activation,
-				padding=padding
+				padding=padding,
+				name="conv_2"
 			)
 	)
 
@@ -313,7 +316,8 @@ def create_autoencoder_for_flux(
 						convolutional_layer_sizes[i],
 						convolutional_layer_kernels[i],
 						activation=convolutional_activation,
-						padding=padding
+						padding=padding,
+						name=f"conv_{i}-{j}"
 
 					)
 			)
@@ -361,7 +365,8 @@ def create_autoencoder_for_flux(
 						convolutional_layer_sizes[i],
 						convolutional_layer_kernels[i],
 						activation=convolutional_activation,
-						padding=padding
+						padding=padding,
+						name=f"deconv_{i}-{j}"
 					)
 			)
 
@@ -376,7 +381,8 @@ def create_autoencoder_for_flux(
 				1,
 				(3,3), 
 				activation=output_activation,
-				padding=padding
+				padding=padding,
+				name=f"output_autoencoder_conv"
 			)
 		)
 
@@ -420,7 +426,7 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 			break
 
 	conv_input = encoder.output
-	conv_layers = UpSampling2D(size=(1,2))(conv_input)
+	conv_layers = UpSampling2D(size=(1,2), name="bottleneck_upsampling")(conv_input)
 
 	for i in range(len(convolutional_layer_sizes)):
 		for j in range(2):
@@ -428,14 +434,16 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 								convolutional_layer_sizes[i],
 								convolutional_layer_kernels[i],
 								activation=convolutional_activation,
-								padding=padding
+								padding=padding,
+								name=f"enc_conv_{i}-{j}"
 							)(conv_layers)
 
 		if use_batch_normalization:
-			conv_layers = BatchNormalization()(conv_layers)
+			conv_layers = BatchNormalization(name=f"enc_batch_norm{i}")(conv_layers)
 
 		conv_layers = UpSampling2D(
-						size=(2,2)
+						size=(2,2),
+						name=f"enc_upsampling_{i}"
 						)(conv_layers)
 
 	# OUTPUT_LAYER
@@ -443,7 +451,8 @@ def create_convolutional_architecture_with_encoder_for_amplitude_phase_reconstru
 					2,
 					(3,3), 
 					activation=output_activation,
-					padding=padding
+					padding=padding,
+					name=f"output_enc_conv"
 					)(conv_layers)
 
 	conv_model = keras.Model(inputs=encoder.input, outputs=conv_layers)
@@ -629,7 +638,8 @@ def train_model_with_generator(model,
 						 	   epochs,
 						 	   batch_size,
 						 	   callbacks,
-						 	   n_samples=70000
+						 	   n_samples=70000,
+						 	   do_shuffle=False
 						 	   ):
 	"""
 	Fits the model to the train instances of the data.
@@ -650,18 +660,18 @@ def train_model_with_generator(model,
 	train_gen = train_generator(fluxes_path,
 								amplitudes_path,
 								batch_size,
-								do_shuffle=False,
+								do_shuffle=do_shuffle,
 								n_samples=n_samples)
 
 	steps_per_epoch = math.ceil(n_samples/batch_size)
 	validation_steps = math.ceil(len(validation_amplitudes)/batch_size)
 
-	history = model.fit_generator(train_gen, 
-								  steps_per_epoch=steps_per_epoch,
-								  validation_data=(validation_fluxes, validation_amplitudes),
-								  epochs=epochs,
-								  callbacks=callbacks,
-								  verbose=1)
+	history = model.fit(train_gen, 
+						steps_per_epoch=steps_per_epoch,
+						validation_data=(validation_fluxes, validation_amplitudes),
+						epochs=epochs,
+						callbacks=callbacks,
+						verbose=1)
 
 
 	return history
@@ -670,7 +680,10 @@ def train_model_with_generator(model,
 def store_model(
 	model,
 	model_name,			
-	description):
+	description,
+	mse,
+	val_mse,
+	psf_model=False):
 	"""
 	Stores the model in the DATA_FOLDER with the name with a description in the neural network descriptions file
 
@@ -684,19 +697,30 @@ def store_model(
 	"""
 
 	# To not overwrite other model, look for the number of models with the same configuration to add a version number at the end of the file
-	model_files = os.listdir(MODELS_FOLDER_PATH)
+	if psf_model:
+		model_files = os.listdir(PSF_MODELS_FOLDER_PATH)
+	else:
+		model_files = os.listdir(MODELS_FOLDER_PATH)
+
 	version = sum(1 for file in model_files if file.startswith(model_name))+1
 
+	models_description_fp = MODELS_DESCRIPTION_FILE_PATH
+	if psf_model:
+		models_description_fp = PSF_MODELS_DESCRIPTION_FILE_PATH
+		
 	# Save its description
-	with open(MODELS_DESCRIPTION_FILE_PATH, 'a') as f:
-		f.write(f"===={model_name}_{version}====\n")
+	with open(models_description_fp, 'a') as f:
+		f.write(f"===={model_name}-{version}====\n")
 		f.write(description)
+		f.write("\n")
+		f.write(f"    *RESULTS:\n        -Train MSE: {mse}\n        -Validation MSE: {val_mse}")
 		f.write("\n\n")
 
 
 	# Create the model path
-	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}_{version}{KERAS_SUFFIX}"
-
+	model_file_path = f"{MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
+	if psf_model:
+		model_file_path = f"{PSF_MODELS_FOLDER_PATH}/{model_name}-{version}{KERAS_SUFFIX}"
 	# Save the model
 	model.save(model_file_path)
 
@@ -704,7 +728,9 @@ def store_model(
 
 
 def load_model(
-	model_name):
+	model_name,
+	psf_model=False
+	):
 	"""
 	Loads a model given its name
 
@@ -715,6 +741,9 @@ def load_model(
 		model (keras.models): The loaded model
 	"""
 	model_path = f"{MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
+	if psf_model:
+		model_path = f"{PSF_MODELS_FOLDER_PATH}/{model_name}{KERAS_SUFFIX}"
+
 	model = keras.models.load_model(model_path)
 	return model
 

@@ -1,0 +1,33 @@
+\newday{04 March 2024}
+	\action{
+		After seeing that with 1 datapoint the model does not learn I decide to make some simpler tests, I will train a model that from a 19 element array predicts images with 2 channels and see if the input is too small for the model to predict anything. Three experiments will be performed:
+		\begin{itemize}
+			\item From a 19 elements array to a 2x128x128 image
+			\item From a 19 elements array to a 2x64x64 image
+			\item From a 19 elements array to a 2x32x32 image
+		\end{itemize}
+	}
+	
+	\input{Experiments/psf-FromArrayToImage128}
+	
+	\action{
+		From the previous experiment it is clear that a 19 element array as input is enough to reconstruct a random image of 2x128x128 resolution, what is happening for the psf reconstruction?.\\
+		
+		I will perform the other 2 stated experiments because it is quite fast.
+	}
+	
+	\input{Experiments/psf-FromArrayToImage64}
+	
+	\input{Experiments/psf-FromArrayToImage32}
+	
+	\action{
+		The results are satisfactory, I am going to try the exact same configuration for one data point of the PSF dataset and see what happens	
+	}
+	
+	\input{Experiments/psf-TestWith1DataPoint-3}
+	\action{
+		The result has improved incredibly compared to the TestWith1DataPoint-1 and TestWith1DataPoint-2. The only difference I can see are the learning rates and the batch size. I will perform a series of experiments varying batch size: 100 datapoints with 64, 32 and 16 batch size
+	}
+	
+	\input{Experiments/psf-PSFReconstructor-100-64-1}
+\finishday

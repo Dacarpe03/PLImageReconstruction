@@ -1,0 +1,47 @@
+\newday{11 March 2024}
+	
+	\action{
+		Finally got the output fluxes from the unnormalized mode coefficients
+	}
+	
+	\input{Experiments/psf-PSFReconstructorFC10000-1}
+	\input{Experiments/psf-PSFReconstructorFC30000-1}
+	
+	\action{
+		Again, flatline, and same output for any input. I will try with all the train dataset and then start using different batch sizes, see how this works
+	}
+	
+	\input{Experiments/psf-PSFReconstructorFC70000-1}
+	
+	\action{
+		Batch size for these experiments is 64, maybe it is too big	, let's try with 32
+	}
+	
+	\input{Experiments/psf-PSFReconstructorFC10000-32-1}
+	
+	\action{
+		Interesting, slower convergence but less overfitting	
+	}
+	
+	\input{Experiments/psf-PSFReconstructorFC30000-32-1}
+	\input{Experiments/psf-PSFReconstructorFC70000-32-1}
+	
+	\action{
+		So no good results, what I saw is that the lower the batch size, the longer it takes to coverge. Options now are:
+		\begin{itemize}
+			\item Bigger NN
+			\item Bigger Batch size
+			\item Longer training
+		\end{itemize}
+		
+		I will start with 10000 datapoints and a bigger NN		
+	}
+	
+	\input{Experiments/psf-PSFReconstructorBigFC10000-32-1}
+	
+	\input{Experiments/psf-PSFReconstructorBigFC30000-32-1}
+	
+	\action{
+		With respect to the last to experiments, a bigger neural network seems to work better, with more datapoints the learning is delayed a bit, and the overfitting slightly improves, let's check with 70000 datapoints.	
+	}
+\finishday

@@ -207,7 +207,7 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 		convolutinal_layer_kernels,
 		convolutional_activation,
 		output_activation,
-		model_name="EncoderConvolutionalArchitecture",
+		model_name="EncoderConvolutionalArchitecture70000",
 		padding="same",
 		use_batch_normalization=True
 		):
@@ -421,14 +421,16 @@ def SimpleFCModel(
 	"""
 
 	# Define architecture hyperparmeters
-	input_shape = FC_INPUT_SHAPE
-	output_shape = FC_OUTPUT_SHAPE
-	hidden_layer_sizes = [512, 512, 256, 256, 512, 512, 1024, 1024, 2048]
+	input_shape = 19
+	output_shape = (1)
+	hidden_layer_sizes = [128, 128, 128, 128, 256, 256, 512, 2000, 4000]
 	regularizer = None
-	hidden_activation = 'relu'
+	hidden_activation = 'rel'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	model_name = "SimpleFCModel"
+	use_dropout = False
+	dropout_rate = 0.2
+	model_name = "Flux-Sum"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -438,7 +440,9 @@ def SimpleFCModel(
                                     hidden_activation,
                                     output_activation,
                                     use_batch_normalization,
-                                    model_name
+                                    model_name,
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
                                     )
 
 	description = f"""
@@ -452,11 +456,12 @@ def SimpleFCModel(
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
 	"""
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -483,11 +488,11 @@ def SimpleFCModel(
 	reduce_lr = ReduceLROnPlateau(
 					'val_mean_squared_error', 
 					factor=0.1, 
-					patience=15, 
+					patience=10, 
 					verbose=1)
 	early_stop = EarlyStopping(
 					'val_mean_squared_error',
-					patience=50, 
+					patience=25, 
 					verbose=1)
 	callbacks = [reduce_lr, early_stop]
 
@@ -497,11 +502,117 @@ def SimpleFCModel(
 									callbacks)
 
 	description += f"""
-	* TRAINING HYPERPARAMETERS:
+	*TRAINING HYPERPARAMETERS:
 		-Epochs: {epochs}
 		-Batch size: {batch_size}
 		-Callbacks: 
-			-ReduceLROnPlateau: MSE 15 x0.1
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def PSFSimpleFCModel(
+	):
+	"""
+	Function that creates the model configuration for the first working model (a fully connected one)
+	"""
+
+	# Define architecture hyperparmeters
+	input_shape = 19
+	output_shape = (2*128*128)
+	hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
+	regularizer = None
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	use_dropout = True
+	dropout_rate = 0.2
+	model_name = "PSF-FCDR02-70000"
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: None
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 1
+	batch_size = 32
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=50, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=70, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks)
+
+	description += f"""
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Batch size: {batch_size}
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 20 x0.1
 			-Early Stop: MSE 50
 	"""
 
@@ -530,7 +641,7 @@ def SimpleFCWithBN(
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name = "AmplitudePhaseReconstructor1"
+	model_name = "NewConv10000"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -627,7 +738,7 @@ def FullyConnectedDropoutAndBN(
 	input_shape = FC_INPUT_SHAPE
 	output_shape = FC_OUTPUT_SHAPE
 	hidden_layer_sizes = [256, 256, 128, 128, 64, 64, 512, 512, 1024]
-	regularizer = None
+	regularizer = L1(0.0001)
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
@@ -655,7 +766,7 @@ def FullyConnectedDropoutAndBN(
 		-Input shape: {input_shape}
 		-Output shape: {output_shape}
 		-Hidden layers: {hidden_layer_sizes}
-		-Regularizer: {regularizer}
+		-Regularizer: L1 0.0001
 		-Hidden Layers Activation: {hidden_activation}
 		-Output Layer Activation: {output_activation}
 		-Batch Normalization: {use_batch_normalization}
@@ -1051,15 +1162,15 @@ def SimpleConvolutional(
 	# Define architecture hyperparmeters
 	input_shape = CNN_INPUT_SHAPE
 	output_shape = CNN_OUTPUT_SHAPE
-	convolutional_layer_sizes = [128, 256, 512]
+	convolutional_layer_sizes = [128, 256, 512]	
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3)]
-	fully_connected_hidden_layer_sizes = [1024, 2048, 2048, 2048]
+	fully_connected_hidden_layer_sizes = [4096, 2048, 2048, 1024, 1024, 1024]
 	regularizer = None
 	convolutional_activation = 'relu'
 	fully_connected_hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = True
-	model_name="SimpleConvolutional"
+	model_name="NewConv80000"
 
 	architecture_hyperparams = ConvolutionalArchitecture(
 									input_shape, 
@@ -1093,7 +1204,7 @@ def SimpleConvolutional(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.0001
+	learning_rate = 0.001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -1114,7 +1225,7 @@ def SimpleConvolutional(
 	"""
 
 	# Define training hyperparameters
-	epochs = 70
+	epochs = 200
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1162,11 +1273,11 @@ def AutoEncoderConfiguration(
 		
 		
 	input_shape = AUTOENCODER_INPUT_SHAPE
-	convolutional_layer_sizes = [512, 128, 64, 16]
+	convolutional_layer_sizes = [512, 128, 64, 8]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="FluxAutoencoder2DConv"
+	model_name="NewFluxAutoencoder80000"
 	padding="same"
 	use_batch_normalization=True
 
@@ -1217,7 +1328,7 @@ def AutoEncoderConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 100
+	epochs = 75
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(
@@ -1264,11 +1375,11 @@ def EncoderConvolutionalConfiguration(
 	# Define architecture hyperparmeters
 		
 		
-	convolutional_layer_sizes = [32, 128, 256, 512]
+	convolutional_layer_sizes = [1024, 512, 256, 256]
 	convolutinal_layer_kernels = [(3,3), (3,3), (3,3), (3,3)]
 	convolutional_activation = 'relu'
 	output_activation = 'linear'
-	model_name="EncoderAndConvolutional"
+	model_name="NewEncConv80000"
 
 	architecture_hyperparams = EncoderConvolutionalArchitecture(
 									convolutional_layer_sizes,
@@ -1311,7 +1422,7 @@ def EncoderConvolutionalConfiguration(
 	"""
 
 	# Define training hyperparameters
-	epochs = 15
+	epochs = 100
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

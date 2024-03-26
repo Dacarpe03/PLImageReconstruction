@@ -1,0 +1,53 @@
+\rule{0.5\textwidth}{0.5pt}\\
+
+	{\large \textbf{EXPERIMENT ElectricField-Sum-1}}\\
+	
+		This model performs a sum of all the output fluxes from the PL
+		
+	{\normalsize HYPERPARAMETERS:}
+	\begin{lstlisting}
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 32768
+		-Output shape: 1
+		-Hidden layers: [100, 100, 100]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: False, 0.2
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: 200
+		-Batch size: 64
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 10 x0.1
+			-Early Stop: MSE 25
+	\end{lstlisting}
+	
+	{\normalsize VISUALIZATION:}
+	\begin{lstlisting}
+    *RESULTS:
+        -Train MSE: 0.050156451761722565
+        -Validation MSE: 0.8189939856529236
+	\end{lstlisting}
+	
+	\begin{figure*}[ht!]
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-ElectricField-Sum-1-evolution.png}}
+		\hspace{\fill}
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-ElectricField-Sum-1-evolution.png}}
+		\hspace{\fill}	
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-ElectricField-Sum-1-evolution.png}}\\
+		\caption{Results of training the model ElectricField-Sum-1}
+	\end{figure*}
+	
+\FloatBarrier	
+\rule{0.5\textwidth}{0.5pt}\\
