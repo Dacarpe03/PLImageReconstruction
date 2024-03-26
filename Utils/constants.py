@@ -4,7 +4,7 @@ NUMPY_SUFFIX = ".npy"
 PICKLE_SUFFIX = ".pkl"
 
 # DATA  FOLDER
-PL_AMP_PHASE_DATA_PATH = "/home/dani/DaniProjects/SAIL/PhotonicLanternProjects/Data/AmpPhaseReconstruction"
+PL_AMP_PHASE_DATA_PATH = "~/DaniProjects/SAIL/PhotonicLanternProjects/Data/AmpPhaseReconstruction"
 
 # ORIGINAL DATA FOLDERS
 ORIGINAL_FOLDER_DATA_PATH = f"{PL_AMP_PHASE_DATA_PATH}/OriginalData"
