@@ -398,7 +398,7 @@ def plot_amplitude_phase_from_electric_field(
     log_scale=True,
     save_image=True,
     validation=False,
-    train=False,,
+    train=False,
     show_plot=True):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
