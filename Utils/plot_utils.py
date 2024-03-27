@@ -64,6 +64,7 @@ def plot_model_history(
     history,
     model_name,
     top_y_lim=0.5,
+    save_image=False,
     show_plot=True
     ):
     """
@@ -91,8 +92,9 @@ def plot_model_history(
     if show_plot:
         plt.show()
 
-    img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
-    plt.savefig(img_path)
+    if save_image:
+        img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
+        plt.savefig(img_path)
 
     return None
 
