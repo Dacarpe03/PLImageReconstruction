@@ -63,7 +63,8 @@ def plot_fluxes(original_flux,
 def plot_model_history(
     history,
     model_name,
-    top_y_lim=0.5
+    top_y_lim=0.5,
+    show_plot=True
     ):
     """
     Plots the history of the model in a graph
@@ -87,7 +88,8 @@ def plot_model_history(
     # Limit the error
     plt.ylim(top=top_y_lim, bottom=0)
     # Show the plot
-    plt.show()
+    if show_plot:
+        plt.show()
 
     img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
     plt.savefig(img_path)
@@ -394,7 +396,8 @@ def plot_amplitude_phase_from_electric_field(
     log_scale=True,
     save_image=True,
     validation=False,
-    train=False):
+    train=False,,
+    show_plot=True):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
     
@@ -498,8 +501,9 @@ def plot_amplitude_phase_from_electric_field(
         width=800    # Set the width of the figure
     )
 
-    # Show the plot
-    fig.show()
+    if show_plot:
+        # Show the plot
+        fig.show()
 
     if save_image:
         if validation:
@@ -519,7 +523,8 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     log_scale=True,
     save_image=True,
     validation=False,
-    train=False
+    train=False,
+    show_plot=True
     ):
     """
     Function that plots the amplitude and phase, both original and predicted
@@ -545,7 +550,8 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
                                              log_scale=log_scale,
                                              save_image=save_image,
                                              validation=validation,
-                                             train=train)
+                                             train=train,
+                                             show_plot=show_plot)
 
     return None
 
