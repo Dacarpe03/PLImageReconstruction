@@ -64,7 +64,8 @@ def plot_model_history(
     history,
     model_name,
     top_y_lim=0.5,
-    show_plot=True
+    show_plot=True,
+    save_image=True
     ):
     """
     Plots the history of the model in a graph
@@ -91,8 +92,9 @@ def plot_model_history(
     if show_plot:
         plt.show()
 
-    img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
-    plt.savefig(img_path)
+    if save_image:
+        img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-evolution.png"
+        plt.savefig(img_path)
 
     return None
 
@@ -345,7 +347,7 @@ def plot_amplitude_phase_intensity(
         amplitude = np.log10((amplitude/amplitude.max()))
         intensity = np.log10((intensity/intensity.max()))
 
-    fig = make_subplots(rows=2, cols=3, subplot_titles=("Phase", "Amplitude", "Intensity"))
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("Phase", "Amplitude", "Intensity"))
 
     phase_heatmap = go.Heatmap(
                                             z=phase,
@@ -394,9 +396,9 @@ def plot_amplitude_phase_from_electric_field(
     predicted_electric_field,
     model_name,
     log_scale=True,
-    save_image=True,
+    save_image=False,
     validation=False,
-    train=False,,
+    train=False,
     show_plot=True):
     """
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
@@ -541,8 +543,14 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     input_output_flux = np.array([ouput_flux])
     predicted_electric_field = model.predict(input_output_flux)[0]
 
-    reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
-    reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
+    reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field, 
+    og_shape_depth = 2,
+    og_shape_rows = 64,
+    og_shape_cols = 64)
+    reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field,
+    og_shape_depth = 2,
+    og_shape_rows = 64,
+    og_shape_cols = 64)
 
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,

@@ -528,15 +528,15 @@ def PSFSimpleFCModel(
 
 	# Define architecture hyperparmeters
 	input_shape = 19
-	output_shape = (2*128*128)
+	output_shape = (2*64*64)
 	hidden_layer_sizes = [256, 256, 256, 256, 256, 256]
 	regularizer = None
 	hidden_activation = 'relu'
 	output_activation = 'linear'
 	use_batch_normalization = False
-	use_dropout = True
+	use_dropout = False
 	dropout_rate = 0.2
-	model_name = "PSF-FCDR02-70000"
+	model_name = "CroppedTest"
 
 	architecture_hyperparams = FullyConnectedArchitecture(
 									input_shape, 
@@ -567,7 +567,7 @@ def PSFSimpleFCModel(
 
 	# Define compilation hyperparameters
 	loss_function = LossesMeanSquaredError()
-	learning_rate = 0.001
+	learning_rate = 0.0001
 	optimizer = Adam(
 		learning_rate=learning_rate,
 		beta_1=0.9,
@@ -588,7 +588,7 @@ def PSFSimpleFCModel(
 	"""
 
 	# Define training hyperparameters
-	epochs = 1
+	epochs = 50
 	batch_size = 32
 	
 	reduce_lr = ReduceLROnPlateau(

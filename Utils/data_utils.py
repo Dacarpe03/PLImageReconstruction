@@ -992,7 +992,10 @@ def compute_amplitude_and_phase_from_electric_field(
 
 
 def reshape_fc_electric_field_to_real_imaginary_matrix(
-	electric_field
+	electric_field,
+	og_shape_depth = 2,
+	og_shape_rows = 128,
+	og_shape_cols = 128
 	):
 	"""
 	Function that reshapes the predicted electric field array of a fully connected network, as it is flattened in that stage
@@ -1006,7 +1009,7 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	"""
 
 	# Reshape into a 3d matrix of depth 2, at depth one is the real part of the complex number, at depth two, the imaginary part of the complex number
-	electric_field = electric_field.reshape(2, 128 , 128)
+	electric_field = electric_field.reshape(og_shape_depth, og_shape_rows, og_shape_cols)
 
 	# Reshape into a 2d matrix of complex numbers
 	electric_field = electric_field[0] + 1j*electric_field[1]
