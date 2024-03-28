@@ -3,7 +3,7 @@ KERAS_SUFFIX = ".keras"
 NUMPY_SUFFIX = ".npy"
 PICKLE_SUFFIX = ".pkl"
 
-HOME = "/home/dani"
+HOME = "/home/daniel"
 # DATA  FOLDER
 PL_AMP_PHASE_DATA_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/Data/AmpPhaseReconstruction"
 
