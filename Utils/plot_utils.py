@@ -511,7 +511,7 @@ def plot_amplitude_phase_from_electric_field(
         if validation:
             img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-validation.png"
         if train:
-            img_path = f"{PSF_TEMP_IMAGES}/psf{model_name}-1-train.png"
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-train.png"
 
         fig.write_image(img_path)
 
