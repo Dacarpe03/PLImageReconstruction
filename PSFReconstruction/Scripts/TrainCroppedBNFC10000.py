@@ -21,6 +21,9 @@ from kobol_configurations import CroppedBNFC as ModelConfig
 
 from plot_utils import plot_amplitude_phase_fully_connected_prediction_from_electric_field, \
                        plot_model_history
+                       
+gpus = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpus[0], True)
 
 
 validation_fluxes_array = load_numpy_data(FC_PROCESSED_VALIDATION_OUTPUT_FLUXES_FILE_PATH)

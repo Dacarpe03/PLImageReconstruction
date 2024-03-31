@@ -22,31 +22,27 @@ from kobol_configurations import CroppedDR02FC as ModelConfig
 from plot_utils import plot_amplitude_phase_fully_connected_prediction_from_electric_field, \
                        plot_model_history
 
+gpus = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpus[0], True)
 
 validation_fluxes_array = load_numpy_data(FC_PROCESSED_VALIDATION_OUTPUT_FLUXES_FILE_PATH)
 validation_complex_fields_array = load_numpy_data(FC_CROPPED_VALIDATION_COMPLEX_FIELDS_FILE_PATH)
 
-
 validation_fluxes_array.shape
-
 
 validation_complex_fields_array.shape
 
-
 model_configuration = ModelConfig(n_samples=30000)
 print(model_configuration.get_description())
-
 
 model = create_fully_connected_architecture_for_amplitude_and_phase_reconstruction(
     *model_configuration.unpack_architecture_hyperparameters()
 )
 
-
 compile_model(
     model,
     *model_configuration.unpack_compilation_hyperparameters()
 )
-
 
 history = train_model_with_generator(
     model,
@@ -56,7 +52,6 @@ history = train_model_with_generator(
     validation_complex_fields_array,
     *model_configuration.unpack_training_hyperparameters()
 )
-
 
 plot_model_history(history, model.name, top_y_lim=0.1, show_plot=False, save_image=True)
 
