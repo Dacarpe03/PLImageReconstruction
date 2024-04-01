@@ -9,4 +9,4 @@ Models/
 *.xml
 *.gz
 *.toc
-
+Scripts/log_*
