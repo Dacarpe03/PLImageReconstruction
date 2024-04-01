@@ -21,6 +21,8 @@ from kobol_configurations import CroppedSimpleFC as ModelConfig
 from plot_utils import plot_amplitude_phase_fully_connected_prediction_from_electric_field, \
                        plot_model_history
 
+import tensorflow as tf
+
 gpus = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(gpus[0], True)
 
