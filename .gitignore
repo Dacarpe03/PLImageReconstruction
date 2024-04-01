@@ -9,4 +9,4 @@ Models/
 *.xml
 *.gz
 *.toc
-
+PSFReconstruction/Scripts/log_*
