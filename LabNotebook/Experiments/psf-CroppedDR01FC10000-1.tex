@@ -1,0 +1,52 @@
+\rule{0.5\textwidth}{0.5pt}\\
+
+	{\large \textbf{EXPERIMENT CroppedDR01FC10000-1}}\\
+	
+	{\normalsize HYPERPARAMETERS:}
+	\begin{lstlisting}	
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: 19
+		-Output shape: 8192
+		-Hidden layers: [1024, 1024, 1024, 1024, 1024, 1024]
+		-Regularizer: None
+		-Hidden Layers Activation: relu
+		-Output Layer Activation: linear
+		-Batch Normalization: False
+		-Dropout: True, 0.1
+	
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr=0.0001, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: 500
+		-Samples: 10000
+		-Batch size: 32
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 50 x0.1
+			-Early Stop: MSE 70
+	\end{lstlisting}
+	
+	{\normalsize VISUALIZATION:}
+	\begin{lstlisting}
+	*RESULTS:
+        -Train MSE: 0.0152916694059968
+        -Validation MSE: 0.18240582942962646
+	\end{lstlisting}
+	
+	\begin{figure*}[ht!]
+		\subfloat[Training Evolution]{%
+		\includegraphics[ width=0.31\textwidth]{psf-CroppedDR01FC10000-1-evolution.png}}
+		\hspace{\fill}
+		\subfloat[Validation example]{%
+		\includegraphics[ width=0.31\textwidth]{psf-CroppedDR01FC10000-1-validation.png}}
+		\hspace{\fill}
+		\subfloat[Train example]{%
+		\includegraphics[ width=0.31\textwidth]{psf-CroppedDR01FC10000-1-train.png}}\\
+		\caption{Results of training the model CroppedDR01FC10000-1}
+	\end{figure*}
+	
+\FloatBarrier	
+\rule{0.5\textwidth}{0.5pt}\\
