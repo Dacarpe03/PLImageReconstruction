@@ -63,7 +63,7 @@ history = train_model_with_generator(
 )
 
 
-plot_model_history(history, model.name, top_y_lim=0.1, show_plot=False, save_image=True)
+plot_model_history(history, model.name, top_y_lim=0.2, show_plot=False, save_image=True)
 
 
 store_model(model,
