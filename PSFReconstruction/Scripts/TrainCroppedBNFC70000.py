@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-gpus = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
-
 from psf_constants import FC_PROCESSED_TRAIN_OUTPUT_FLUXES_PREFIX, \
                           FC_PROCESSED_TRAIN_COMPLEX_FIELDS_PREFIX, \
                           FC_CROPPED_TRAIN_COMPLEX_FIELDS_PREFIX, \
