@@ -1,5 +1,20 @@
 \newday{09 April 2024}
 	
-	\action{}
+	\action{PL information determination}
+	
+	\action{Given some set of data containing the inputs (eg mode coeffs or images) X and outputs (eg PL fluxes) y of a photonic lantern, quantify the amount of information preserved by the encoding, independent of any assumptions about the transfer function or reconstruction algorithm.}
+	
+	\action{First create files with the predictions from the models \filename{PSFRecontructorSuperBigFC70000-1} (for the original sized complex fields predictions) and \filename{CroppedBNFC70000-1} (for the cropped complex fields predictions). The predictions are made for the whole train dataset.}
+	
+	\action{\textbf{BRUTE FORCE ANALYSIS}:
+		\begin{itemize}
+			\item Pick 70000 random pair of frames
+			\item Save euclidean distances for each of them
+			\item Plot euclidean distances
+			\item See if PSF similarity implies PL similarity
+			\item Metric will be the ratio between PL output distances and PSF distances
+			\item Perform ANOVA test for Uncropped, Cropped, PredictedUncropped, PredictedCropped pairs.
+		\end{itemize}
+	}	
 	
 \finishday
