@@ -1016,5 +1016,50 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	return electric_field
 
 
-def compute_pairs_euclidean_distances():
-	return
+def compute_square_module_amplitude_from_fc_complex_field(electric_field):
+	is_cropped = electric_field.shape[0] == 8192
+	if is_cropped:
+		electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(electric_field,
+																			og_shape_rows=64, 
+																			og_shape_cols=64)
+	else:
+		electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(electric_field)
+
+	# The psf is the squared module of the complex amplitude
+	psf = np.abs(electric_field)**2
+
+	# Flatten for an easier euclidean distance computation
+	psf = psf.flatten()
+	return psf
+
+
+def compute_pairs_euclidean_distances(
+	points_array, 
+	selected_pairs,
+	is_complex_field=False):
+	
+	n_pairs = selected_pairs.shape[0]
+	euclidean_distances = np.zeros((n_pairs))
+
+	for i, pair in enumerate(selected_pairs):
+		a_index = pair[0]
+		b_index = pair[1]
+
+		point_a = points_array[a_index]
+		point_b = points_array[b_index]
+
+		if is_complex_field:
+			point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
+			point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
+
+		euclidean_distance = compute_euclidean_distance(point_a,
+														point_b)
+		euclidean_distances[i] = euclidean_distance
+
+	print(euclidean_distances.shape)
+	return euclidean_distances
+
+
+def compute_euclidean_distance(point_a, point_b):
+	euclidean_distance = np.linalg.norm(point_a - point_b)
+	return euclidean_distance
