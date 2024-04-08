@@ -456,7 +456,7 @@ def plot_amplitude_phase_from_electric_field(
 
     original_phase_heatmap = go.Heatmap(
                                         z=original_phases,
-                                        colorscale='viridis',
+                                        colorscale='twilight',
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.14,
@@ -468,7 +468,7 @@ def plot_amplitude_phase_from_electric_field(
 
     predicted_phase_heatmap = go.Heatmap(
                                         z=predicted_phases,
-                                        colorscale='viridis',
+                                        colorscale='twilight',
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.5,
@@ -481,7 +481,7 @@ def plot_amplitude_phase_from_electric_field(
 
     residual_phase_heatmap = go.Heatmap(
                                 z=original_phases-predicted_phases,
-                                colorscale='viridis',
+                                colorscale='twilight',
                                 colorbar=dict(
                                     orientation='h',
                                     x=0.86,
