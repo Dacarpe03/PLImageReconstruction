@@ -1014,3 +1014,7 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	# Reshape into a 2d matrix of complex numbers
 	electric_field = electric_field[0] + 1j*electric_field[1]
 	return electric_field
+
+
+def compute_pairs_euclidean_distances():
+	return
