@@ -456,7 +456,7 @@ def plot_amplitude_phase_from_electric_field(
 
     original_phase_heatmap = go.Heatmap(
                                         z=original_phases,
-                                        colorscale='viridis',
+                                        colorscale='twilight',
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.14,
@@ -468,7 +468,7 @@ def plot_amplitude_phase_from_electric_field(
 
     predicted_phase_heatmap = go.Heatmap(
                                         z=predicted_phases,
-                                        colorscale='viridis',
+                                        colorscale='twilight',
                                         colorbar=dict(
                                                 orientation='h',
                                                 x=0.5,
@@ -481,7 +481,7 @@ def plot_amplitude_phase_from_electric_field(
 
     residual_phase_heatmap = go.Heatmap(
                                 z=original_phases-predicted_phases,
-                                colorscale='viridis',
+                                colorscale='twilight',
                                 colorbar=dict(
                                     orientation='h',
                                     x=0.86,
@@ -572,3 +572,45 @@ def plot_19_mode_pl_flux(flux):
     fig.update_xaxes(title_text='Fiber', tickvals=np.arange(len(flux)+1))
     fig.update_yaxes(title_text='Output flux')
     fig.show()
+
+
+def plot_euclidean_distances(
+    pl_flux_distances,
+    og_complex_field_distances,
+    cropped_complex_field_distances,
+    predicted_complex_field_distances,
+    predicted_cropped_complex_field_distances,
+    suffix=None
+    ):
+
+    fig = make_subplots(rows=2, cols=2, subplot_titles=("PL vs Original PSF ", "PL vs Cropped PSF", "PL vs Predicted PSF", "PL vs Predicted Cropped PSF"))
+
+    og_scatter = go.Scatter(x=pl_flux_distances, y=og_complex_field_distances, mode='markers', showlegend=False)
+    cropped_scatter = go.Scatter(x=pl_flux_distances, y=cropped_complex_field_distances, mode='markers', showlegend=False)
+    predicted_scatter = go.Scatter(x=pl_flux_distances, y=predicted_complex_field_distances, mode='markers', showlegend=False)
+    predicted_cropped_scatter = go.Scatter(x=pl_flux_distances, y=predicted_cropped_complex_field_distances, mode='markers', showlegend=False)
+
+    fig.add_trace(og_scatter, row=1, col=1)
+    fig.add_trace(cropped_scatter, row=1, col=2)
+    fig.add_trace(predicted_scatter, row=2, col=1)
+    fig.add_trace(predicted_cropped_scatter, row=2, col=2)
+
+    title = "Euclidean distances"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+    #fig.show()
+    fig.write_image(F"{suffix}.png")
+
+    return None

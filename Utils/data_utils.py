@@ -1014,3 +1014,102 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	# Reshape into a 2d matrix of complex numbers
 	electric_field = electric_field[0] + 1j*electric_field[1]
 	return electric_field
+
+
+def compute_square_module_amplitude_from_fc_complex_field(electric_field):
+	"""
+	Function that computes the square module of the amplitude of a complex field in the form of a fully connected nn input
+	
+	Input:
+		electric_field (np.array): A 1d array with the first half of the elements representing the real part of a complex number and the second half
+								   representing the imaginary part of a complex number
+
+	Returns:
+		psf (np.array): The flattened psf computed
+	"""
+	is_cropped = electric_field.shape[0] == 8192
+	if is_cropped:
+		electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(electric_field,
+																			og_shape_rows=64, 
+																			og_shape_cols=64)
+	else:
+		electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(electric_field)
+
+	# The psf is the squared module of the complex amplitude
+	psf = np.abs(electric_field)**2
+
+	# Flatten for an easier euclidean distance computation
+	psf = psf.flatten()
+	return psf
+
+
+def compute_pairs_euclidean_distances(
+	points_array, 
+	selected_pairs,
+	is_complex_field=False):
+	"""
+	Function that computes the euclidean distances given pairs of points in a dataset
+
+	Input:
+		points_array (np.array): The dataset where the points are stored
+		selected_pairs (np.array): An integer array of shape nx2 containing the selected pairs for which the distance will be measured
+		is_complex_field (bool): If the input is a complex field, the function will perform a transformation to compute the psf and flatten it
+	"""
+	n_pairs = selected_pairs.shape[0]
+	euclidean_distances = np.zeros((n_pairs))
+
+	for i, pair in enumerate(selected_pairs):
+		a_index = pair[0]
+		b_index = pair[1]
+
+		point_a = points_array[a_index]
+		point_b = points_array[b_index]
+
+		if is_complex_field:
+			point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
+			point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
+
+		euclidean_distance = compute_euclidean_distance(point_a,
+														point_b)
+		euclidean_distances[i] = euclidean_distance
+
+	return euclidean_distances
+
+
+def compute_euclidean_distance(point_a, point_b):
+	"""
+	Computes the euclidean distance between two points
+	
+	Input:
+		point_a (np.array): The point a
+		point_b (np.array): The point b
+
+	Returns:
+		euclidean_distance (float): The euclidean distance between the points
+	"""
+	euclidean_distance = np.linalg.norm(point_a - point_b)
+	return euclidean_distance
+
+
+def separate_distances(euclidean_distances):
+	"""
+	Divides the euclidean distances arrays into different subarrays (one for each dataset)
+
+	Input:
+		euclidean_distances (np.array): The array with the merged information
+
+	Returns:
+		pl_flux_distances
+		og_complex_field_distances
+		og_cropped_complex_field_distances
+		predicted_complex_field_distances
+		predicted_cropped_complex_field_distances
+    """
+
+	pl_flux_distances = euclidean_distances[:, 0:1].flatten()
+	og_complex_field_distances = euclidean_distances[:, 1:2].flatten()
+	og_cropped_complex_field_distances = euclidean_distances[:, 2:3].flatten()
+	predicted_complex_field_distances = euclidean_distances[:, 3:4].flatten()
+	predicted_cropped_complex_field_distances = euclidean_distances[:, 4:].flatten()
+
+	return pl_flux_distances, og_complex_field_distances, og_cropped_complex_field_distances, predicted_complex_field_distances, predicted_cropped_complex_field_distances
