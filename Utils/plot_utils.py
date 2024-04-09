@@ -572,3 +572,40 @@ def plot_19_mode_pl_flux(flux):
     fig.update_xaxes(title_text='Fiber', tickvals=np.arange(len(flux)+1))
     fig.update_yaxes(title_text='Output flux')
     fig.show()
+
+
+def plot_euclidean_distances(
+    pl_flux_distances,
+    og_complex_field_distances,
+    cropped_complex_field_distances,
+    predicted_complex_field_distances,
+    predicted_cropped_complex_field_distances
+    ):
+
+    fig = make_subplots(rows=2, cols=2, subplot_titles=("PL vs Original PSF ", "PL vs Cropped PSF", "PL vs Predicted PSF", "PL vs Predicted Cropped PSF"))
+
+    og_scatter = go.Scatter(x=pl_flux_distances, y=og_complex_field_distances, mode='markers')
+    cropped_scatter = go.Scatter(x=pl_flux_distances, mode='markers')
+    predicted_scatter = go.Scatter(x=pl_flux_distances, y=predicted_complex_field_distances, mode='markers')
+    predicted_cropped_scatter = go.Scatter(x=pl_flux_distances, y=predicted_cropped_complex_field_distances, mode='markers')
+
+    fig.add_trace(og_scatter, row=1, col=1)
+    fig.add_trace(cropped_scatter, row=1, col=2)
+    fig.add_trace(predicted_scatter, row=2, col=1)
+    fig.add_trace(predicted_cropped_scatter, row=2, col=2)
+
+    fig.update_layout(
+        title_text=f"Euclidean distances",
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+    fig.show()
+
+    return None
