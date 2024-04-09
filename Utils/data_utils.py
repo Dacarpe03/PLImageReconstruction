@@ -1099,10 +1099,10 @@ def separate_distances(euclidean_distances):
 		euclidean_distances (np.array): The array with the merged information
 
 	Returns:
-		pl_flux_distances,\
-		og_complex_field_distances, \
-		og_cropped_complex_field_distances, \
-		predicted_complex_field_distances, \
+		pl_flux_distances
+		og_complex_field_distances
+		og_cropped_complex_field_distances
+		predicted_complex_field_distances
 		predicted_cropped_complex_field_distances
     """
 
