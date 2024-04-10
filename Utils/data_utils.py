@@ -1113,3 +1113,38 @@ def separate_distances(euclidean_distances):
 	predicted_cropped_complex_field_distances = euclidean_distances[:, 4:].flatten()
 
 	return pl_flux_distances, og_complex_field_distances, og_cropped_complex_field_distances, predicted_complex_field_distances, predicted_cropped_complex_field_distances
+
+
+def compute_center_of_mass(x_coords, y_coords):
+	"""
+	Computes the center of mass of a 2d dataset given the x and y coordinates of its points:
+
+	Input:
+		x_coords (np.array): The array containing the x coordinates of the datapoints
+		y_coords (np.array): The array containing the y coordinates of the datapoints
+
+	Returns:
+		center_x (float): The x coordinate of the center of mass
+		center_y (float): The y coordinate of the center of mass
+	"""
+	# Calculate the center of mass
+	center_x = np.sum(x_coords) / len(x_coords)
+	center_y = np.sum(y_coords) / len(y_coords)
+
+	return center_x, center_y
+
+
+def compute_ratio(datapoints_a,  datapoints_b):
+	"""
+	Computes the ratio between the pairs in the dataset a and dataset b
+
+	Input:
+		datapoints_a (np.array): The numerator of the ratio
+		datapoints_b (np.array): The denominator of the ratio
+
+	Returns:
+		ratio (np.array): The ratio between the datapoints
+	"""
+
+	ratio = datapoints_a/datapoints_b
+	return ratio

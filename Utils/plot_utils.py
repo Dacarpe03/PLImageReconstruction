@@ -7,9 +7,12 @@ import pandas as pd
 import numpy as np
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
-                       reshape_fc_electric_field_to_real_imaginary_matrix
+                       reshape_fc_electric_field_to_real_imaginary_matrix, \
+                       compute_center_of_mass, \
+                       compute_ratio
 
 from psf_constants import PSF_TEMP_IMAGES
+
 
 def plot_map(
 	whatever_map
@@ -543,15 +546,19 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     input_output_flux = np.array([ouput_flux])
     predicted_electric_field = model.predict(input_output_flux)[0]
 
-    reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field, 
-    og_shape_depth = 2,
-    og_shape_rows = 64,
-    og_shape_cols = 64)
-    reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field,
-    og_shape_depth = 2,
-    og_shape_rows = 64,
-    og_shape_cols = 64)
-
+    if cropped:
+        reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field, 
+        og_shape_depth = 2,
+        og_shape_rows = 64,
+        og_shape_cols = 64)
+        reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field,
+        og_shape_depth = 2,
+        og_shape_rows = 64,
+        og_shape_cols = 64)
+    else:
+        reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
+        reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
+        
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,
                                              model.name,
@@ -574,6 +581,32 @@ def plot_19_mode_pl_flux(flux):
     fig.show()
 
 
+
+def create_scatter_with_center_of_mass(x_coords, y_coords):
+    scatter = go.Scatter(
+        x=x_coords, 
+        y=y_coords, 
+        mode='markers', 
+        showlegend=False,
+        marker_color='blue')
+
+    center_x, center_y = compute_center_of_mass(x_coords, y_coords)
+
+    x_mass_line = go.Scatter(x=[center_x, center_x],
+                             y=[np.min(y_coords), np.max(y_coords)],
+                             mode='lines',
+                                 showlegend=False,
+                                 marker_color='coral')
+
+    y_mass_line = go.Scatter(x=[np.min(x_coords), np.max(x_coords)],
+                             y=[center_y, center_y],
+                             mode='lines',
+                             showlegend=False,
+                             marker_color='coral')
+
+    return scatter, x_mass_line, y_mass_line
+
+
 def plot_euclidean_distances(
     pl_flux_distances,
     og_complex_field_distances,
@@ -582,18 +615,51 @@ def plot_euclidean_distances(
     predicted_cropped_complex_field_distances,
     suffix=None
     ):
+    
+    og_corr = np.corrcoef(pl_flux_distances, og_complex_field_distances)[0, 1]
+    cr_corr = np.corrcoef(pl_flux_distances, cropped_complex_field_distances)[0, 1]
+    pr_corr = np.corrcoef(pl_flux_distances, predicted_complex_field_distances)[0, 1]
+    pr_cr_corr = np.corrcoef(pl_flux_distances, predicted_cropped_complex_field_distances)[0, 1]
 
-    fig = make_subplots(rows=2, cols=2, subplot_titles=("PL vs Original PSF ", "PL vs Cropped PSF", "PL vs Predicted PSF", "PL vs Predicted Cropped PSF"))
+    fig = make_subplots(
+        rows=2, 
+        cols=2, 
+        subplot_titles=(
+            f"PL vs Original PSF<br>Correlation: {round(og_corr, 2)}", 
+            f"PL vs Cropped PSF<br>Correlation: {round(cr_corr, 2)}", 
+            f"PL vs Predicted PSF<br>Correlation: {round(pr_corr, 2)}", 
+            f"PL vs Predicted Cropped PSF<br>Correlation: {round(pr_cr_corr, 2)}"))
 
-    og_scatter = go.Scatter(x=pl_flux_distances, y=og_complex_field_distances, mode='markers', showlegend=False)
-    cropped_scatter = go.Scatter(x=pl_flux_distances, y=cropped_complex_field_distances, mode='markers', showlegend=False)
-    predicted_scatter = go.Scatter(x=pl_flux_distances, y=predicted_complex_field_distances, mode='markers', showlegend=False)
-    predicted_cropped_scatter = go.Scatter(x=pl_flux_distances, y=predicted_cropped_complex_field_distances, mode='markers', showlegend=False)
+    og_scatter, og_mass_x, og_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                          og_complex_field_distances)
+
+    cropped_scatter, cropped_mass_x, cropped_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                         cropped_complex_field_distances)
+
+    predicted_scatter, predicted_mass_x, predicted_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                               predicted_complex_field_distances)
+
+    predicted_cropped_scatter, predicted_cr_mass_x, predicted_cr_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                                             predicted_cropped_complex_field_distances)
 
     fig.add_trace(og_scatter, row=1, col=1)
+    fig.add_trace(og_mass_x, row=1, col=1)
+    fig.add_trace(og_mass_y, row=1, col=1)
+
     fig.add_trace(cropped_scatter, row=1, col=2)
+    fig.add_trace(cropped_mass_x, row=1, col=2)
+    fig.add_trace(cropped_mass_y, row=1, col=2)
+
+
     fig.add_trace(predicted_scatter, row=2, col=1)
+    fig.add_trace(predicted_mass_x, row=2, col=1)
+    fig.add_trace(predicted_mass_y, row=2, col=1)
+
+
     fig.add_trace(predicted_cropped_scatter, row=2, col=2)
+    fig.add_trace(predicted_cr_mass_x, row=2, col=2)
+    fig.add_trace(predicted_cr_mass_y, row=2, col=2)
+
 
     title = "Euclidean distances"
     if suffix is not None:
@@ -604,13 +670,72 @@ def plot_euclidean_distances(
         width=1000    # Set the width of the figure
     )
 
-    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
-    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+    fig.update_xaxes(range=[0,11], title_text='PL Fluxes euclidean distance')
+    fig.update_yaxes(range=[0,120], title_text='PSF Intensity euclidean distance')
 
     fig.update_traces(
         marker=dict(size=1)
         )
     #fig.show()
-    fig.write_image(F"{suffix}.png")
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
+def create_boxplot(data, name=""):
+    data_mean = np.mean(data)
+    data_std = np.std(data)
+    text = f"<br>Ratio mean: {round(data_mean, 2)}<br>Ratio std: {round(data_std, 2)}"
+    name += f"\n{text}"
+    boxplot = go.Box(y=data, name=name, boxpoints=False, showlegend=False)
+    return boxplot
+
+
+def plot_boxplot_euclidean_distances(
+    pl_flux_distances,
+    og_complex_field_distances,
+    cropped_complex_field_distances,
+    predicted_complex_field_distances,
+    predicted_cropped_complex_field_distances,
+    suffix=None
+    ):
+
+    fig = go.Figure()
+
+    og_plf_ratio = compute_ratio(og_complex_field_distances, pl_flux_distances)
+    cropped_og_plf_ratio = compute_ratio(cropped_complex_field_distances, pl_flux_distances)
+    predicted_plf_ratio = compute_ratio(predicted_complex_field_distances, pl_flux_distances)
+    predicted_cropped_plf_ratio = compute_ratio(predicted_cropped_complex_field_distances, pl_flux_distances)
+
+    og_boxplot = create_boxplot(og_plf_ratio, name="Original PSF - PL")
+    cropped_boxplot = create_boxplot(cropped_og_plf_ratio, name="Cropped PSF - PL")
+    predicted_boxplot = create_boxplot(predicted_plf_ratio, name="Predicted PSF - PL")
+    predicted_cropped_boxplot = create_boxplot(predicted_cropped_plf_ratio, name="Predicted Cropped PSF - PL")
+
+
+    fig.add_trace(og_boxplot)
+    fig.add_trace(cropped_boxplot)
+    fig.add_trace(predicted_boxplot)
+    fig.add_trace(predicted_cropped_boxplot)
+
+
+    title = "Euclidean distance ratios"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    fig.update_yaxes(title_text='Ratio')
+
+    #fig.show()
+    fig.write_image(f"{title}.png")
 
     return None
