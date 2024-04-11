@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 
 from lantern_fiber_utils import LanternFiber
 from skimage.transform import resize, rescale
+from scipy.stats import f_oneway
 
 
 def load_numpy_data(
@@ -1148,3 +1149,8 @@ def compute_ratio(datapoints_a,  datapoints_b):
 
 	ratio = datapoints_a/datapoints_b
 	return ratio
+
+
+def compute_anova_test(set_1, set_2, set_3, set_4):
+	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4)
+	return f_statistic, p_value

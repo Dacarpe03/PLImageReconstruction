@@ -670,7 +670,7 @@ def plot_euclidean_distances(
         width=1000    # Set the width of the figure
     )
 
-    fig.update_xaxes(range=[0,11], title_text='PL Fluxes euclidean distance')
+    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
     fig.update_yaxes(range=[0,120], title_text='PSF Intensity euclidean distance')
 
     fig.update_traces(
