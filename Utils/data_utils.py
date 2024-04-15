@@ -14,6 +14,7 @@ from psf_constants import PSF_DATA_PATH, \
 import os
 
 from hcipy.atmosphere import *
+from hcipy.mode_basis import zernike, noll_to_zernike
 from hcipy import *
 
 import matplotlib.pyplot as plt
@@ -732,6 +733,127 @@ def generate_psf_complex_fields(
 	return None
 
 
+def generate_zernike_psf_complex_fields(
+	filepath,
+	telescope_diameter=1,
+	wavelength=1e-6,
+	pupil_grid_size=256,
+	focal_q=8,
+	num_airy=8,
+	n_modes=5,
+	n_samples=SUBFILE_SAMPLES,
+	plot=False,
+	save_complex_fields=True,
+	save_wavefront_phase=False
+	):
+	"""
+	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
+	
+	Input:
+		filepath (string): The path of file to store the psf
+		teslecope_diameter (float): The diameter of the aperture
+		wavelength (float): The wavelength of the light
+		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+	"""
+
+	D_tel = 0.5
+
+	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
+	
+
+	focal_grid = make_focal_grid(q=focal_q, num_airy=num_airy, spatial_resolution=wavelength/D_tel)
+	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
+	aperture = make_circular_aperture(D_tel)(pupil_grid)
+
+	for i in range(n_samples):
+
+		zernike_complex_field = create_zernike_complex_field(n_modes,
+															 pupil_grid,
+															 pupil_grid_size,
+															 aperture)
+
+		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
+		
+
+		propagate_zernike_wavefront(zernike_wavefront,
+									propagator,
+									aperture,
+									plot=plot)
+
+
+	#propagated_wavefronts = propagate_wavefronts(n_samples,
+	#											 wf,
+	#											 propagator,
+	#											 atmosphere,
+	#											 plot=plot)
+	#if save_complex_fields:
+	#	save_wavefronts_complex_fields(propagated_wavefronts,
+	#	   						   	   filepath)
+
+	#if save_wavefronts_phase:
+	#	save_wavefronts_phase(propagated_wavefronts,
+	#						  filepath)
+
+	return None
+
+
+def create_zernike_complex_field(
+	zernike_modes,
+	pupil_grid,
+	pupil_grid_size,
+	aperture):
+	
+
+	mode_complex_fields = []
+	mode_coefficients = []
+	for zernike_mode in zernike_modes:
+		n, m = noll_to_zernike(zernike_mode)
+		print(n, m)
+
+		mode_field = zernike(n, m, radial_cutoff=True)(pupil_grid)
+		mode_complex_fields.append(mode_field)
+
+		mode_coeff = np.random(-1, 1) / n
+		mode_coefficients.append(mode_coeff)
+
+	zernike_wavefront = aperture.copy()
+	for complex_field in zip(coefficients, mode_complex_fields):
+		zernike_wavefront += complex_field
+
+	return zernike_wavefront
+
+
+def propagate_zernike_wavefront(
+	zernike_wavefront,
+	propagator,
+	aperture,
+	plot=False
+	):
+	"""
+	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	"""
+	
+	propagated_wavefront = propagator(zernike_wavefront)
+
+	if plot:
+		plt.clf()
+		plt.subplot(1,4,1)
+		imshow_field(propagated_wavefront.phase, vmin=-6)
+		plt.colorbar()
+
+		plt.subplot(1,4,2)
+		imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.subplot(1,4,3)
+		imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.draw()
+
+	return propagated_wavefront
+
+
 def propagate_wavefronts(
 	n_samples,
 	wavefront,
@@ -755,15 +877,19 @@ def propagate_wavefronts(
 			plt.subplot(1,4,1)
 			imshow_field(propagated_wavefront.phase, vmin=-6)
 			plt.colorbar()
+
 			plt.subplot(1,4,2)
 			imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
 			plt.colorbar()
+
 			plt.subplot(1,4,3)
 			imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+			plt.colorbar()
 
 			plt.subplot(1,4,4)
 			imshow_field(np.log10(original_psf.intensity/ original_psf.intensity.max()), vmin=-6)
 			plt.colorbar()
+
 			plt.draw()
 
 	return wavefronts
