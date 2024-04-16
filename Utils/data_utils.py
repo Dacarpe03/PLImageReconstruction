@@ -740,7 +740,7 @@ def generate_zernike_psf_complex_fields(
 	pupil_grid_size=256,
 	focal_q=8,
 	num_airy=8,
-	n_modes=5,
+	zernike_modes=[2, 3],
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
@@ -755,7 +755,7 @@ def generate_zernike_psf_complex_fields(
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
-
+	print("Creating ", zernike_modes)
 	D_tel = 0.5
 
 	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
@@ -765,34 +765,29 @@ def generate_zernike_psf_complex_fields(
 	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
 
+	propagated_wavefronts = []
+
 	for i in range(n_samples):
 
-		zernike_complex_field = create_zernike_complex_field(n_modes,
+		zernike_complex_field = create_zernike_complex_field(zernike_modes,
 															 pupil_grid,
 															 pupil_grid_size,
-															 aperture)
+															 aperture,
+															 propagator=propagator)
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
 
-		propagate_zernike_wavefront(zernike_wavefront,
+		propagatated_wf = propagate_zernike_wavefront(zernike_wavefront,
 									propagator,
 									aperture,
 									plot=plot)
 
+		propagated_wavefronts.append(propagatated_wf)
 
-	#propagated_wavefronts = propagate_wavefronts(n_samples,
-	#											 wf,
-	#											 propagator,
-	#											 atmosphere,
-	#											 plot=plot)
-	#if save_complex_fields:
-	#	save_wavefronts_complex_fields(propagated_wavefronts,
-	#	   						   	   filepath)
-
-	#if save_wavefronts_phase:
-	#	save_wavefronts_phase(propagated_wavefronts,
-	#						  filepath)
+	if save_complex_fields:
+		save_wavefronts_complex_fields(propagated_wavefronts,
+		   						   	   filepath)
 
 	return None
 
@@ -801,26 +796,28 @@ def create_zernike_complex_field(
 	zernike_modes,
 	pupil_grid,
 	pupil_grid_size,
-	aperture):
+	aperture,
+	propagator=None):
 	
 
 	mode_complex_fields = []
 	mode_coefficients = []
 	for zernike_mode in zernike_modes:
 		n, m = noll_to_zernike(zernike_mode)
-		print(n, m)
 
 		mode_field = zernike(n, m, radial_cutoff=True)(pupil_grid)
 		mode_complex_fields.append(mode_field)
 
-		mode_coeff = np.random(-1, 1) / n
+		#propagate_zernike_wavefront(Wavefront(mode_field, 1e-6), propagator, aperture, plot=True)
+
+		mode_coeff = np.random.uniform(-1, 1) / n
 		mode_coefficients.append(mode_coeff)
 
-	zernike_wavefront = aperture.copy()
-	for complex_field in zip(coefficients, mode_complex_fields):
-		zernike_wavefront += complex_field
-
-	return zernike_wavefront
+	zernike_complex_field = aperture.copy()
+	for coef, zernike_field in zip(mode_coefficients, mode_complex_fields):
+		zernike_complex_field += coef * zernike_field
+	
+	return zernike_complex_field
 
 
 def propagate_zernike_wavefront(
@@ -834,6 +831,8 @@ def propagate_zernike_wavefront(
 	"""
 	
 	propagated_wavefront = propagator(zernike_wavefront)
+	aperture_wf = Wavefront(aperture, propagated_wavefront.wavelength)
+	propagated_aperture = propagator(aperture_wf)
 
 	if plot:
 		plt.clf()
@@ -849,7 +848,11 @@ def propagate_zernike_wavefront(
 		imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
 		plt.colorbar()
 
-		plt.draw()
+		plt.subplot(1,4,4)
+		imshow_field(np.log10(propagated_aperture.intensity/ propagated_aperture.intensity.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.show()
 
 	return propagated_wavefront
 
@@ -939,6 +942,10 @@ def compute_output_fluxes_from_complex_field(
 	verbose=False
 	):
 	
+	if os.path.isfile(output_fluxes_file_path):
+		print(f"{output_fluxes_file_path} already exists")
+		return
+	print(f"Computing {output_fluxes_file_path}")
 	# Create the lantern fiber
 	n_core = 1.44
 	n_cladding = 1.4345
