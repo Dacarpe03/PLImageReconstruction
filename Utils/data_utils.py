@@ -1248,6 +1248,35 @@ def separate_distances(euclidean_distances):
 
 	return pl_flux_distances, og_complex_field_distances, og_cropped_complex_field_distances, predicted_complex_field_distances, predicted_cropped_complex_field_distances
 
+def separate_zernike_distances(euclidean_distances):
+	"""
+	Divides the euclidean distances arrays into different subarrays (one for each dataset)
+
+	Input:
+		euclidean_distances (np.array): The array with the merged information
+
+	Returns:
+		pl_flux_distances
+		og_complex_field_distances
+		og_cropped_complex_field_distances
+		predicted_complex_field_distances
+		predicted_cropped_complex_field_distances
+    """
+
+	m2_flux_distances = euclidean_distances[:, 0:1].flatten()
+	m2_complex_field_distances = euclidean_distances[:, 1:2].flatten()
+	m5_flux_distances = euclidean_distances[:, 2:3].flatten()
+	m5_complex_field_distances = euclidean_distances[:, 3:4].flatten()
+	m9_flux_distances = euclidean_distances[:, 4:5].flatten()
+	m9_complex_field_distances = euclidean_distances[:, 5:6].flatten()
+	m14_flux_distances = euclidean_distances[:, 6:7].flatten()
+	m14_complex_field_distances = euclidean_distances[:, 7:8].flatten()
+	m20_flux_distances = euclidean_distances[:, 8:9].flatten()
+	m20_complex_field_distances = euclidean_distances[:, 9:].flatten()
+	
+
+	return m2_flux_distances, m2_complex_field_distances, m5_flux_distances, m5_complex_field_distances, m9_flux_distances, m9_complex_field_distances, m14_flux_distances, m14_complex_field_distances, m20_flux_distances, m20_complex_field_distances, 
+
 
 def compute_center_of_mass(x_coords, y_coords):
 	"""
@@ -1286,4 +1315,8 @@ def compute_ratio(datapoints_a,  datapoints_b):
 
 def compute_anova_test(set_1, set_2, set_3, set_4):
 	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4)
+	return f_statistic, p_value
+
+def compute_anova_test_5_sets(set_1, set_2, set_3, set_4, set_5):
+	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4, set_5)
 	return f_statistic, p_value

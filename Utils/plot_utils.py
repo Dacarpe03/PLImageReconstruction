@@ -529,6 +529,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     save_image=True,
     validation=False,
     train=False,
+    cropped=False,
     show_plot=True
     ):
     """
@@ -682,6 +683,95 @@ def plot_euclidean_distances(
     return None
 
 
+def plot_zernike_euclidean_distances(
+    m2_fluxes,
+    m2_psf,
+    m5_fluxes,
+    m5_psf,
+    m9_fluxes,
+    m9_psf,
+    m14_fluxes,
+    m14_psf,
+    m20_fluxes,
+    m20_psf,
+    suffix=None
+    ):
+    
+    m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
+    m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
+    m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
+    m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
+    m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
+
+    fig = make_subplots(
+        rows=3, 
+        cols=2, 
+        subplot_titles=(
+            f"PL vs 2 Mode Zernike PSF<br>Correlation: {round(m2_corr, 2)}",
+            f"PL vs 5 Mode Zernike PSF<br>Correlation: {round(m5_corr, 2)}",
+            f"PL vs 9 Mode Zernike PSF<br>Correlation: {round(m9_corr, 2)}",
+            f"PL vs 14 Mode Zernike PSF<br>Correlation: {round(m14_corr, 2)}",
+            f"PL vs 20 Mode Zernike PSF<br>Correlation: {round(m20_corr, 2)}"))
+
+    m2_scatter, m2_mass_x, m2_mass_y = create_scatter_with_center_of_mass(m2_fluxes, 
+                                                                          m2_psf)
+
+    m5_scatter, m5_mass_x, m5_mass_y = create_scatter_with_center_of_mass(m5_fluxes, 
+                                                                          m5_psf)
+
+    m9_scatter, m9_mass_x, m9_mass_y = create_scatter_with_center_of_mass(m9_fluxes, 
+                                                                          m9_psf)
+
+    m14_scatter, m14_mass_x, m14_mass_y = create_scatter_with_center_of_mass(m14_fluxes, 
+                                                                             m14_psf)
+
+    m20_scatter, m20_mass_x, m20_mass_y = create_scatter_with_center_of_mass(m20_fluxes, 
+                                                                             m20_psf)
+
+    fig.add_trace(m2_scatter, row=1, col=1)
+    fig.add_trace(m2_mass_x, row=1, col=1)
+    fig.add_trace(m2_mass_y, row=1, col=1)
+
+    fig.add_trace(m5_scatter, row=1, col=2)
+    fig.add_trace(m5_mass_x, row=1, col=2)
+    fig.add_trace(m5_mass_y, row=1, col=2)
+
+
+    fig.add_trace(m9_scatter, row=2, col=1)
+    fig.add_trace(m9_mass_x, row=2, col=1)
+    fig.add_trace(m9_mass_y, row=2, col=1)
+
+
+    fig.add_trace(m14_scatter, row=2, col=2)
+    fig.add_trace(m14_mass_x, row=2, col=2)
+    fig.add_trace(m14_mass_y, row=2, col=2)
+
+    fig.add_trace(m20_scatter, row=3, col=1)
+    fig.add_trace(m20_mass_x, row=3, col=1)
+    fig.add_trace(m20_mass_y, row=3, col=1)
+
+
+    title = "Zernike Euclidean distances"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=1050,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+    #fig.show()
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
 def create_boxplot(data, name=""):
     data_mean = np.mean(data)
     data_std = np.std(data)
@@ -717,6 +807,68 @@ def plot_boxplot_euclidean_distances(
     fig.add_trace(cropped_boxplot)
     fig.add_trace(predicted_boxplot)
     fig.add_trace(predicted_cropped_boxplot)
+
+
+    title = "Euclidean distance ratios"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    fig.update_yaxes(title_text='Ratio')
+
+    #fig.show()
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
+def plot_boxplot_zernike_euclidean_distances(
+    m2_fluxes,
+    m2_psf,
+    m5_fluxes,
+    m5_psf,
+    m9_fluxes,
+    m9_psf,
+    m14_fluxes,
+    m14_psf,
+    m20_fluxes,
+    m20_psf,
+    suffix=None
+    ):
+
+    fig = go.Figure()
+
+    m2_ratio = compute_ratio(m2_psf, m2_fluxes)
+
+    m5_ratio = compute_ratio(m5_psf, m5_fluxes)
+
+    m9_ratio = compute_ratio(m9_psf, m9_fluxes)
+
+    m14_ratio = compute_ratio(m14_psf, m14_fluxes)
+
+    m20_ratio = compute_ratio(m20_psf, m20_fluxes)
+
+    m2_boxplot = create_boxplot(m2_ratio, name="2 Mode Zernike PSF - PL")
+    m5_boxplot = create_boxplot(m5_ratio, name="5 Mode Zernike PSF - PL")
+    m9_boxplot = create_boxplot(m9_ratio, name="9 Mode Zernike PSF - PL")
+    m14_boxplot = create_boxplot(m14_ratio, name="14 Mode Zernike PSF - PL")
+    m20_boxplot = create_boxplot(m20_ratio, name="20 Mode Zernike PSF - PL")
+
+
+    fig.add_trace(m2_boxplot)
+    fig.add_trace(m5_boxplot)
+    fig.add_trace(m9_boxplot)
+    fig.add_trace(m14_boxplot)
+    fig.add_trace(m20_boxplot)
 
 
     title = "Euclidean distance ratios"
