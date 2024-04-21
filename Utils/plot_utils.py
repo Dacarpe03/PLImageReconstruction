@@ -341,7 +341,8 @@ def plot_diffusion_output(
 
 def plot_amplitude_phase_intensity(
     electric_field,
-    log_scale=False
+    log_scale=False,
+    title=""
     ):
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
     intensity = amplitude**2
@@ -357,10 +358,8 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.14,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.10
                                             ))
 
     amplitude_heatmap = go.Heatmap(
@@ -368,10 +367,8 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.5,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.5
                                     ))
 
     intenstity_heatmap = go.Heatmap(
@@ -379,17 +376,32 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.86,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.9
                                         ))
 
-    fig.add_trace(phase_heatmap, row=1, col=1)
-    fig.add_trace(amplitude_heatmap, row=1, col=2)
-    fig.add_trace(intenstity_heatmap, row=1, col=3)
+    cross = go.Scatter(
+        x=[len(amplitude)/2],
+        y=[len(amplitude)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
 
-    fig.show()
+    fig.add_trace(phase_heatmap, row=1, col=1)
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(amplitude_heatmap, row=1, col=2)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(intenstity_heatmap, row=1, col=3)
+    fig.add_trace(cross, row=1, col=3)
+
+    fig.update_layout(
+        title_text=title,
+        height=500,  # Set the height of the figure
+        width=1100    # Set the width of the figure
+    )
+    #fig.show()
+    fig.write_image(f"{title}.png")
 
     return None
 

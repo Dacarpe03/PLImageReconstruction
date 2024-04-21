@@ -14,7 +14,7 @@ from psf_constants import PSF_DATA_PATH, \
 import os
 
 from hcipy.atmosphere import *
-from hcipy.mode_basis import zernike, noll_to_zernike
+from hcipy.mode_basis import zernike, noll_to_zernike, make_zernike_basis
 from hcipy import *
 
 import matplotlib.pyplot as plt
@@ -527,7 +527,8 @@ def load_validation_data(
 def save_numpy_array(
 	array,
 	filepath,
-	single_precision=True
+	single_precision=True,
+	overwrite=False
 	):
 
 	"""
@@ -540,7 +541,7 @@ def save_numpy_array(
 	Returns:
 		None
 	"""
-	if os.path.isfile(filepath) or os.path.exists(filepath):
+	if (os.path.isfile(filepath) or os.path.exists(filepath)) and not overwrite:
 		print(f"ERROR: {filepath} already exists.")
 		return None
 
@@ -740,11 +741,11 @@ def generate_zernike_psf_complex_fields(
 	pupil_grid_size=256,
 	focal_q=8,
 	num_airy=8,
-	zernike_modes=[2, 3],
+	starting_mode=2,
+	zernike_modes=1,
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
-	save_complex_fields=True,
-	save_wavefront_phase=False
+	save_complex_fields=True
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -755,7 +756,10 @@ def generate_zernike_psf_complex_fields(
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
-	print("Creating ", zernike_modes)
+	if os.path.isfile(filepath):
+		print(f"{filepath} already exists")
+		return
+
 	D_tel = 0.5
 
 	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
@@ -769,14 +773,18 @@ def generate_zernike_psf_complex_fields(
 
 	for i in range(n_samples):
 
-		zernike_complex_field = create_zernike_complex_field(zernike_modes,
+		zernike_complex_field = create_zernike_complex_field(starting_mode,
+															 zernike_modes,
 															 pupil_grid,
-															 pupil_grid_size,
 															 aperture,
-															 propagator=propagator)
+															 D_tel)
+
+		#imshow_field(zernike_complex_field)
+		#plt.colorbar()
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
+		imshow_field(zernike_wavefront.phase)
 
 		propagatated_wf = propagate_zernike_wavefront(zernike_wavefront,
 									propagator,
@@ -787,37 +795,37 @@ def generate_zernike_psf_complex_fields(
 
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
-		   						   	   filepath)
+		   						   	   filepath,
+		   						   	   overwrite=False)
 
 	return None
 
 
 def create_zernike_complex_field(
+	starting_mode,
 	zernike_modes,
 	pupil_grid,
-	pupil_grid_size,
 	aperture,
-	propagator=None):
+	D_tel):
 	
 
 	mode_complex_fields = []
 	mode_coefficients = []
-	for zernike_mode in zernike_modes:
+
+	zern_basis = make_zernike_basis(starting_mode=starting_mode, num_modes=zernike_modes, D=D_tel, grid=pupil_grid)
+
+
+	for zernike_mode in range(starting_mode, starting_mode+zernike_modes):
 		n, m = noll_to_zernike(zernike_mode)
-
-		mode_field = zernike(n, m, radial_cutoff=True)(pupil_grid)
-		mode_complex_fields.append(mode_field)
-
-		#propagate_zernike_wavefront(Wavefront(mode_field, 1e-6), propagator, aperture, plot=True)
 
 		mode_coeff = np.random.uniform(-1, 1) / n
 		mode_coefficients.append(mode_coeff)
 
-	zernike_complex_field = aperture.copy()
-	for coef, zernike_field in zip(mode_coefficients, mode_complex_fields):
-		zernike_complex_field += coef * zernike_field
-	
-	return zernike_complex_field
+
+	phase_pupil = zern_basis.linear_combination(np.array(mode_coefficients))
+	zernike_complex_pupil = aperture * np.exp(1j*phase_pupil)
+
+	return zernike_complex_pupil
 
 
 def propagate_zernike_wavefront(
@@ -831,6 +839,7 @@ def propagate_zernike_wavefront(
 	"""
 	
 	propagated_wavefront = propagator(zernike_wavefront)
+
 	aperture_wf = Wavefront(aperture, propagated_wavefront.wavelength)
 	propagated_aperture = propagator(aperture_wf)
 
@@ -900,7 +909,8 @@ def propagate_wavefronts(
 
 def save_wavefronts_complex_fields(
 	propagated_wavefronts,
-	filepath
+	filepath,
+	overwrite=False
 	):
 	
 	n_fields = len(propagated_wavefronts)
@@ -915,7 +925,7 @@ def save_wavefronts_complex_fields(
 		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
 		complex_fields[i] = comp_amp_phase
 
-	save_numpy_array(complex_fields, filepath, single_precision=False)
+	save_numpy_array(complex_fields, filepath, single_precision=False, overwrite=overwrite)
 
 
 def save_wavefronts_phase(
