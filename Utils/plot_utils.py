@@ -342,6 +342,8 @@ def plot_diffusion_output(
 def plot_amplitude_phase_intensity(
     electric_field,
     log_scale=False,
+    plot=True,
+    save=False,
     title=""
     ):
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
@@ -400,8 +402,11 @@ def plot_amplitude_phase_intensity(
         height=500,  # Set the height of the figure
         width=1100    # Set the width of the figure
     )
-    #fig.show()
-    fig.write_image(f"{title}.png")
+
+    if plot:
+        fig.show()
+    if save:
+        fig.write_image(f"{title}.png")
 
     return None
 
@@ -428,7 +433,7 @@ def plot_amplitude_phase_from_electric_field(
     original_amplitudes, original_phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)    
     predicted_amplitudes, predicted_phases = compute_amplitude_and_phase_from_electric_field(predicted_electric_field)
 
-
+    print(original_phases)
     fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Amplitude residual",
                                                         "Original Phase", "Predicted Phase", "Phase residual"))
 
@@ -571,7 +576,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     else:
         reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
         reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
-        
+
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,
                                              model.name,

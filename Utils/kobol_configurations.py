@@ -1357,3 +1357,215 @@ def CroppedBNFC(
 							)
 
 	return model_configuration
+
+
+def ZernikeCroppedFC(
+		name="ZernikeCroppedFC",
+		n_samples=10000
+	):
+	# Define architecture hyperparmeters
+	input_shape = 19
+	output_shape = (2*64*64)
+	hidden_layer_sizes = [1024, 1024, 1024, 1024, 1024, 1024]
+	regularizer = None
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	use_dropout = False
+	dropout_rate = 0.2
+	model_name = f"{name}{n_samples}"
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: None
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.0001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 250
+	batch_size = 32
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=40, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=70, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks,
+									n_samples)
+
+	description += f"""
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Samples: {n_samples}
+		-Batch size: {batch_size}
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 50 x0.1
+			-Early Stop: MSE 70
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
+
+
+def ZernikeFC(
+		name="ZernikeFC",
+		n_samples=10000
+	):
+	# Define architecture hyperparmeters
+	input_shape = 19
+	output_shape = (2*128*128)
+	hidden_layer_sizes = [1024, 1024, 1024, 1024, 1024, 1024]
+	regularizer = None
+	hidden_activation = 'relu'
+	output_activation = 'linear'
+	use_batch_normalization = False
+	use_dropout = False
+	dropout_rate = 0.2
+	model_name = f"{name}{n_samples}"
+
+	architecture_hyperparams = FullyConnectedArchitecture(
+									input_shape, 
+                                    output_shape, 
+                                    hidden_layer_sizes, 
+                                    regularizer,
+                                    hidden_activation,
+                                    output_activation,
+                                    use_batch_normalization,
+                                    model_name,
+                                    use_dropout=use_dropout,
+                                    dropout_rate=dropout_rate
+                                    )
+
+	description = f"""
+	=== {model_name} ===
+	*ARCHITECTURE HYPERPARAMETERS:
+		-Fully Connected
+		-Input shape: {input_shape}
+		-Output shape: {output_shape}
+		-Hidden layers: {hidden_layer_sizes}
+		-Regularizer: None
+		-Hidden Layers Activation: {hidden_activation}
+		-Output Layer Activation: {output_activation}
+		-Batch Normalization: {use_batch_normalization}
+		-Dropout: {use_dropout}, {dropout_rate}
+	"""
+
+	# Define compilation hyperparameters
+	loss_function = LossesMeanSquaredError()
+	learning_rate = 0.0001
+	optimizer = Adam(
+		learning_rate=learning_rate,
+		beta_1=0.9,
+		beta_2=0.999
+		)
+	metric = MetricsMeanSquaredError()
+
+	compilation_hyperparams = CompilationConfiguration(
+								loss_function, 
+								optimizer, 
+								metric)
+
+	description += f"""
+	*COMPILATION HYPERPARAMETERS:
+		-Optimizer: ADAM lr={learning_rate}, beta_1=0.9, beta_2=0.999
+		-Loss Function: MSE
+		-Metric: MSE
+	"""
+
+	# Define training hyperparameters
+	epochs = 250
+	batch_size = 32
+	
+	reduce_lr = ReduceLROnPlateau(
+					'mean_squared_error', 
+					factor=0.1, 
+					patience=40, 
+					verbose=1)
+	early_stop = EarlyStopping(
+					'mean_squared_error',
+					patience=70, 
+					verbose=1)
+	callbacks = [reduce_lr, early_stop]
+
+	training_hyperparameters = TrainingConfiguration(
+									epochs,
+									batch_size,
+									callbacks,
+									n_samples)
+
+	description += f"""
+	*TRAINING HYPERPARAMETERS:
+		-Epochs: {epochs}
+		-Samples: {n_samples}
+		-Batch size: {batch_size}
+		-Callbacks: 
+			-ReduceLROnPlateau: MSE 50 x0.1
+			-Early Stop: MSE 70
+	"""
+
+	model_configuration = Configuration(
+							architecture_hyperparams,
+							compilation_hyperparams,
+							training_hyperparameters,
+							description
+							)
+
+	return model_configuration
