@@ -52,8 +52,8 @@ compile_model(
 
 history = train_model_with_generator(
     model,
-    PROCESSED_TRAIN_14M_ZERNIKE_OUTPUT_FLUXES_FILE_PREFIX,
-    PROCESSED_TRAIN_14M_ZERNIKE_COMPLEX_FIELDS_FILE_PREFIX,
+    PROCESSED_TRAIN_20M_ZERNIKE_OUTPUT_FLUXES_FILE_PREFIX,
+    PROCESSED_TRAIN_20M_ZERNIKE_COMPLEX_FIELDS_FILE_PREFIX,
     validation_fluxes_array,
     validation_complex_fields_array,
     *model_configuration.unpack_training_hyperparameters()

@@ -25,8 +25,8 @@ gpus = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(gpus[0], True)
 
 
-validation_fluxes_array = load_numpy_data(PROCESSED_VALIDATION_14M_ZERNIKE_OUTPUT_FLUXES_FILE_PATH)
-validation_complex_fields_array = load_numpy_data(CROPPED_VALIDATION_14M_ZERNIKE_COMPLEX_FIELDS_FILE_PATH)
+validation_fluxes_array = load_numpy_data(PROCESSED_VALIDATION_20M_ZERNIKE_OUTPUT_FLUXES_FILE_PATH)
+validation_complex_fields_array = load_numpy_data(CROPPED_VALIDATION_20M_ZERNIKE_COMPLEX_FIELDS_FILE_PATH)
 
 
 validation_fluxes_array.shape
