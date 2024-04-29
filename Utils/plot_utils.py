@@ -9,7 +9,8 @@ import numpy as np
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
                        reshape_fc_electric_field_to_real_imaginary_matrix, \
                        compute_center_of_mass, \
-                       compute_ratio
+                       compute_ratio, \
+                       separate_zernike_distances
 
 from psf_constants import PSF_TEMP_IMAGES
 
@@ -600,13 +601,14 @@ def plot_19_mode_pl_flux(flux):
 
 
 
-def create_scatter_with_center_of_mass(x_coords, y_coords):
+def create_scatter_with_center_of_mass(x_coords, y_coords, name='Untitled'):
     scatter = go.Scatter(
         x=x_coords, 
         y=y_coords, 
         mode='markers', 
         showlegend=False,
-        marker_color='blue')
+        marker_color='blue',
+        name=name)
 
     center_x, center_y = compute_center_of_mass(x_coords, y_coords)
 
@@ -622,7 +624,11 @@ def create_scatter_with_center_of_mass(x_coords, y_coords):
                              showlegend=False,
                              marker_color='coral')
 
-    return scatter, x_mass_line, y_mass_line
+    corr = np.corrcoef(x_coords, y_coords)[0, 1]
+
+    name+=f"<br>Correlation: {round(corr, 3)}"
+    return [scatter, x_mass_line, y_mass_line, name]
+
 
 
 def plot_euclidean_distances(
@@ -700,91 +706,169 @@ def plot_euclidean_distances(
     return None
 
 
-def plot_zernike_euclidean_distances(
-    m2_fluxes,
-    m2_psf,
-    m5_fluxes,
-    m5_psf,
-    m9_fluxes,
-    m9_psf,
-    m14_fluxes,
-    m14_psf,
-    m20_fluxes,
-    m20_psf,
-    suffix=None
+def create_scatters_for_zernike_dataset(
+        dataset,
+        n_modes,
+    ):
+
+    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = separate_zernike_distances(dataset)
+    
+    fl_to_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_psf, name=f"PL flux vs {n_modes} terms Zernike PSF")
+    lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_psf, name=f"LP modes vs {n_modes} terms Zernike PSF")
+
+    fl_to_pr_psf_scatter = create_scatter_with_center_of_mass(fluxes, pr_psf, name=f"PL flux vs {n_modes} terms Predicted Zernike PSF")
+    lp_to_pr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, pr_psf, name=f"LP modes vs {n_modes} terms Predicted Zernike PSF")
+
+    fl_to_cr_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_cr_psf, name=f"PL flux vs {n_modes} terms Cropped Zernike PSF")
+    lp_to_cr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_cr_psf, name=f"LP modes vs {n_modes} terms Cropped Zernike PSF")
+
+    fl_to_pr_cr_psf_scatter = create_scatter_with_center_of_mass(fluxes, pr_cr_psf, name=f"PL flux vs {n_modes} terms Predicted Cropped Zernike PSF")
+    lp_to_pr_cr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, pr_cr_psf, name=f"LP modes vs {n_modes} terms Predicted Cropped Zernike PSF")
+
+    fl_to_lp_scatter = create_scatter_with_center_of_mass(fluxes, lp_modes, name=f"PL flux vs LP modes coefficients")
+
+    return [fl_to_psf_scatter, lp_to_psf_scatter, fl_to_pr_psf_scatter, lp_to_pr_psf_scatter, fl_to_cr_psf_scatter, lp_to_cr_psf_scatter, fl_to_pr_cr_psf_scatter, lp_to_pr_cr_psf_scatter, fl_to_lp_scatter]
+
+
+def plot_one_dataset_zernike_euclidean_distances(
+    dataset,
+    modes,
+    suffix=None,
+    show=False,
+    save_image=True
     ):
     
-    m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
-    m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
-    m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
-    m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
-    m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
+    zernike_mode_graphs = create_scatters_for_zernike_dataset(dataset, modes)
+
+    #m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
+    #m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
+    #m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
+    #m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
+    #m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
 
     fig = make_subplots(
-        rows=3, 
-        cols=2, 
-        subplot_titles=(
-            f"PL vs 2 Mode Zernike PSF<br>Correlation: {round(m2_corr, 2)}",
-            f"PL vs 5 Mode Zernike PSF<br>Correlation: {round(m5_corr, 2)}",
-            f"PL vs 9 Mode Zernike PSF<br>Correlation: {round(m9_corr, 2)}",
-            f"PL vs 14 Mode Zernike PSF<br>Correlation: {round(m14_corr, 2)}",
-            f"PL vs 20 Mode Zernike PSF<br>Correlation: {round(m20_corr, 2)}"))
+        rows=9, 
+        cols=1, 
+        subplot_titles=subplot_titles
+    )
 
-    m2_scatter, m2_mass_x, m2_mass_y = create_scatter_with_center_of_mass(m2_fluxes, 
-                                                                          m2_psf)
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        row+=1
 
-    m5_scatter, m5_mass_x, m5_mass_y = create_scatter_with_center_of_mass(m5_fluxes, 
-                                                                          m5_psf)
+    title = f"{modes} modes"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=1500,  # Set the height of the figure
+        width=400    # Set the width of the figure
+    )
 
-    m9_scatter, m9_mass_x, m9_mass_y = create_scatter_with_center_of_mass(m9_fluxes, 
-                                                                          m9_psf)
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
 
-    m14_scatter, m14_mass_x, m14_mass_y = create_scatter_with_center_of_mass(m14_fluxes, 
-                                                                             m14_psf)
+    fig.update_traces(
+        marker=dict(size=1)
+        )
 
-    m20_scatter, m20_mass_x, m20_mass_y = create_scatter_with_center_of_mass(m20_fluxes, 
-                                                                             m20_psf)
+    if show:
+        fig.show()
 
-    fig.add_trace(m2_scatter, row=1, col=1)
-    fig.add_trace(m2_mass_x, row=1, col=1)
-    fig.add_trace(m2_mass_y, row=1, col=1)
+    if save_image:
+        print("Saving image")   
+        fig.write_image(f"{title}.jpg")
 
-    fig.add_trace(m5_scatter, row=1, col=2)
-    fig.add_trace(m5_mass_x, row=1, col=2)
-    fig.add_trace(m5_mass_y, row=1, col=2)
+    return None
 
+def plot_zernike_euclidean_distances(
+    datasets,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+    
+    modes = [2, 5, 9, 14, 20]
+    i=0
+    all_graphs = []
+    for dataset in datasets:
+        print(f"{i} modes")
+        zernike_mode_graphs = create_scatters_for_zernike_dataset(dataset, modes[i])
+        all_graphs.append(zernike_mode_graphs)
+        i+=1
 
-    fig.add_trace(m9_scatter, row=2, col=1)
-    fig.add_trace(m9_mass_x, row=2, col=1)
-    fig.add_trace(m9_mass_y, row=2, col=1)
+    #m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
+    #m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
+    #m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
+    #m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
+    #m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
 
+    subplot_titles = []
+    for zernike_mode_graphs in all_graphs:
+        zm_titles = []
+        for graph_info in zernike_mode_graphs:
+            zm_titles.append(graph_info[-1])
+        subplot_titles.append(zm_titles)
 
-    fig.add_trace(m14_scatter, row=2, col=2)
-    fig.add_trace(m14_mass_x, row=2, col=2)
-    fig.add_trace(m14_mass_y, row=2, col=2)
+    subplot_titles = list(zip(*subplot_titles))
+    subplot_titles = [item for sublist in subplot_titles for item in sublist]
+    fig = make_subplots(
+        rows=8, 
+        cols=5, 
+        subplot_titles=subplot_titles
+    )
 
-    fig.add_trace(m20_scatter, row=3, col=1)
-    fig.add_trace(m20_mass_x, row=3, col=1)
-    fig.add_trace(m20_mass_y, row=3, col=1)
+    col=1
+    for zernike_mode_graphs in all_graphs:
+        print(f"Col {col}")
+        row=1
+        for graph in zernike_mode_graphs:
+            print(f"Row {row}")
+            scatter = graph[0]
+            mass_x = graph[1]
+            mass_y = graph[2]
+            fig.add_trace(scatter, row=row, col=col)
+            fig.add_trace(mass_x, row=row, col=col)
+            fig.add_trace(mass_y, row=row, col=col)
+            row+=1
 
+        col+=1
 
     title = "Zernike Euclidean distances"
     if suffix is not None:
         title += f"in train subset {suffix}"
     fig.update_layout(
         title_text=title,
-        height=1050,  # Set the height of the figure
-        width=1000    # Set the width of the figure
+        height=1500,  # Set the height of the figure
+        width=2000    # Set the width of the figure
     )
 
-    fig.update_xaxes(title_text='PL Fluxes euclidean distance')
-    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
 
     fig.update_traces(
         marker=dict(size=1)
         )
-    #fig.show()
-    fig.write_image(f"{title}.png")
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        fig.write_image(f"{title}.jpg")
 
     return None
 
