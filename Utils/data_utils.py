@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 from lantern_fiber_utils import LanternFiber
 from skimage.transform import resize, rescale
-from scipy.stats import f_oneway
+from scipy.stats import f_oneway, unitary_group
 
 
 def load_numpy_data(
@@ -948,11 +948,13 @@ def save_wavefronts_phase(
 def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
 	output_fluxes_file_path,
+	nmodes=19,
 	plot=False,
-	verbose=False
+	verbose=False,
+	overwrite=False
 	):
 	
-	if os.path.isfile(output_fluxes_file_path):
+	if os.path.isfile(output_fluxes_file_path) and not overwrite:
 		print(f"{output_fluxes_file_path} already exists")
 		return
 	print(f"Computing {output_fluxes_file_path}")
@@ -965,7 +967,6 @@ def compute_output_fluxes_from_complex_field(
 	# Scale parameters
 	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
 	npix = 200 # Half-width of mode field calculation in pixels
-	show_plots = False
 
 	# Input fields
 	inp_pix_scale = 4 # input pixels / fiber-field pixels
@@ -973,9 +974,12 @@ def compute_output_fluxes_from_complex_field(
 	lantern_fiber = LanternFiber(n_core, 
 					 			 n_cladding,
 					 			 core_radius,
-					 			 wavelength)
+					 			 wavelength,
+					 			 nwgs=42,
+					 			 nmodes=nmodes)
+
 	lantern_fiber.find_fiber_modes()
-	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r, normtosum=False)
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
 
 	input_complex_fields = np.load(complex_fields_file_path)
@@ -1033,9 +1037,110 @@ def compute_output_fluxes_from_complex_field(
 	save_numpy_array(output_fluxes, output_fluxes_file_path)
 
 
+def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
+	complex_fields_file_path,
+	lp_modes_coeffs_file_path,
+	output_fluxes_file_path,
+	transfer_matrix_path,
+	nmodes=19,
+	plot=False,
+	verbose=False,
+	overwrite=False
+	):
+	
+	if os.path.isfile(output_fluxes_file_path) and not overwrite:
+		print(f"{output_fluxes_file_path} already exists")
+		return
+	print(f"Computing {output_fluxes_file_path}")
+	# Create the lantern fiber
+	n_core = 1.435#1.44
+	n_cladding = 1.42#1.4345
+	wavelength = 1.7#1.5 # microns
+	core_radius = 33.1/2#32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength,
+					 			 nwgs=42,
+					 			 nmodes=nmodes)
+
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+
+	input_complex_fields = np.load(complex_fields_file_path)
+	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
+	n_fields = input_complex_fields.shape[0]
+	transfer_matrix = load_arbitrary_transfer_matrix(transfer_matrix_path)
+	lantern_fiber.Cmat = transfer_matrix
+
+	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=verbose, 
+			show_plots=plot, 
+			fignum=11,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+
+		# Now get the complex amplitudes of the PL outputs:
+		pl_outputs = transfer_matrix @ mode_coupling_complex
+
+		# In real life, we just measure the intensities of the outputs:
+		pl_output_fluxes = np.abs(pl_outputs)**2
+		output_fluxes[k] = pl_output_fluxes
+
+		# In real life, we just measure the intensities of the lp_modes:
+		mode_coupling_complex = np.abs(mode_coupling_complex)**2
+		lp_modes_coeffs[k] = mode_coupling_complex
+
+		if plot:
+			# Plot input mode coefficients and output fluxes
+			xlabels = np.arange(lantern_fiber.nmodes)
+			plt.figure(1)
+			plt.clf()
+			plt.subplot(311)
+			plt.bar(xlabels, np.abs(mode_coupling_complex))
+			plt.title('Input mode amplitudes')
+			plt.subplot(312)
+			plt.bar(xlabels, np.angle(mode_coupling_complex))
+			plt.title('Input mode phases')
+			plt.subplot(313)
+			plt.bar(xlabels, pl_output_fluxes)
+			plt.title('Output fluxes')
+			plt.tight_layout()
+
+	save_numpy_array(output_fluxes, output_fluxes_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
+
+
 def compute_lp_modes_from_complex_field(
 	complex_fields_file_path,
-	lp_modes_file_path,
+	lp_modes_coeffs_file_path,
 	plot=False,
 	verbose=False
 	):
@@ -1070,7 +1175,7 @@ def compute_lp_modes_from_complex_field(
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
 
-	lp_modes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1096,9 +1201,9 @@ def compute_lp_modes_from_complex_field(
 
 		# In real life, we just measure the intensities of the lp_modes:
 		mode_coupling_complex = np.abs(mode_coupling_complex)**2
-		lp_modes[k] = mode_coupling_complex
+		lp_modes_coeffs[k] = mode_coupling_complex
 
-	save_numpy_array(lp_modes, lp_modes_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_file_path)
 
 
 def compute_mode_coefficients_from_complex_field(
@@ -1172,6 +1277,24 @@ def load_transfer_matrix(
 
 	transfer_matrix = lantern_fiber.Cmat # This is the complex transfer matrix
 	return transfer_matrix
+
+
+def load_arbitrary_transfer_matrix(
+	MATRIX_PATH):
+	transfer_matrix = np.load(MATRIX_PATH)
+	return transfer_matrix
+
+
+def create_and_save_arbitrary_matrix(
+	n_modes,
+	matrix_path,
+	overwrite=False
+	):
+	matrix = unitary_group.rvs(n_modes)
+	matrix_condition_number = np.linalg.cond(matrix)
+
+	print("Matrix condition number: %.16f" % matrix_condition_number)
+	save_numpy_array(matrix, matrix_path, overwrite=overwrite)
 
 
 def compute_amplitude_and_phase_from_electric_field(

@@ -13,6 +13,7 @@ import polarTransform
 from scipy import ndimage
 from pathlib import Path
 
+
 class LanternFiber:
     def __init__(self, 
                  n_core=None, 
@@ -240,7 +241,7 @@ class LanternFiber:
         self, 
         mode_to_plot, 
         zlim=0.04, 
-        ignum=1):
+        fignum=5):
         """
         Make a plot of the cos and sin amplitudes of a given mode
 
@@ -493,7 +494,8 @@ class LanternFiber:
             if modes_to_plot is None:
                 plt.bar(mode_field_numbers, overlap_int_vals_plot, tick_label=mode_field_numbers)
                 plt.xticks(np.arange(0, self.nmodes, 1), rotation=90, fontsize=8)
-                plt.gca().set_xticklabels(self.modelabels)
+                if len(self.modelabels) == self.nmodes:
+                    plt.gca().set_xticklabels(self.modelabels)
             else:
                 plt.bar(mode_field_numbers[modes_to_plot], overlap_int_vals_plot[modes_to_plot],
                     tick_label=mode_field_numbers[modes_to_plot])
