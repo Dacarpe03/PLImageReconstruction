@@ -1042,7 +1042,6 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	lp_modes_coeffs_file_path,
 	output_fluxes_file_path,
 	transfer_matrix_path,
-	nmodes=19,
 	plot=False,
 	verbose=False,
 	overwrite=False
@@ -1069,13 +1068,12 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 					 			 n_cladding,
 					 			 core_radius,
 					 			 wavelength,
-					 			 nwgs=42,
-					 			 nmodes=nmodes)
+					 			 nwgs=42)
 
 	lantern_fiber.find_fiber_modes()
 	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
-
+	print(modes_to_measure)
 	input_complex_fields = np.load(complex_fields_file_path)
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
@@ -1106,7 +1104,7 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			complex=True,
 			ylim=0.3,
 			return_abspower=True)
-
+		print(mode_coupling_complex)
 		# Now get the complex amplitudes of the PL outputs:
 		pl_outputs = transfer_matrix @ mode_coupling_complex
 
@@ -1114,13 +1112,10 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 		pl_output_fluxes = np.abs(pl_outputs)**2
 		output_fluxes[k] = pl_output_fluxes
 
-		# In real life, we just measure the intensities of the lp_modes:
-		mode_coupling_complex = np.abs(mode_coupling_complex)**2
-		lp_modes_coeffs[k] = mode_coupling_complex
-
+		print(np.angle(mode_coupling_complex))
 		if plot:
 			# Plot input mode coefficients and output fluxes
-			xlabels = np.arange(lantern_fiber.nmodes)
+			xlabels = np.arange(transfer_matrix.shape[0])
 			plt.figure(1)
 			plt.clf()
 			plt.subplot(311)
@@ -1134,7 +1129,14 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			plt.title('Output fluxes')
 			plt.tight_layout()
 
+
+		mode_coupling_complex = np.abs(mode_coupling_complex)**2
+		# In real life, we just measure the intensities of the lp_modes:
+		lp_modes_coeffs[k] = mode_coupling_complex
+		
+	# Save output fluxes
 	save_numpy_array(output_fluxes, output_fluxes_file_path)
+	# Save lp modes
 	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
 
@@ -1170,7 +1172,6 @@ def compute_lp_modes_from_complex_field(
 	lantern_fiber.find_fiber_modes()
 	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
-
 	input_complex_fields = np.load(complex_fields_file_path)
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
