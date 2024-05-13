@@ -7,9 +7,13 @@ import pandas as pd
 import numpy as np
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
-                       reshape_fc_electric_field_to_real_imaginary_matrix
+                       reshape_fc_electric_field_to_real_imaginary_matrix, \
+                       compute_center_of_mass, \
+                       compute_ratio, \
+                       separate_zernike_distances
 
 from psf_constants import PSF_TEMP_IMAGES
+
 
 def plot_map(
 	whatever_map
@@ -338,7 +342,10 @@ def plot_diffusion_output(
 
 def plot_amplitude_phase_intensity(
     electric_field,
-    log_scale=False
+    log_scale=False,
+    plot=True,
+    save=False,
+    title=""
     ):
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
     intensity = amplitude**2
@@ -354,10 +361,8 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.14,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.10
                                             ))
 
     amplitude_heatmap = go.Heatmap(
@@ -365,10 +370,8 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.5,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.5
                                     ))
 
     intenstity_heatmap = go.Heatmap(
@@ -376,17 +379,35 @@ def plot_amplitude_phase_intensity(
                                             colorscale='viridis',
                                             colorbar=dict(
                                                 orientation='h',
-                                                x=0.86,
-                                                y=0.47,
                                                 len=0.3,
-                                                thickness=15
+                                                x=0.9
                                         ))
 
-    fig.add_trace(phase_heatmap, row=1, col=1)
-    fig.add_trace(amplitude_heatmap, row=1, col=2)
-    fig.add_trace(intenstity_heatmap, row=1, col=3)
+    cross = go.Scatter(
+        x=[len(amplitude)/2],
+        y=[len(amplitude)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
 
-    fig.show()
+    fig.add_trace(phase_heatmap, row=1, col=1)
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(amplitude_heatmap, row=1, col=2)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(intenstity_heatmap, row=1, col=3)
+    fig.add_trace(cross, row=1, col=3)
+
+    fig.update_layout(
+        title_text=title,
+        height=500,  # Set the height of the figure
+        width=1100    # Set the width of the figure
+    )
+
+    if plot:
+        fig.show()
+    if save:
+        fig.write_image(f"{title}.png")
 
     return None
 
@@ -413,7 +434,7 @@ def plot_amplitude_phase_from_electric_field(
     original_amplitudes, original_phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)    
     predicted_amplitudes, predicted_phases = compute_amplitude_and_phase_from_electric_field(predicted_electric_field)
 
-
+    print(original_phases)
     fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Amplitude residual",
                                                         "Original Phase", "Predicted Phase", "Phase residual"))
 
@@ -526,6 +547,7 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     save_image=True,
     validation=False,
     train=False,
+    cropped=False,
     show_plot=True
     ):
     """
@@ -543,14 +565,18 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     input_output_flux = np.array([ouput_flux])
     predicted_electric_field = model.predict(input_output_flux)[0]
 
-    reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field, 
-    og_shape_depth = 2,
-    og_shape_rows = 64,
-    og_shape_cols = 64)
-    reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field,
-    og_shape_depth = 2,
-    og_shape_rows = 64,
-    og_shape_cols = 64)
+    if cropped:
+        reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field, 
+        og_shape_depth = 2,
+        og_shape_rows = 64,
+        og_shape_cols = 64)
+        reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field,
+        og_shape_depth = 2,
+        og_shape_rows = 64,
+        og_shape_cols = 64)
+    else:
+        reshaped_predicted_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(predicted_electric_field)
+        reshaped_original_electric_field = reshape_fc_electric_field_to_real_imaginary_matrix(original_electric_field)
 
     plot_amplitude_phase_from_electric_field(reshaped_original_electric_field,
                                              reshaped_predicted_electric_field,
@@ -574,6 +600,37 @@ def plot_19_mode_pl_flux(flux):
     fig.show()
 
 
+
+def create_scatter_with_center_of_mass(x_coords, y_coords, name='Untitled'):
+    scatter = go.Scatter(
+        x=x_coords, 
+        y=y_coords, 
+        mode='markers', 
+        showlegend=False,
+        marker_color='blue',
+        name=name)
+
+    center_x, center_y = compute_center_of_mass(x_coords, y_coords)
+
+    x_mass_line = go.Scatter(x=[center_x, center_x],
+                             y=[np.min(y_coords), np.max(y_coords)],
+                             mode='lines',
+                                 showlegend=False,
+                                 marker_color='coral')
+
+    y_mass_line = go.Scatter(x=[np.min(x_coords), np.max(x_coords)],
+                             y=[center_y, center_y],
+                             mode='lines',
+                             showlegend=False,
+                             marker_color='coral')
+
+    corr = np.corrcoef(x_coords, y_coords)[0, 1]
+
+    name+=f"<br>Correlation: {round(corr, 3)}"
+    return [scatter, x_mass_line, y_mass_line, name]
+
+
+
 def plot_euclidean_distances(
     pl_flux_distances,
     og_complex_field_distances,
@@ -582,18 +639,51 @@ def plot_euclidean_distances(
     predicted_cropped_complex_field_distances,
     suffix=None
     ):
+    
+    og_corr = np.corrcoef(pl_flux_distances, og_complex_field_distances)[0, 1]
+    cr_corr = np.corrcoef(pl_flux_distances, cropped_complex_field_distances)[0, 1]
+    pr_corr = np.corrcoef(pl_flux_distances, predicted_complex_field_distances)[0, 1]
+    pr_cr_corr = np.corrcoef(pl_flux_distances, predicted_cropped_complex_field_distances)[0, 1]
 
-    fig = make_subplots(rows=2, cols=2, subplot_titles=("PL vs Original PSF ", "PL vs Cropped PSF", "PL vs Predicted PSF", "PL vs Predicted Cropped PSF"))
+    fig = make_subplots(
+        rows=2, 
+        cols=2, 
+        subplot_titles=(
+            f"PL vs Original PSF<br>Correlation: {round(og_corr, 2)}", 
+            f"PL vs Cropped PSF<br>Correlation: {round(cr_corr, 2)}", 
+            f"PL vs Predicted PSF<br>Correlation: {round(pr_corr, 2)}", 
+            f"PL vs Predicted Cropped PSF<br>Correlation: {round(pr_cr_corr, 2)}"))
 
-    og_scatter = go.Scatter(x=pl_flux_distances, y=og_complex_field_distances, mode='markers', showlegend=False)
-    cropped_scatter = go.Scatter(x=pl_flux_distances, y=cropped_complex_field_distances, mode='markers', showlegend=False)
-    predicted_scatter = go.Scatter(x=pl_flux_distances, y=predicted_complex_field_distances, mode='markers', showlegend=False)
-    predicted_cropped_scatter = go.Scatter(x=pl_flux_distances, y=predicted_cropped_complex_field_distances, mode='markers', showlegend=False)
+    og_scatter, og_mass_x, og_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                          og_complex_field_distances)
+
+    cropped_scatter, cropped_mass_x, cropped_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                         cropped_complex_field_distances)
+
+    predicted_scatter, predicted_mass_x, predicted_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                               predicted_complex_field_distances)
+
+    predicted_cropped_scatter, predicted_cr_mass_x, predicted_cr_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                                             predicted_cropped_complex_field_distances)
 
     fig.add_trace(og_scatter, row=1, col=1)
+    fig.add_trace(og_mass_x, row=1, col=1)
+    fig.add_trace(og_mass_y, row=1, col=1)
+
     fig.add_trace(cropped_scatter, row=1, col=2)
+    fig.add_trace(cropped_mass_x, row=1, col=2)
+    fig.add_trace(cropped_mass_y, row=1, col=2)
+
+
     fig.add_trace(predicted_scatter, row=2, col=1)
+    fig.add_trace(predicted_mass_x, row=2, col=1)
+    fig.add_trace(predicted_mass_y, row=2, col=1)
+
+
     fig.add_trace(predicted_cropped_scatter, row=2, col=2)
+    fig.add_trace(predicted_cr_mass_x, row=2, col=2)
+    fig.add_trace(predicted_cr_mass_y, row=2, col=2)
+
 
     title = "Euclidean distances"
     if suffix is not None:
@@ -605,12 +695,364 @@ def plot_euclidean_distances(
     )
 
     fig.update_xaxes(title_text='PL Fluxes euclidean distance')
-    fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+    fig.update_yaxes(range=[0,120], title_text='PSF Intensity euclidean distance')
 
     fig.update_traces(
         marker=dict(size=1)
         )
     #fig.show()
-    fig.write_image(F"{suffix}.png")
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
+def plot_pl42_euclidean_distances(
+    pl_flux_distances,
+    lp_coeffs_distances,
+    og_complex_field_distances,
+    suffix=None,
+    ):
+    pl_flux_distances = pl_flux_distances.flatten()
+    lp_coeffs_distances = lp_coeffs_distances.flatten()
+    og_complex_field_distances = og_complex_field_distances.flatten()
+    fl_og_corr = np.corrcoef(pl_flux_distances, og_complex_field_distances)[0, 1]
+    pl_og_corr = np.corrcoef(lp_coeffs_distances, og_complex_field_distances)[0, 1]
+    fl_pl = np.corrcoef(pl_flux_distances, lp_coeffs_distances)[0, 1]
+
+    fig = make_subplots(
+        rows=3, 
+        cols=1, 
+        subplot_titles=(
+            f"PL flux vs PSF<br>Correlation: {round(fl_og_corr, 2)}", 
+            f"LP coeffs vs PSF<br>Correlation: {round(pl_og_corr, 2)}", 
+            f"PL flux vs LP coeffs<br>Correlation: {round(fl_pl, 2)}")
+    )
+
+    fl_og_scatter = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                   og_complex_field_distances)
+
+    pl_og_scatter = create_scatter_with_center_of_mass(lp_coeffs_distances, 
+                                                                                   og_complex_field_distances)
+
+    fl_lp_scatter = create_scatter_with_center_of_mass(pl_flux_distances, 
+                                                                                   lp_coeffs_distances)
+
+    fig.add_trace(fl_og_scatter[0], row=1, col=1)
+    fig.add_trace(fl_og_scatter[1], row=1, col=1)
+    fig.add_trace(fl_og_scatter[2], row=1, col=1)
+
+    fig.add_trace(pl_og_scatter[0], row=2, col=1)
+    fig.add_trace(pl_og_scatter[1], row=2, col=1)
+    fig.add_trace(pl_og_scatter[2], row=2, col=1)
+
+
+    fig.add_trace(fl_lp_scatter[0], row=3, col=1)
+    fig.add_trace(fl_lp_scatter[1], row=3, col=1)
+    fig.add_trace(fl_lp_scatter[2], row=3, col=1)
+
+
+    title = "Euclidean distances for a 42 mode PL"
+    if suffix is not None:
+        title += f" ({suffix})"
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=500    # Set the width of the figure
+    )
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+    #fig.show()
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
+
+def create_scatters_for_zernike_dataset(
+        dataset,
+        n_modes,
+    ):
+
+    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = (dataset)
+    
+    fl_to_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_psf, name=f"PL flux vs {n_modes} terms Zernike PSF")
+    lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_psf, name=f"LP modes vs {n_modes} terms Zernike PSF")
+
+    fl_to_pr_psf_scatter = create_scatter_with_center_of_mass(fluxes, pr_psf, name=f"PL flux vs {n_modes} terms Predicted Zernike PSF")
+    lp_to_pr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, pr_psf, name=f"LP modes vs {n_modes} terms Predicted Zernike PSF")
+
+    fl_to_cr_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_cr_psf, name=f"PL flux vs {n_modes} terms Cropped Zernike PSF")
+    lp_to_cr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_cr_psf, name=f"LP modes vs {n_modes} terms Cropped Zernike PSF")
+
+    fl_to_pr_cr_psf_scatter = create_scatter_with_center_of_mass(fluxes, pr_cr_psf, name=f"PL flux vs {n_modes} terms Predicted Cropped Zernike PSF")
+    lp_to_pr_cr_psf_scatter = create_scatter_with_center_of_mass(lp_modes, pr_cr_psf, name=f"LP modes vs {n_modes} terms Predicted Cropped Zernike PSF")
+
+    fl_to_lp_scatter = create_scatter_with_center_of_mass(fluxes, lp_modes, name=f"PL flux vs LP modes coefficients")
+
+    return [fl_to_psf_scatter, lp_to_psf_scatter, fl_to_pr_psf_scatter, lp_to_pr_psf_scatter, fl_to_cr_psf_scatter, lp_to_cr_psf_scatter, fl_to_pr_cr_psf_scatter, lp_to_pr_cr_psf_scatter, fl_to_lp_scatter]
+
+
+def plot_one_dataset_zernike_euclidean_distances(
+    dataset,
+    modes,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+    
+    zernike_mode_graphs = create_scatters_for_zernike_dataset(dataset, modes)
+
+    #m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
+    #m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
+    #m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
+    #m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
+    #m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
+
+    fig = make_subplots(
+        rows=9, 
+        cols=1, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        row+=1
+
+    title = f"{modes} modes"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=1500,  # Set the height of the figure
+        width=400    # Set the width of the figure
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")   
+        fig.write_image(f"{title}.jpg")
+
+    return None
+
+def plot_zernike_euclidean_distances(
+    datasets,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+    
+    modes = [2, 5, 9, 14, 20]
+    i=0
+    all_graphs = []
+    for dataset in datasets:
+        print(f"{i} modes")
+        zernike_mode_graphs = create_scatters_for_zernike_dataset(dataset, modes[i])
+        all_graphs.append(zernike_mode_graphs)
+        i+=1
+
+    #m2_corr = np.corrcoef(m2_fluxes, m2_psf)[0, 1]
+    #m5_corr = np.corrcoef(m5_fluxes, m5_psf)[0, 1]
+    #m9_corr = np.corrcoef(m9_fluxes, m9_psf)[0, 1]
+    #m14_corr = np.corrcoef(m14_fluxes, m14_psf)[0, 1]
+    #m20_corr = np.corrcoef(m20_fluxes, m20_psf)[0, 1]
+
+    subplot_titles = []
+    for zernike_mode_graphs in all_graphs:
+        zm_titles = []
+        for graph_info in zernike_mode_graphs:
+            zm_titles.append(graph_info[-1])
+        subplot_titles.append(zm_titles)
+
+    subplot_titles = list(zip(*subplot_titles))
+    subplot_titles = [item for sublist in subplot_titles for item in sublist]
+    fig = make_subplots(
+        rows=8, 
+        cols=5, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    for zernike_mode_graphs in all_graphs:
+        print(f"Col {col}")
+        row=1
+        for graph in zernike_mode_graphs:
+            print(f"Row {row}")
+            scatter = graph[0]
+            mass_x = graph[1]
+            mass_y = graph[2]
+            fig.add_trace(scatter, row=row, col=col)
+            fig.add_trace(mass_x, row=row, col=col)
+            fig.add_trace(mass_y, row=row, col=col)
+            row+=1
+
+        col+=1
+
+    title = "Zernike Euclidean distances"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=1500,  # Set the height of the figure
+        width=2000    # Set the width of the figure
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        fig.write_image(f"{title}.jpg")
+
+    return None
+
+
+def create_boxplot(data, name=""):
+    data_mean = np.mean(data)
+    data_std = np.std(data)
+    text = f"<br>Ratio mean: {round(data_mean, 2)}<br>Ratio std: {round(data_std, 2)}"
+    name += f"\n{text}"
+    boxplot = go.Box(y=data, name=name, boxpoints=False, showlegend=False)
+    return boxplot
+
+
+def plot_boxplot_euclidean_distances(
+    pl_flux_distances,
+    og_complex_field_distances,
+    cropped_complex_field_distances,
+    predicted_complex_field_distances,
+    predicted_cropped_complex_field_distances,
+    suffix=None
+    ):
+
+    fig = go.Figure()
+
+    og_plf_ratio = compute_ratio(og_complex_field_distances, pl_flux_distances)
+    cropped_og_plf_ratio = compute_ratio(cropped_complex_field_distances, pl_flux_distances)
+    predicted_plf_ratio = compute_ratio(predicted_complex_field_distances, pl_flux_distances)
+    predicted_cropped_plf_ratio = compute_ratio(predicted_cropped_complex_field_distances, pl_flux_distances)
+
+    og_boxplot = create_boxplot(og_plf_ratio, name="Original PSF - PL")
+    cropped_boxplot = create_boxplot(cropped_og_plf_ratio, name="Cropped PSF - PL")
+    predicted_boxplot = create_boxplot(predicted_plf_ratio, name="Predicted PSF - PL")
+    predicted_cropped_boxplot = create_boxplot(predicted_cropped_plf_ratio, name="Predicted Cropped PSF - PL")
+
+
+    fig.add_trace(og_boxplot)
+    fig.add_trace(cropped_boxplot)
+    fig.add_trace(predicted_boxplot)
+    fig.add_trace(predicted_cropped_boxplot)
+
+
+    title = "Euclidean distance ratios"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    fig.update_yaxes(title_text='Ratio')
+
+    #fig.show()
+    fig.write_image(f"{title}.png")
+
+    return None
+
+
+def plot_boxplot_zernike_euclidean_distances(
+    m2_fluxes,
+    m2_psf,
+    m5_fluxes,
+    m5_psf,
+    m9_fluxes,
+    m9_psf,
+    m14_fluxes,
+    m14_psf,
+    m20_fluxes,
+    m20_psf,
+    suffix=None
+    ):
+
+    fig = go.Figure()
+
+    m2_ratio = compute_ratio(m2_psf, m2_fluxes)
+
+    m5_ratio = compute_ratio(m5_psf, m5_fluxes)
+
+    m9_ratio = compute_ratio(m9_psf, m9_fluxes)
+
+    m14_ratio = compute_ratio(m14_psf, m14_fluxes)
+
+    m20_ratio = compute_ratio(m20_psf, m20_fluxes)
+
+    m2_boxplot = create_boxplot(m2_ratio, name="2 Mode Zernike PSF - PL")
+    m5_boxplot = create_boxplot(m5_ratio, name="5 Mode Zernike PSF - PL")
+    m9_boxplot = create_boxplot(m9_ratio, name="9 Mode Zernike PSF - PL")
+    m14_boxplot = create_boxplot(m14_ratio, name="14 Mode Zernike PSF - PL")
+    m20_boxplot = create_boxplot(m20_ratio, name="20 Mode Zernike PSF - PL")
+
+
+    fig.add_trace(m2_boxplot)
+    fig.add_trace(m5_boxplot)
+    fig.add_trace(m9_boxplot)
+    fig.add_trace(m14_boxplot)
+    fig.add_trace(m20_boxplot)
+
+
+    title = "Euclidean distance ratios"
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+
+    fig.update_layout(
+        title_text=title,
+        height=700,  # Set the height of the figure
+        width=1000    # Set the width of the figure
+    )
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    fig.update_yaxes(title_text='Ratio')
+
+    #fig.show()
+    fig.write_image(f"{title}.png")
 
     return None
