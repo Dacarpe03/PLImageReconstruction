@@ -41,7 +41,10 @@ from psf_constants import PROCESSED_TRAIN_2M_ZERNIKE_COMPLEX_FIELDS_FILE_PREFIX,
 
 import umap
 import numpy as np
+import tensorflow as tf
 
+gpus = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpus[0], True)
 
 # In[2]:
 
