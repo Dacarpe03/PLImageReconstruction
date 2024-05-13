@@ -14,12 +14,14 @@ from psf_constants import PSF_DATA_PATH, \
 import os
 
 from hcipy.atmosphere import *
+from hcipy.mode_basis import zernike, noll_to_zernike, make_zernike_basis
 from hcipy import *
 
 import matplotlib.pyplot as plt
 
 from lantern_fiber_utils import LanternFiber
 from skimage.transform import resize, rescale
+from scipy.stats import f_oneway, unitary_group
 
 
 def load_numpy_data(
@@ -525,7 +527,8 @@ def load_validation_data(
 def save_numpy_array(
 	array,
 	filepath,
-	single_precision=True
+	single_precision=True,
+	overwrite=False
 	):
 
 	"""
@@ -538,7 +541,7 @@ def save_numpy_array(
 	Returns:
 		None
 	"""
-	if os.path.isfile(filepath) or os.path.exists(filepath):
+	if (os.path.isfile(filepath) or os.path.exists(filepath)) and not overwrite:
 		print(f"ERROR: {filepath} already exists.")
 		return None
 
@@ -731,6 +734,138 @@ def generate_psf_complex_fields(
 	return None
 
 
+def generate_zernike_psf_complex_fields(
+	filepath,
+	telescope_diameter=1,
+	wavelength=1e-6,
+	pupil_grid_size=256,
+	focal_q=8,
+	num_airy=8,
+	starting_mode=2,
+	zernike_modes=1,
+	n_samples=SUBFILE_SAMPLES,
+	plot=False,
+	save_complex_fields=True
+	):
+	"""
+	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
+	
+	Input:
+		filepath (string): The path of file to store the psf
+		teslecope_diameter (float): The diameter of the aperture
+		wavelength (float): The wavelength of the light
+		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+	"""
+	if os.path.isfile(filepath):
+		print(f"{filepath} already exists")
+		return
+
+	D_tel = 0.5
+
+	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
+	
+
+	focal_grid = make_focal_grid(q=focal_q, num_airy=num_airy, spatial_resolution=wavelength/D_tel)
+	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
+	aperture = make_circular_aperture(D_tel)(pupil_grid)
+
+	propagated_wavefronts = []
+
+	for i in range(n_samples):
+
+		zernike_complex_field = create_zernike_complex_field(starting_mode,
+															 zernike_modes,
+															 pupil_grid,
+															 aperture,
+															 D_tel)
+
+		#imshow_field(zernike_complex_field)
+		#plt.colorbar()
+
+		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
+		
+		imshow_field(zernike_wavefront.phase)
+
+		propagatated_wf = propagate_zernike_wavefront(zernike_wavefront,
+									propagator,
+									aperture,
+									plot=plot)
+
+		propagated_wavefronts.append(propagatated_wf)
+
+	if save_complex_fields:
+		save_wavefronts_complex_fields(propagated_wavefronts,
+		   						   	   filepath,
+		   						   	   overwrite=False)
+
+	return None
+
+
+def create_zernike_complex_field(
+	starting_mode,
+	zernike_modes,
+	pupil_grid,
+	aperture,
+	D_tel):
+	
+
+	mode_complex_fields = []
+	mode_coefficients = []
+
+	zern_basis = make_zernike_basis(starting_mode=starting_mode, num_modes=zernike_modes, D=D_tel, grid=pupil_grid)
+
+
+	for zernike_mode in range(starting_mode, starting_mode+zernike_modes):
+		n, m = noll_to_zernike(zernike_mode)
+
+		mode_coeff = np.random.uniform(-1, 1) / n
+		mode_coefficients.append(mode_coeff)
+
+
+	phase_pupil = zern_basis.linear_combination(np.array(mode_coefficients))
+	zernike_complex_pupil = aperture * np.exp(1j*phase_pupil)
+
+	return zernike_complex_pupil
+
+
+def propagate_zernike_wavefront(
+	zernike_wavefront,
+	propagator,
+	aperture,
+	plot=False
+	):
+	"""
+	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	"""
+	
+	propagated_wavefront = propagator(zernike_wavefront)
+
+	aperture_wf = Wavefront(aperture, propagated_wavefront.wavelength)
+	propagated_aperture = propagator(aperture_wf)
+
+	if plot:
+		plt.clf()
+		plt.subplot(1,4,1)
+		imshow_field(propagated_wavefront.phase, vmin=-6)
+		plt.colorbar()
+
+		plt.subplot(1,4,2)
+		imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.subplot(1,4,3)
+		imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.subplot(1,4,4)
+		imshow_field(np.log10(propagated_aperture.intensity/ propagated_aperture.intensity.max()), vmin=-6)
+		plt.colorbar()
+
+		plt.show()
+
+	return propagated_wavefront
+
+
 def propagate_wavefronts(
 	n_samples,
 	wavefront,
@@ -754,15 +889,19 @@ def propagate_wavefronts(
 			plt.subplot(1,4,1)
 			imshow_field(propagated_wavefront.phase, vmin=-6)
 			plt.colorbar()
+
 			plt.subplot(1,4,2)
 			imshow_field(np.log10(propagated_wavefront.amplitude/propagated_wavefront.amplitude.max()), vmin=-6)
 			plt.colorbar()
+
 			plt.subplot(1,4,3)
 			imshow_field(np.log10(propagated_wavefront.intensity/ propagated_wavefront.intensity.max()), vmin=-6)
+			plt.colorbar()
 
 			plt.subplot(1,4,4)
 			imshow_field(np.log10(original_psf.intensity/ original_psf.intensity.max()), vmin=-6)
 			plt.colorbar()
+
 			plt.draw()
 
 	return wavefronts
@@ -770,7 +909,8 @@ def propagate_wavefronts(
 
 def save_wavefronts_complex_fields(
 	propagated_wavefronts,
-	filepath
+	filepath,
+	overwrite=False
 	):
 	
 	n_fields = len(propagated_wavefronts)
@@ -785,7 +925,7 @@ def save_wavefronts_complex_fields(
 		comp_amp_phase = comp_amp_phase.reshape((square_side, square_side))
 		complex_fields[i] = comp_amp_phase
 
-	save_numpy_array(complex_fields, filepath, single_precision=False)
+	save_numpy_array(complex_fields, filepath, single_precision=False, overwrite=overwrite)
 
 
 def save_wavefronts_phase(
@@ -808,10 +948,16 @@ def save_wavefronts_phase(
 def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
 	output_fluxes_file_path,
+	nmodes=19,
 	plot=False,
-	verbose=False
+	verbose=False,
+	overwrite=False
 	):
 	
+	if os.path.isfile(output_fluxes_file_path) and not overwrite:
+		print(f"{output_fluxes_file_path} already exists")
+		return
+	print(f"Computing {output_fluxes_file_path}")
 	# Create the lantern fiber
 	n_core = 1.44
 	n_cladding = 1.4345
@@ -821,7 +967,6 @@ def compute_output_fluxes_from_complex_field(
 	# Scale parameters
 	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
 	npix = 200 # Half-width of mode field calculation in pixels
-	show_plots = False
 
 	# Input fields
 	inp_pix_scale = 4 # input pixels / fiber-field pixels
@@ -829,9 +974,12 @@ def compute_output_fluxes_from_complex_field(
 	lantern_fiber = LanternFiber(n_core, 
 					 			 n_cladding,
 					 			 core_radius,
-					 			 wavelength)
+					 			 wavelength,
+					 			 nwgs=42,
+					 			 nmodes=nmodes)
+
 	lantern_fiber.find_fiber_modes()
-	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r, normtosum=False)
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
 
 	input_complex_fields = np.load(complex_fields_file_path)
@@ -887,6 +1035,175 @@ def compute_output_fluxes_from_complex_field(
 			plt.tight_layout()
 
 	save_numpy_array(output_fluxes, output_fluxes_file_path)
+
+
+def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
+	complex_fields_file_path,
+	lp_modes_coeffs_file_path,
+	output_fluxes_file_path,
+	transfer_matrix_path,
+	plot=False,
+	verbose=False,
+	overwrite=False
+	):
+	
+	if os.path.isfile(output_fluxes_file_path) and not overwrite:
+		print(f"{output_fluxes_file_path} already exists")
+		return
+	print(f"Computing {output_fluxes_file_path}")
+	# Create the lantern fiber
+	n_core = 1.435#1.44
+	n_cladding = 1.42#1.4345
+	wavelength = 1.7#1.5 # microns
+	core_radius = 33.1/2#32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength,
+					 			 nwgs=42)
+
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+	print(modes_to_measure)
+	input_complex_fields = np.load(complex_fields_file_path)
+	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
+	n_fields = input_complex_fields.shape[0]
+	transfer_matrix = load_arbitrary_transfer_matrix(transfer_matrix_path)
+	lantern_fiber.Cmat = transfer_matrix
+
+	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=verbose, 
+			show_plots=plot, 
+			fignum=11,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+		print(mode_coupling_complex)
+		# Now get the complex amplitudes of the PL outputs:
+		pl_outputs = transfer_matrix @ mode_coupling_complex
+
+		# In real life, we just measure the intensities of the outputs:
+		pl_output_fluxes = np.abs(pl_outputs)**2
+		output_fluxes[k] = pl_output_fluxes
+
+		print(np.angle(mode_coupling_complex))
+		if plot:
+			# Plot input mode coefficients and output fluxes
+			xlabels = np.arange(transfer_matrix.shape[0])
+			plt.figure(1)
+			plt.clf()
+			plt.subplot(311)
+			plt.bar(xlabels, np.abs(mode_coupling_complex))
+			plt.title('Input mode amplitudes')
+			plt.subplot(312)
+			plt.bar(xlabels, np.angle(mode_coupling_complex))
+			plt.title('Input mode phases')
+			plt.subplot(313)
+			plt.bar(xlabels, pl_output_fluxes)
+			plt.title('Output fluxes')
+			plt.tight_layout()
+
+
+		mode_coupling_complex = np.abs(mode_coupling_complex)**2
+		# In real life, we just measure the intensities of the lp_modes:
+		lp_modes_coeffs[k] = mode_coupling_complex
+		
+	# Save output fluxes
+	save_numpy_array(output_fluxes, output_fluxes_file_path)
+	# Save lp modes
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
+
+
+def compute_lp_modes_from_complex_field(
+	complex_fields_file_path,
+	lp_modes_coeffs_file_path,
+	plot=False,
+	verbose=False
+	):
+	
+	if os.path.isfile(lp_modes_coeffs_file_path):
+		print(f"{lp_modes_coeffs_file_path} already exists")
+		return
+	print(f"Computing {lp_modes_coeffs_file_path}")
+	# Create the lantern fiber
+	n_core = 1.44
+	n_cladding = 1.4345
+	wavelength = 1.5 # microns
+	core_radius = 32.8/2 # microns
+
+	# Scale parameters
+	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
+	npix = 200 # Half-width of mode field calculation in pixels
+	show_plots = False
+
+	# Input fields
+	inp_pix_scale = 4 # input pixels / fiber-field pixels
+
+	lantern_fiber = LanternFiber(n_core, 
+					 			 n_cladding,
+					 			 core_radius,
+					 			 wavelength)
+	lantern_fiber.find_fiber_modes()
+	lantern_fiber.make_fiber_modes(npix=npix, show_plots=show_plots, max_r=max_r, normtosum=False)
+	modes_to_measure = np.arange(lantern_fiber.nmodes)
+	input_complex_fields = np.load(complex_fields_file_path)
+	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
+	n_fields = input_complex_fields.shape[0]
+
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
+
+	for k in range(n_fields):
+		original_field = input_complex_fields[k,:,:]
+		resized_field_real = rescale(original_field.real, inp_pix_scale)
+		resized_field_imag = rescale(original_field.imag, inp_pix_scale)
+		resized_field = resized_field_real + resized_field_imag*1j
+
+		input_field = resized_field
+		cnt = input_field.shape[1]//2
+		input_field = input_field[cnt-lantern_fiber.npix:cnt+lantern_fiber.npix, cnt-lantern_fiber.npix:cnt+lantern_fiber.npix]
+
+		lantern_fiber.input_field = input_field
+		lantern_fiber.plot_injection_field(lantern_fiber.input_field, show_colorbar=False, logI=True, vmin=-3, fignum=50)
+
+		coupling, mode_coupling, mode_coupling_complex = lantern_fiber.calc_injection_multi(
+			mode_field_numbers=modes_to_measure,
+			verbose=verbose, 
+			show_plots=plot, 
+			fignum=11,
+			complex=True,
+			ylim=0.3,
+			return_abspower=True)
+
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
+
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
 
 def compute_mode_coefficients_from_complex_field(
@@ -960,6 +1277,24 @@ def load_transfer_matrix(
 
 	transfer_matrix = lantern_fiber.Cmat # This is the complex transfer matrix
 	return transfer_matrix
+
+
+def load_arbitrary_transfer_matrix(
+	MATRIX_PATH):
+	transfer_matrix = np.load(MATRIX_PATH)
+	return transfer_matrix
+
+
+def create_and_save_arbitrary_matrix(
+	n_modes,
+	matrix_path,
+	overwrite=False
+	):
+	matrix = unitary_group.rvs(n_modes)
+	matrix_condition_number = np.linalg.cond(matrix)
+
+	print("Matrix condition number: %.16f" % matrix_condition_number)
+	save_numpy_array(matrix, matrix_path, overwrite=overwrite)
 
 
 def compute_amplitude_and_phase_from_electric_field(
@@ -1113,3 +1448,72 @@ def separate_distances(euclidean_distances):
 	predicted_cropped_complex_field_distances = euclidean_distances[:, 4:].flatten()
 
 	return pl_flux_distances, og_complex_field_distances, og_cropped_complex_field_distances, predicted_complex_field_distances, predicted_cropped_complex_field_distances
+
+
+def separate_zernike_distances(euclidean_distances):
+	"""
+	Divides the euclidean distances arrays into different subarrays (one for each dataset)
+
+	Input:
+		euclidean_distances (np.array): The array with the merged information
+
+	Returns:
+		pl_flux_distances
+		og_complex_field_distances
+		og_cropped_complex_field_distances
+		predicted_complex_field_distances
+		predicted_cropped_complex_field_distances
+    """
+
+	pl_flux_distances = euclidean_distances[:, 0:1].flatten()
+	lp_modes_distances = euclidean_distances[:, 1:2].flatten()
+	og_complex_field_distances = euclidean_distances[:, 2:3].flatten()
+	predicted_complex_field_distances = euclidean_distances[:, 3:4].flatten()
+	og_cropped_complex_field_distances = euclidean_distances[:, 4:5].flatten()
+	predicted_cropped_complex_field_distances = euclidean_distances[:, 5:].flatten()
+
+	return pl_flux_distances, lp_modes_distances, og_complex_field_distances, predicted_complex_field_distances, og_cropped_complex_field_distances, predicted_cropped_complex_field_distances
+
+
+def compute_center_of_mass(x_coords, y_coords):
+	"""
+	Computes the center of mass of a 2d dataset given the x and y coordinates of its points:
+
+	Input:
+		x_coords (np.array): The array containing the x coordinates of the datapoints
+		y_coords (np.array): The array containing the y coordinates of the datapoints
+
+	Returns:
+		center_x (float): The x coordinate of the center of mass
+		center_y (float): The y coordinate of the center of mass
+	"""
+	# Calculate the center of mass
+	center_x = np.sum(x_coords) / len(x_coords)
+	center_y = np.sum(y_coords) / len(y_coords)
+
+	return center_x, center_y
+
+
+def compute_ratio(datapoints_a,  datapoints_b):
+	"""
+	Computes the ratio between the pairs in the dataset a and dataset b
+
+	Input:
+		datapoints_a (np.array): The numerator of the ratio
+		datapoints_b (np.array): The denominator of the ratio
+
+	Returns:
+		ratio (np.array): The ratio between the datapoints
+	"""
+
+	ratio = datapoints_a/datapoints_b
+	return ratio
+
+
+def compute_anova_test(set_1, set_2, set_3, set_4):
+	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4)
+	return f_statistic, p_value
+
+def compute_anova_test_5_sets(set_1, set_2, set_3, set_4, set_5):
+	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4, set_5)
+	return f_statistic, p_value
