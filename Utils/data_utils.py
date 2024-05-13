@@ -1147,10 +1147,10 @@ def compute_lp_modes_from_complex_field(
 	verbose=False
 	):
 	
-	if os.path.isfile(lp_modes_file_path):
-		print(f"{lp_modes_file_path} already exists")
+	if os.path.isfile(lp_modes_coeffs_file_path):
+		print(f"{lp_modes_coeffs_file_path} already exists")
 		return
-	print(f"Computing {lp_modes_file_path}")
+	print(f"Computing {lp_modes_coeffs_file_path}")
 	# Create the lantern fiber
 	n_core = 1.44
 	n_cladding = 1.4345
@@ -1176,7 +1176,7 @@ def compute_lp_modes_from_complex_field(
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
 
-	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1200,11 +1200,10 @@ def compute_lp_modes_from_complex_field(
 			ylim=0.3,
 			return_abspower=True)
 
-		# In real life, we just measure the intensities of the lp_modes:
-		mode_coupling_complex = np.abs(mode_coupling_complex)**2
-		lp_modes_coeffs[k] = mode_coupling_complex
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
 
-	save_numpy_array(lp_modes_coeffs, lp_modes_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
 
 def compute_mode_coefficients_from_complex_field(

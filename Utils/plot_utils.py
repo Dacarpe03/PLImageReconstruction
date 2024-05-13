@@ -712,50 +712,52 @@ def plot_pl42_euclidean_distances(
     og_complex_field_distances,
     suffix=None,
     ):
-    
+    pl_flux_distances = pl_flux_distances.flatten()
+    lp_coeffs_distances = lp_coeffs_distances.flatten()
+    og_complex_field_distances = og_complex_field_distances.flatten()
     fl_og_corr = np.corrcoef(pl_flux_distances, og_complex_field_distances)[0, 1]
-    pl_og_corr = np.corrcoef(lp_coeffs_distances, cropped_complex_field_distances)[0, 1]
+    pl_og_corr = np.corrcoef(lp_coeffs_distances, og_complex_field_distances)[0, 1]
     fl_pl = np.corrcoef(pl_flux_distances, lp_coeffs_distances)[0, 1]
 
     fig = make_subplots(
         rows=3, 
         cols=1, 
         subplot_titles=(
-            f"PL flux vs PSF<br>Correlation: {round(og_corr, 2)}", 
-            f"LP coeffs vs PSF PSF<br>Correlation: {round(cr_corr, 2)}", 
-            f"PL flux vs LP coeffs<br>Correlation: {round(pr_corr, 2)}")
+            f"PL flux vs PSF<br>Correlation: {round(fl_og_corr, 2)}", 
+            f"LP coeffs vs PSF<br>Correlation: {round(pl_og_corr, 2)}", 
+            f"PL flux vs LP coeffs<br>Correlation: {round(fl_pl, 2)}")
     )
 
-    fl_og_scatter, fl_og_mass_x, fl_og_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+    fl_og_scatter = create_scatter_with_center_of_mass(pl_flux_distances, 
                                                                                    og_complex_field_distances)
 
-    pl_og_scatter, pl_og_mass_x, pl_og_mass_y = create_scatter_with_center_of_mass(lp_coeffs_distances, 
-                                                                                   cropped_complex_field_distances)
+    pl_og_scatter = create_scatter_with_center_of_mass(lp_coeffs_distances, 
+                                                                                   og_complex_field_distances)
 
-    fl_lp_scatter, fl_lp_mass_x, fl_lp_mass_y = create_scatter_with_center_of_mass(pl_flux_distances, 
+    fl_lp_scatter = create_scatter_with_center_of_mass(pl_flux_distances, 
                                                                                    lp_coeffs_distances)
 
-    fig.add_trace(fl_og_scatter, row=1, col=1)
-    fig.add_trace(fl_og_mass_x, row=1, col=1)
-    fig.add_trace(fl_og_mass_y, row=1, col=1)
+    fig.add_trace(fl_og_scatter[0], row=1, col=1)
+    fig.add_trace(fl_og_scatter[1], row=1, col=1)
+    fig.add_trace(fl_og_scatter[2], row=1, col=1)
 
-    fig.add_trace(pl_og_scatter, row=2, col=1)
-    fig.add_trace(pl_og_mass_x, row=2, col=1)
-    fig.add_trace(pl_og_mass_y, row=2, col=1)
+    fig.add_trace(pl_og_scatter[0], row=2, col=1)
+    fig.add_trace(pl_og_scatter[1], row=2, col=1)
+    fig.add_trace(pl_og_scatter[2], row=2, col=1)
 
 
-    fig.add_trace(fl_lp_scatter, row=3, col=1)
-    fig.add_trace(fl_lp_mass_x, row=3, col=1)
-    fig.add_trace(fl_lp_mass_y, row=3, col=1)
+    fig.add_trace(fl_lp_scatter[0], row=3, col=1)
+    fig.add_trace(fl_lp_scatter[1], row=3, col=1)
+    fig.add_trace(fl_lp_scatter[2], row=3, col=1)
 
 
     title = "Euclidean distances for a 42 mode PL"
     if suffix is not None:
-        title += f"{suffix}"
+        title += f" ({suffix})"
     fig.update_layout(
         title_text=title,
         height=700,  # Set the height of the figure
-        width=1000    # Set the width of the figure
+        width=500    # Set the width of the figure
     )
 
     fig.update_traces(
@@ -773,7 +775,7 @@ def create_scatters_for_zernike_dataset(
         n_modes,
     ):
 
-    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = separate_zernike_distances(dataset)
+    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = (dataset)
     
     fl_to_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_psf, name=f"PL flux vs {n_modes} terms Zernike PSF")
     lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_psf, name=f"LP modes vs {n_modes} terms Zernike PSF")
