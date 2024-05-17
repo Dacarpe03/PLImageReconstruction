@@ -100,7 +100,7 @@ for dataset_name, ds_info in PATH_DICTIONARY.items():
         
         print("    Generating UMAP for", psf_path)
         psf_list = []
-        for fnumber in [PSF_TRAIN_FILE_SUFFIXES[0]]:
+        for fnumber in PSF_TRAIN_FILE_SUFFIXES:
             psf_subpath = f"{psf_path}{fnumber}{NUMPY_SUFFIX}"
             psf_sublist = np.load(psf_subpath)
             psf_list.append(psf_sublist)
