@@ -20,6 +20,11 @@ from psf_constants import FC_PREDICTED_TRAIN_2M_ZERNIKE_COMPLEX_FIELDS_FILE_PREF
 import umap
 import numpy as np
 
+import tensorflow as tf
+ 
+gpus = tf.config.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpus[0], True)
+
 
 PATH_DICTIONARY = {
     "TR2": [FC_PREDICTED_TRAIN_2M_ZERNIKE_COMPLEX_FIELDS_FILE_PREFIX, 
