@@ -775,7 +775,7 @@ def create_scatters_for_zernike_dataset(
         n_modes,
     ):
 
-    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = (dataset)
+    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = separate_zernike_distances(dataset)
     
     fl_to_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_psf, name=f"PL flux vs {n_modes} terms Zernike PSF")
     lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_psf, name=f"LP modes vs {n_modes} terms Zernike PSF")
@@ -833,12 +833,32 @@ def plot_one_dataset_zernike_euclidean_distances(
         fig.add_trace(mass_y, row=row, col=col)
         row+=1
 
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=1)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=2)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=3)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=4)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=5)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=6)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=7)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=8)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=9)
+
+    fig.update_yaxes(title_text="PSF distance", col=1, row=1)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=2)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=3)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=4)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=5)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=6)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=7)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=8)
+    fig.update_yaxes(title_text="LP coefficients distance", col=1, row=9)
+
     title = f"{modes} modes"
     if suffix is not None:
         title += f"in train subset {suffix}"
     fig.update_layout(
         title_text=title,
-        height=1500,  # Set the height of the figure
+        height=1900,  # Set the height of the figure
         width=400    # Set the width of the figure
     )
 

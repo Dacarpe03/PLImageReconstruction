@@ -1044,7 +1044,8 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	transfer_matrix_path,
 	plot=False,
 	verbose=False,
-	overwrite=False
+	overwrite=False,
+	only_lp_coeffs=False
 	):
 	
 	if os.path.isfile(output_fluxes_file_path) and not overwrite:
@@ -1080,8 +1081,10 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	transfer_matrix = load_arbitrary_transfer_matrix(transfer_matrix_path)
 	lantern_fiber.Cmat = transfer_matrix
 
-	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
-	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	if not only_lp_coeffs:
+		output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1106,11 +1109,13 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			return_abspower=True)
 		print(mode_coupling_complex)
 		# Now get the complex amplitudes of the PL outputs:
-		pl_outputs = transfer_matrix @ mode_coupling_complex
 
-		# In real life, we just measure the intensities of the outputs:
-		pl_output_fluxes = np.abs(pl_outputs)**2
-		output_fluxes[k] = pl_output_fluxes
+		if not only_lp_coeffs:
+			pl_outputs = transfer_matrix @ mode_coupling_complex
+
+			# In real life, we just measure the intensities of the outputs:
+			pl_output_fluxes = np.abs(pl_outputs)**2
+			output_fluxes[k] = pl_output_fluxes
 
 		print(np.angle(mode_coupling_complex))
 		if plot:
@@ -1130,12 +1135,13 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			plt.tight_layout()
 
 
-		mode_coupling_complex = np.abs(mode_coupling_complex)**2
-		# In real life, we just measure the intensities of the lp_modes:
-		lp_modes_coeffs[k] = mode_coupling_complex
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
+	
+	if not only_lp_coeffs:	
+		# Save output fluxes
+		save_numpy_array(output_fluxes, output_fluxes_file_path)
 		
-	# Save output fluxes
-	save_numpy_array(output_fluxes, output_fluxes_file_path)
 	# Save lp modes
 	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
@@ -1381,7 +1387,8 @@ def compute_square_module_amplitude_from_fc_complex_field(electric_field):
 def compute_pairs_euclidean_distances(
 	points_array, 
 	selected_pairs,
-	is_complex_field=False):
+	is_complex_field=False,
+	is_lp_coefficients=False):
 	"""
 	Function that computes the euclidean distances given pairs of points in a dataset
 
@@ -1401,8 +1408,14 @@ def compute_pairs_euclidean_distances(
 		point_b = points_array[b_index]
 
 		if is_complex_field:
-			point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
-			point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
+			#point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
+			#point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
+			point_a = point_a.flatten()
+			point_b = point_b.flatten()
+
+		elif is_lp_coefficients:
+			point_a = point_a.flatten()
+			point_b = point_b.flatten()
 
 		euclidean_distance = compute_euclidean_distance(point_a,
 														point_b)
