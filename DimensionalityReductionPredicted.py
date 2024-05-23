@@ -43,8 +43,8 @@ PATH_DICTIONARY = {
 for dataset_name, ds_info in PATH_DICTIONARY.items():
     
     reducer = umap.UMAP(n_neighbors=500,
-                        min_dist=0.3,
-                        n_components=3,
+                        min_dist=0.5,
+                        n_components=1000,
                         metric='euclidean')
     psf_path = ds_info[0]
     embedding_path = ds_info[1]
