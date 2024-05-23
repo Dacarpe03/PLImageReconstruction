@@ -1048,7 +1048,7 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	only_lp_coeffs=False
 	):
 	
-	if os.path.isfile(output_fluxes_file_path) and not overwrite:
+	if os.path.isfile(output_fluxes_file_path) and not overwrite and not only_lp_coeffs:
 		print(f"{output_fluxes_file_path} already exists")
 		return
 	print(f"Computing {output_fluxes_file_path}")
@@ -1074,7 +1074,6 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	lantern_fiber.find_fiber_modes()
 	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
-	print(modes_to_measure)
 	input_complex_fields = np.load(complex_fields_file_path)
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
@@ -1107,7 +1106,6 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			complex=True,
 			ylim=0.3,
 			return_abspower=True)
-		print(mode_coupling_complex)
 		# Now get the complex amplitudes of the PL outputs:
 
 		if not only_lp_coeffs:
@@ -1117,7 +1115,6 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			pl_output_fluxes = np.abs(pl_outputs)**2
 			output_fluxes[k] = pl_output_fluxes
 
-		print(np.angle(mode_coupling_complex))
 		if plot:
 			# Plot input mode coefficients and output fluxes
 			xlabels = np.arange(transfer_matrix.shape[0])
