@@ -10,11 +10,11 @@
 				\hline
 				\textbf{Dataset type} & \textbf{Number of neighbors} & \textbf{Min distance} & \textbf{Number of components} \\
 				\hline
-				Zernike modes PSF & 500 & 0.3 & 3 \\
+				Zernike modes PSF & 500 & 0.5 & 1000 \\
 				\hline
-				LP coefficients & 500 & 0.1 & 2 \\
+				LP coefficients & 500 & 0.3 & 3 \\
 				\hline
-				PL intensities & 500 & 0.1 & 2 \\
+				PL intensities & 500 & 0.3 & 3 \\
 				
 				\hline
 			\end{tabular}
@@ -25,53 +25,43 @@
 		\begin{figure*}[ht!]
 			\centering
 			\subfloat[2 Zernike modes LP coefficients UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-2mlpumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-2mlpcoefficientsumap.png}}
 			\hspace{\fill}
 			\subfloat[2 Zernike modes PL intensities UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-2mplumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-2mplintensitiesumap.png}}
 			\hspace{\fill}
-			\subfloat[2 Zernike modes PSF UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-2mpsfumap.png}}
 			\\
 			
 			\subfloat[5 Zernike modes LP coefficients UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-5mlpumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-5mlpcoefficientsumap.png}}
 			\hspace{\fill}
 			\subfloat[5 Zernike modes PL intensities UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-5mplumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-5mplintensitiesumap.png}}
 			\hspace{\fill}
-			\subfloat[5 Zernike modes PSF UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-5mpsfumap.png}}
 			\\
 			
 			\subfloat[9 Zernike modes LP coefficients UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-9mlpumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-9mlpcoefficientsumap.png}}
 			\hspace{\fill}
 			\subfloat[9 Zernike modes PL intensities UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-9mplumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-9mplintensitiesumap.png}}
 			\hspace{\fill}
-			\subfloat[9 Zernike modes PSF UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-9mpsfumap.png}}
 			\\
 			
 			\subfloat[14 Zernike modes LP coefficients UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-14mlpumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-14mlpcoefficientsumap.png}}
 			\hspace{\fill}
 			\subfloat[14 Zernike modes PL intensities UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-14mplumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-14mplintensitiesumap.png}}
 			\hspace{\fill}
-			\subfloat[14 Zernike modes PSF UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-14mpsfumap.png}}
 			\\
 			
 			\subfloat[20 Zernike modes LP coefficients UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-20mlpumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-20mlpcoefficientsumap.png}}
 			\hspace{\fill}
 			\subfloat[20 Zernike modes PL intensities UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-20mplumap.png}}
+			\includegraphics[ width=0.31\textwidth]{pid-20mplintensitiesumap.png}}
 			\hspace{\fill}
-			\subfloat[20 Zernike modes PSF UMAP]{%
-			\includegraphics[ width=0.31\textwidth]{pid-20mpsfumap.png}}
 			\\
 			
 			\caption{Datasets UMAPs}
@@ -90,17 +80,17 @@
 				\hline
 				\textbf{} & \textbf{LP coeffs} & \textbf{PL intensities} & \textbf{PSF} & \textbf{Pred PSF}\\
 				\hline
-				\textbf{DBSCAN $\epsilon$} & 0.11 & 0.102 & 0.125 & 0.125\\
+				\textbf{DBSCAN $\epsilon$} & 0.12 & 0.116 & 0.157 & 0.157\\
 				\hline
-				\textbf{DBSCAN neighbors} & 6 & 4 & 6 & 6\\
+				\textbf{DBSCAN neighbors} & 5 & 4 & 5 & 5\\
 				\hline
-				\textbf{Number of clusters} & 1447 & 1553 & 1485 & 1528\\
+				\textbf{Number of clusters} & 1515 & 1547 & 1466 & 1569\\
 				\hline
-				\textbf{Cluster density mean} & 42.37 & 41.59 & 41.52 & 40.20\\
+				\textbf{Cluster density mean} & 41.89 & 42.04 & 43.57 & 40.43\\
 				\hline
-				\textbf{Cluster density variance} & 157.86 & 188.90 & 90.50 & 87.57\\
+				\textbf{Cluster density variance} & 125.13 & 150.99 & 138.00 & 109.82\\
 				\hline
-				\textbf{Non noise points} & 61313 & 64594 & 61665 & 61427\\
+				\textbf{Non noise points} & 63470 & 65046 & 63877 & 63443\\
 				\hline
 			\end{tabular}
 		\caption{Clustering for 2 Zernike modes datasets}
@@ -114,17 +104,17 @@
 				\hline
 				\textbf{} & \textbf{LP coeffs} & \textbf{PL intensities} & \textbf{PSF} & \textbf{Pred PSF}\\
 				\hline
-				\textbf{DBSCAN $\epsilon$} & 0.0385 & 0.041 & 0.131 & 0.131\\
+				\textbf{DBSCAN $\epsilon$} & 0.133 & 0.133 & 0.31 & 0.31\\
 				\hline
-				\textbf{DBSCAN neighbors} & 5 & 5 & 5 & 5\\
+				\textbf{DBSCAN neighbors} & 5 & 5 & 4 & 4\\
 				\hline
-				\textbf{Number of clusters} & 1601 & 1527 & 1591 & 1681\\
+				\textbf{Number of clusters} & 1528 & 1621 & 1557 & 1548\\
 				\hline
-				\textbf{Cluster density mean} & 39.42 & 41.43 & 33.00 & 31.36\\
+				\textbf{Cluster density mean} & 35.33 & 31.70 & 29.65 & 29.93\\
 				\hline
-				\textbf{Cluster density variance} & 348.27 & 273.60 & 857.67 & 844.99\\
+				\textbf{Cluster density variance} & 907.70 & 362.28 & 864.12 & 864.49\\
 				\hline
-				\textbf{Non noise points} & 63120 & 63266 & 52509 & 52719\\
+				\textbf{Non noise points} & 53995 & 51391 & 46175 & 46333\\
 				\hline
 			\end{tabular}
 		\caption{Clustering for 5 Zernike modes datasets}
@@ -138,17 +128,17 @@
 				\hline
 				\textbf{} & \textbf{LP coeffs} & \textbf{PL intensities} & \textbf{PSF} & \textbf{Pred PSF}\\
 				\hline
-				\textbf{DBSCAN $\epsilon$} & 0.0335 & 0.0355 & 0.105 & 0.105\\
+				\textbf{DBSCAN $\epsilon$} & 0.11 & 0.12 & 0.265 & 0.265\\
 				\hline
-				\textbf{DBSCAN neighbors} & 6 & 5 & 5 & 5\\
+				\textbf{DBSCAN neighbors} & 5 & 6 & 4 & 4\\
 				\hline
-				\textbf{Number of clusters} & 1649 & 1666 & 1685 & 1628\\
+				\textbf{Number of clusters} & 1554 & 1569 & 1408 & 1381\\
 				\hline
-				\textbf{Cluster density mean} & 37.05 & 37.29 & 30.04 & 31.95\\
+				\textbf{Cluster density mean} & 33.87 & 34.31 & 33.06 & 33.81\\
 				\hline
-				\textbf{Cluster density variance} & 239.01 & 403.49 & 843.20 & 900.53 \\
+				\textbf{Cluster density variance} & 899.54 & 839.96 & 985.96 & 998.79\\
 				\hline
-				\textbf{Non noise points} & 61106 & 62136 & 50619 & 52024\\
+				\textbf{Non noise points} & 52645 & 53847 & 46556 & 46692\\
 				\hline
 			\end{tabular}
 		\caption{Clustering for 9 Zernike modes datasets}
@@ -162,17 +152,17 @@
 				\hline
 				\textbf{} & \textbf{LP coeffs} & \textbf{PL intensities} & \textbf{PSF} & \textbf{Pred PSF}\\
 				\hline
-				\textbf{DBSCAN $\epsilon$} & 0.0322 & 0.0355 & 0.1 & 0.1\\
+				\textbf{DBSCAN $\epsilon$} & 0.11 & 0.111 & 0.25 & 0.25\\
 				\hline
-				\textbf{DBSCAN neighbors} & 6 & 6 & 5 & 5\\
+				\textbf{DBSCAN neighbors} & 5 & 6 & 4 & 4\\
 				\hline
-				\textbf{Number of clusters} & 1472 & 1590 & 1481 & 1467\\
+				\textbf{Number of clusters} & 1492 & 1587 & 1678 & 1654\\
 				\hline
-				\textbf{Cluster density mean} & 41.82 & 37.57 & 36.07 & 36.30\\
+				\textbf{Cluster density mean} & 37.58 & 25.88 & 26.19 & 26.68\\
 				\hline
-				\textbf{Cluster density variance} & 330.54 & 322.57 & 998.39 & 1013.64\\
+				\textbf{Cluster density variance} & 937.10 & 282.39 & 792.29 & \\
 				\hline
-				\textbf{Non noise points} & 61570 & 59751 & 53428 & 53265\\
+				\textbf{Non noise points} & 56076 & 41081 & 43947 & 802.27\\
 				\hline
 			\end{tabular}
 		\caption{Clustering for 14 Zernike modes datasets}
@@ -186,17 +176,17 @@
 				\hline
 				\textbf{} & \textbf{LP coeffs} & \textbf{PL intensities} & \textbf{PSF} & \textbf{Pred PSF}\\
 				\hline
-				\textbf{DBSCAN $\epsilon$} & 0.031 & 0.0348 & 0.094 & 0.094\\
+				\textbf{DBSCAN $\epsilon$} & 0.109 & 0.113 & 0.25 & 0.25\\
 				\hline
-				\textbf{DBSCAN neighbors} & 6 & 7 & 5 & 5\\
+				\textbf{DBSCAN neighbors} & 6 & 5 & 4 & 4\\
 				\hline
-				\textbf{Number of clusters} & 1596 & 1574 & 1543 & 1702\\
+				\textbf{Number of clusters} & 1364 & 1524 & 1586 & 1688\\
 				\hline
-				\textbf{Cluster density mean} & 38.09 & 35.22 & 33.11 & 28.75\\
+				\textbf{Cluster density mean} & 36.79 & 35.80 & 28.33 & 25.94\\
 				\hline
-				\textbf{Cluster density variance} & 305.13 & 250.72 & 905.19 & 810.40\\
+				\textbf{Cluster density variance} & 870.92 & 965.84 & 861.31 & 787.24\\
 				\hline
-				\textbf{Non noise points} & 60804 & 55444 & 51090 & 48941\\
+				\textbf{Non noise points} & 50189 & 54563 & 44940 & 43791\\
 				\hline
 			\end{tabular}
 		\caption{Clustering for 20 Zernike modes datasets}
@@ -210,73 +200,73 @@
 		\begin{lstlisting}
 	NMI from datasets created with 2 Zernike Modes
     		- LP coeffs and PL intensities:
-    			0.8219524719004785
+    			0.8164576430824315
     		- LP coeffs and PSF: 
-    			0.8267679974838258
+    			0.8175003226815989
     		- PL intensities and PSF:
-    			0.8006407078651336
+    			0.7994322323774545
     		- LP coeffs and predicted PSF: 
-    			0.8278719240660488
+    			0.8175646434293075
     		- PL intensities and predicted PSF: 
-    			0.8031544640644421
+    			0.7983573747301721
     		- Predicted PSF and original PSF: 
-    			0.8462724838435687
+    			0.8095814407687527
     				
 	NMI from datasets created with 5 Zernike Modes
     		- LP coeffs and PL intensities: 
-    			0.42285255296107516
+    			0.2546247849754754
     		- LP coeffs and PSF clusters: 
-    			0.3621602125646374
+    			0.2761463896986409
     		- PL intensities and PSF clusters:
-    			0.26905538939513185
+    			0.2169490063500632
     		- LP coeffs and predicted PSF clusters: 
-    			0.33778878770748194
+    			0.28175438653504503
     		- PL intensities and predicted PSF clusters: 
-    			0.27117206275597827
+    			0.21635800151194817
     		- Predicted PSF and original PSF clusters: 
-    			0.30681420233381534
+    			0.5464235488639057
 
 	NMI from datasets created with 9 Zernike Modes
     		- LP coeffs and PL intensities: 
-    			0.38776580755209583
+    			0.19594140953604774
     		- LP coeffs and PSF clusters: 
-    			0.2800781281347026
+    			0.19331293998931096
     		- PL intensities and PSF clusters: 
-    			0.20361911230443988
+    			0.14033346512809078
     		- LP coeffs and predicted PSF clusters: 
-    			0.28157126796049103
+    			0.18823201153015062
     		- PL intensities and predicted PSF clusters: 
-    			0.1996203977942372
+    			0.13583799714028102
     		- Predicted PSF and original PSF clusters: 
-    			0.31825281172097275
+    			0.4208027610913512
 
 	NMI from datasets created with 14 Zernike Modes
 		- LP coeffs and PL intensities: 
-			0.3384222807204235
+			0.2061877271415178
 		- LP coeffs and PSF clusters: 
-			0.27310238481860455
+			0.22489998453619262
    		- PL intensities and PSF clusters: 
-   			0.18201429597315782
+   			0.15638010188248286
    		- LP coeffs and predicted PSF clusters: 
-    			0.27181375146600834
+    			0.22450523757936153
     		- PL intensities and predicted PSF clusters: 
-    			0.17647317929216427
+    			0.15124830319698243
     		- Predicted PSF and original PSF clusters: 
-    			0.4010800021054478
+    			0.3978566533293418
 
 	NMI from datasets created with 20 Zernike Modes
     		- LP coeffs and PL intensities:
-    			0.3349100276934313
+    			0.15590863566718433
     		- LP coeffs and PSF clusters: 
-    			0.2722495673325805
+    			0.2096232888801945
     		- PL intensities and PSF clusters: 
-    			0.19338019736560508
+    			0.11871048630190495
     		- LP coeffs and predicted PSF clusters: 
-    			0.2803220715684146
+    			0.20997226177915623
     		- PL intensities and predicted PSF clusters: 
-    			0.20028997925400618
+    			0.1269907541345761
     		- Predicted PSF and original PSF clusters: 
-    			0.3020698591006825
+    			0.2983128702057625
 	\end{lstlisting}
 	
 		\begin{itemize}
