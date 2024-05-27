@@ -677,7 +677,7 @@ def load_subfile_for_train_generator(feature_path_prefix,
 ### PSF RELATED
 def generate_psf_complex_fields(
 	filepath,
-	telescope_diameter=1,
+	telescope_diameter=0.5,
 	wavelength=1e-6,
 	pupil_grid_size=256,
 	focal_q=8,
@@ -688,7 +688,8 @@ def generate_psf_complex_fields(
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
-	save_wavefront_phase=False
+	save_wavefront_phase=False,
+	overwrite=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -700,11 +701,11 @@ def generate_psf_complex_fields(
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
 
-	D_tel = 0.5
+	D_tel = telescope_diameter
 	wavelength = 1e-6
 
-	pupil_grid = make_pupil_grid(256, D_tel)
-	focal_grid = make_focal_grid(q=8, num_airy=8, spatial_resolution=wavelength/D_tel)
+	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
+	focal_grid = make_focal_grid(q=8, num_airy=num_airy, spatial_resolution=wavelength/D_tel)
 	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
 
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
@@ -725,9 +726,11 @@ def generate_psf_complex_fields(
 												 plot=plot)
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
-		   						   	   filepath)
+		   						   	   filepath,
+		   						   	   overwrite=overwrite)
 
-	if save_wavefronts_phase:
+	if save_wavefront_phase:
+		print("Aqui")
 		save_wavefronts_phase(propagated_wavefronts,
 							  filepath)
 
@@ -736,7 +739,7 @@ def generate_psf_complex_fields(
 
 def generate_zernike_psf_complex_fields(
 	filepath,
-	telescope_diameter=1,
+	telescope_diameter=0.5,
 	wavelength=1e-6,
 	pupil_grid_size=256,
 	focal_q=8,
@@ -745,7 +748,8 @@ def generate_zernike_psf_complex_fields(
 	zernike_modes=1,
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
-	save_complex_fields=True
+	save_complex_fields=True,
+	overwrite=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -756,11 +760,11 @@ def generate_zernike_psf_complex_fields(
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
-	if os.path.isfile(filepath):
+	if os.path.isfile(filepath) and not overwrite:
 		print(f"{filepath} already exists")
 		return
 
-	D_tel = 0.5
+	D_tel = telescope_diameter
 
 	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
 	
@@ -796,7 +800,7 @@ def generate_zernike_psf_complex_fields(
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
 		   						   	   filepath,
-		   						   	   overwrite=False)
+		   						   	   overwrite=overwrite)
 
 	return None
 
