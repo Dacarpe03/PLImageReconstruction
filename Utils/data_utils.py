@@ -738,7 +738,8 @@ def generate_psf_complex_fields(
 
 
 def generate_zernike_psf_complex_fields(
-	filepath,
+	psf_filepath,
+	zernike_coeffs_filepath,
 	telescope_diameter=0.5,
 	wavelength=1e-6,
 	pupil_grid_size=256,
@@ -760,8 +761,8 @@ def generate_zernike_psf_complex_fields(
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
-	if os.path.isfile(filepath) and not overwrite:
-		print(f"{filepath} already exists")
+	if os.path.isfile(psf_filepath) and not overwrite:
+		print(f"{psf_filepath} already exists")
 		return
 
 	D_tel = telescope_diameter
@@ -774,21 +775,18 @@ def generate_zernike_psf_complex_fields(
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
 
 	propagated_wavefronts = []
+	zernike_coefficients_list = []
 
 	for i in range(n_samples):
 
-		zernike_complex_field = create_zernike_complex_field(starting_mode,
-															 zernike_modes,
-															 pupil_grid,
-															 aperture,
-															 D_tel)
-
-		#imshow_field(zernike_complex_field)
-		#plt.colorbar()
+		zernike_complex_field, zernike_coefficients = create_zernike_complex_field(starting_mode,
+															 				 	zernike_modes,
+															 					pupil_grid,
+															 					aperture,
+															 					D_tel)
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
-		imshow_field(zernike_wavefront.phase)
 
 		propagatated_wf = propagate_zernike_wavefront(zernike_wavefront,
 									propagator,
@@ -796,11 +794,17 @@ def generate_zernike_psf_complex_fields(
 									plot=plot)
 
 		propagated_wavefronts.append(propagatated_wf)
+		zernike_coefficients_list.append(zernike_coefficients)
 
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
-		   						   	   filepath,
+		   						   	   psf_filepath,
 		   						   	   overwrite=overwrite)
+
+		zernike_coefficients_array = np.vstack(zernike_coefficients_list)
+		save_numpy_array(zernike_coefficients_array,
+						 zernike_coeffs_filepath,
+						 overwrite=overwrite)
 
 	return None
 
@@ -826,10 +830,13 @@ def create_zernike_complex_field(
 		mode_coefficients.append(mode_coeff)
 
 
-	phase_pupil = zern_basis.linear_combination(np.array(mode_coefficients))
+	mode_coefficients = np.array(mode_coefficients)
+	phase_pupil = zern_basis.linear_combination(mode_coefficients)
 	zernike_complex_pupil = aperture * np.exp(1j*phase_pupil)
 
-	return zernike_complex_pupil
+
+
+	return zernike_complex_pupil, mode_coefficients
 
 
 def propagate_zernike_wavefront(
@@ -1012,7 +1019,7 @@ def compute_output_fluxes_from_complex_field(
 			show_plots=plot, 
 			fignum=11,
 			complex=True,
-			ylim=0.3,
+			ylim=None,
 			return_abspower=True)
 
 		# Now get the complex amplitudes of the PL outputs:
@@ -1038,7 +1045,7 @@ def compute_output_fluxes_from_complex_field(
 			plt.title('Output fluxes')
 			plt.tight_layout()
 
-	save_numpy_array(output_fluxes, output_fluxes_file_path)
+	save_numpy_array(output_fluxes, output_fluxes_file_path, overwrite=overwrite)
 
 
 def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
@@ -1151,10 +1158,11 @@ def compute_lp_modes_from_complex_field(
 	complex_fields_file_path,
 	lp_modes_coeffs_file_path,
 	plot=False,
-	verbose=False
+	verbose=False,
+	overwrite=False
 	):
 	
-	if os.path.isfile(lp_modes_coeffs_file_path):
+	if os.path.isfile(lp_modes_coeffs_file_path) and not overwrite:
 		print(f"{lp_modes_coeffs_file_path} already exists")
 		return
 	print(f"Computing {lp_modes_coeffs_file_path}")
@@ -1210,7 +1218,7 @@ def compute_lp_modes_from_complex_field(
 		lp_modes_coeffs[k][0] = mode_coupling_complex.real
 		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
 
-	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path, overwrite=overwrite)
 
 
 def compute_mode_coefficients_from_complex_field(
