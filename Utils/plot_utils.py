@@ -67,7 +67,7 @@ def plot_fluxes(original_flux,
 def plot_model_history(
     history,
     model_name,
-    top_y_lim=0.5,
+    top_y_lim=None,
     show_plot=True,
     save_image=True
     ):
