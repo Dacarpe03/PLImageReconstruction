@@ -958,11 +958,13 @@ def save_wavefronts_phase(
 
 def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
+	lp_modes_coeffs_file_path,
 	output_fluxes_file_path,
 	nmodes=19,
 	plot=False,
 	verbose=False,
-	overwrite=False
+	overwrite=False,
+	only_lp_coeffs=False
 	):
 	
 	if os.path.isfile(output_fluxes_file_path) and not overwrite:
@@ -999,6 +1001,7 @@ def compute_output_fluxes_from_complex_field(
 	transfer_matrix = load_transfer_matrix()
 
 	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1045,7 +1048,12 @@ def compute_output_fluxes_from_complex_field(
 			plt.title('Output fluxes')
 			plt.tight_layout()
 
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
+
 	save_numpy_array(output_fluxes, output_fluxes_file_path, overwrite=overwrite)
+	# Save lp modes
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
 
 def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
