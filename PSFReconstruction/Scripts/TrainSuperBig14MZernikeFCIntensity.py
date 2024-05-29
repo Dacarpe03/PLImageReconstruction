@@ -16,7 +16,7 @@ from modeling_utils import create_fully_connected_architecture_for_amplitude_and
 
 from kobol_configurations import ZernikeFC as ModelConfig
 
-from plot_utils import plot_amplitude_phase_fully_connected_prediction_from_electric_field, \
+from plot_utils import plot_intensity_fully_connected_prediction_from_electric_field, \
                        plot_model_history
 
 import tensorflow as tf
@@ -72,7 +72,7 @@ store_model(model,
 
 
 n = 106
-plot_amplitude_phase_fully_connected_prediction_from_electric_field(model,
+plot_intensity_fully_connected_prediction_from_electric_field(model,
                                                                     validation_fluxes_array[n],
                                                                     validation_complex_fields_array[n],
                                                                     save_image=True,
@@ -84,7 +84,7 @@ n = 2
 tf = load_numpy_data(f"{PROCESSED_TRAIN_14M_ZERNIKE_OUTPUT_FLUXES_FILE_PREFIX}00.npy")
 tc = load_numpy_data(f"{PROCESSED_TRAIN_14M_ZERNIKE_COMPLEX_FIELDS_INTENSITY_FILE_PREFIX}00.npy")
 
-plot_amplitude_phase_fully_connected_prediction_from_electric_field(model,
+plot_intensity_fully_connected_prediction_from_electric_field(model,
                                                                     tf[n],
                                                                     tc[n],
                                                                     save_image=True,

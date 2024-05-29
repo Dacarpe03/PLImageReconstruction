@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
+                       compute_intensity_from_electric_field, \
                        reshape_fc_electric_field_to_real_imaginary_matrix, \
                        compute_center_of_mass, \
                        compute_ratio, \
@@ -539,6 +540,90 @@ def plot_amplitude_phase_from_electric_field(
     return None
 
 
+def plot_intensity_from_electric_field(
+    original_intensity,
+    predicted_intensity,
+    model_name,
+    log_scale=True,
+    save_image=False,
+    validation=False,
+    train=False,
+    show_plot=True):
+    """
+    Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
+    
+    Input:
+        complex_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        None
+
+    """
+
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("Original Intensity", "Predicted Intensity", "Intensity residual"))
+
+    if log_scale:
+        original_intensity = np.log10((original_intensity/original_intensity.max()))
+        predicted_intensity = np.log10((predicted_intensity/predicted_intensity.max()))
+        
+    original_intensity_heatmap = go.Heatmap(
+                                            z=original_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.14,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                            ))
+
+    predicted_intensity_heatmap = go.Heatmap(
+                                            z=predicted_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.5,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                    ))
+
+    residual_intensity_heatmap = go.Heatmap(
+                                            z=original_intensity - predicted_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.86,
+                                                y=0.47,
+                                                len=0.3,
+                                                thickness=15
+                                        ))
+
+    fig.add_trace(original_intensity_heatmap, row=1, col=1)
+    fig.add_trace(predicted_intensity_heatmap, row=1, col=2)
+    fig.add_trace(residual_intensity_heatmap, row=1, col=3)
+    
+    fig.update_layout(
+        title_text=f"PSF reconstruction from model {model_name}",
+        height=350,  # Set the height of the figure
+        width=800    # Set the width of the figure
+    )
+
+    if show_plot:
+        # Show the plot
+        fig.show()
+
+    if save_image:
+        if validation:
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-validation.png"
+        if train:
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-train.png"
+
+        fig.write_image(img_path)
+
+    return None
+
+
 def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
     model,
     ouput_flux,
@@ -586,6 +671,51 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
                                              validation=validation,
                                              train=train,
                                              show_plot=show_plot)
+
+    return None
+
+
+def plot_intensity_fully_connected_prediction_from_electric_field(
+    model,
+    ouput_flux,
+    original_intensity,
+    log_scale=True,
+    save_image=True,
+    validation=False,
+    train=False,
+    cropped=False,
+    show_plot=True
+    ):
+    """
+    Function that plots the amplitude and phase, both original and predicted
+
+    Input:
+        model (keras.model): The model that will predict the electric field in the pupil plane
+        output_flux (np.array): The input that the model will predict from
+        original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
+
+    Returns:
+        None
+    """
+
+    input_output_flux = np.array([ouput_flux])
+    predicted_intensity = model.predict(input_output_flux)[0]
+
+    if cropped:
+        reshaped_predicted_intensity = predicted_electric_field.reshape(64, 64)
+        reshaped_original_intensity = original_intensity.reshape(64, 64)
+    else:
+        reshaped_predicted_intensity = predicted_electric_field.reshape(128, 128)
+        reshaped_original_intensity = original_intensity.reshape(128, 128)
+
+    plot_intensity_from_electric_field(reshaped_original_intensity,
+                                        reshaped_predicted_intensity,
+                                        model.name,
+                                        log_scale=log_scale,
+                                        save_image=save_image,
+                                        validation=validation,
+                                        train=train,
+                                        show_plot=show_plot)
 
     return None
 

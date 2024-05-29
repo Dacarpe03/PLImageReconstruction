@@ -1349,6 +1349,33 @@ def compute_amplitude_and_phase_from_electric_field(
     return amplitudes, phases
 
 
+def compute_intensity_from_electric_field(
+    electric_field
+    ):
+    """
+    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+
+    Input:
+        electric_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
+        phases (np.array): A numpy array containing the phases of the points in the complex field
+    """
+
+    intensities = np.zeros(electric_field.shape)
+    
+    # Iterar sobre cada elemento de la matriz de números complejos
+    for i in range(electric_field.shape[0]):
+        for j in range(electric_field.shape[1]):
+
+            complex_number = electric_field[i, j]
+
+            intensities[i, j] = np.abs(complex_number)**2
+
+    return amplitudes, phases
+
+
 def reshape_fc_electric_field_to_real_imaginary_matrix(
 	electric_field,
 	og_shape_depth = 2,
