@@ -1452,10 +1452,8 @@ def compute_pairs_euclidean_distances(
 		point_b = points_array[b_index]
 
 		if is_complex_field:
-			#point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
-			#point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
-			point_a = point_a.flatten()
-			point_b = point_b.flatten()
+			point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
+			point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
 
 		elif is_lp_coefficients:
 			point_a = point_a.flatten()
@@ -1524,12 +1522,13 @@ def separate_zernike_distances(euclidean_distances):
 
 	pl_flux_distances = euclidean_distances[:, 0:1].flatten()
 	lp_modes_distances = euclidean_distances[:, 1:2].flatten()
-	og_complex_field_distances = euclidean_distances[:, 2:3].flatten()
-	predicted_complex_field_distances = euclidean_distances[:, 3:4].flatten()
-	og_cropped_complex_field_distances = euclidean_distances[:, 4:5].flatten()
-	predicted_cropped_complex_field_distances = euclidean_distances[:, 5:].flatten()
+	zernike_coeffs_distances = euclidean_distances[:, 2:3].flatten()
+	og_complex_field_distances = euclidean_distances[:, 3:4].flatten()
+	predicted_complex_field_distances = euclidean_distances[:, 4:5].flatten()
+	og_cropped_complex_field_distances = euclidean_distances[:, 5:6].flatten()
+	predicted_cropped_complex_field_distances = euclidean_distances[:, 6:].flatten()
 
-	return pl_flux_distances, lp_modes_distances, og_complex_field_distances, predicted_complex_field_distances, og_cropped_complex_field_distances, predicted_cropped_complex_field_distances
+	return pl_flux_distances, lp_modes_distances, zernike_coeffs_distances, og_complex_field_distances, predicted_complex_field_distances, og_cropped_complex_field_distances, predicted_cropped_complex_field_distances
 
 
 def compute_center_of_mass(x_coords, y_coords):

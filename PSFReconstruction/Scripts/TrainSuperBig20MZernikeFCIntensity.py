@@ -14,7 +14,7 @@ from modeling_utils import create_fully_connected_architecture_for_amplitude_and
                            train_model_with_generator, \
                            store_model
 
-from kobol_configurations import ZernikeFC as ModelConfig
+from kobol_configurations import ZernikeIntensityFC as ModelConfig
 
 from plot_utils import plot_intensity_fully_connected_prediction_from_electric_field, \
                        plot_model_history
