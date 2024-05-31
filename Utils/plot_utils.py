@@ -701,10 +701,10 @@ def plot_intensity_fully_connected_prediction_from_electric_field(
     predicted_intensity = model.predict(input_output_flux)[0]
 
     if cropped:
-        reshaped_predicted_intensity = predicted_electric_field.reshape(64, 64)
+        reshaped_predicted_intensity = predicted_intensity.reshape(64, 64)
         reshaped_original_intensity = original_intensity.reshape(64, 64)
     else:
-        reshaped_predicted_intensity = predicted_electric_field.reshape(128, 128)
+        reshaped_predicted_intensity = predicted_intensity.reshape(128, 128)
         reshaped_original_intensity = original_intensity.reshape(128, 128)
 
     plot_intensity_from_electric_field(reshaped_original_intensity,
