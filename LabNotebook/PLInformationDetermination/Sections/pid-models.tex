@@ -7,7 +7,11 @@
 	*ARCHITECTURE HYPERPARAMETERS:
 		-Fully Connected
 		-Input shape: 19
-		-Output shape: 32768
+		-Output shape: 
+			- 32768 for original sized PSF electric field
+			- 16384 for original sized PSF intensity 
+			- 8192 for cropped sized PSF electric field
+			- 4096 for cropped sized PSF intensity 
 		-Hidden layers: [1024, 1024, 1024, 1024, 1024, 1024]
 		-Regularizer: None
 		-Hidden Layers Activation: relu
@@ -21,7 +25,7 @@
 		-Metric: MSE
 	
 	*TRAINING HYPERPARAMETERS:
-		-Epochs: 200
+		-Epochs: 100
 		-Batch size: 32
 		-Callbacks: 
 			-ReduceLROnPlateau: MSE 20 x0.1
@@ -69,7 +73,75 @@
 		\end{figure*}
 	
 \FloatBarrier
+
 	\subsubsection{Zernike modes related models}
+	
+		\begin{figure*}[ht!]
+				\centering	
+				\subfloat[2 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike2MFC70000-1-evolution.png}}
+				\hspace{\fill}
+				\subfloat[2 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike2MFCIntensity70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[2 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike2MFC70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[2 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike2MFCIntensity70000-1-evolution.png}}\\
+					
+				\subfloat[5 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike5MFC70000-1-evolution.png}}
+				\hspace{\fill}
+				\subfloat[5 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike5MFCIntensity70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[5 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike5MFC70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[5 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike5MFCIntensity70000-1-evolution.png}}\\
+					
+				\subfloat[9 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike9MFC70000-1-evolution.png}}
+				\hspace{\fill}
+				\subfloat[9 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike9MFCIntensity70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[9 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike9MFC70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[9 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike9MFCIntensity70000-1-evolution.png}}\\
+					
+				\subfloat[14 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike14MFC70000-1-evolution.png}}
+				\hspace{\fill}
+				\subfloat[14 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike14MFCIntensity70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[14 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike14MFC70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[14 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike14MFCIntensity70000-1-evolution.png}}\\
+					
+				\subfloat[20 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike20MFC70000-1-evolution.png}}
+				\hspace{\fill}
+				\subfloat[20 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigZernike20MFCIntensity70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[20 zernike mode PSF electric field model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike20MFC70000-1-evolution.png}}
+				\hspace{\fill}	
+				\subfloat[20 zernike mode PSF intensity model training]{%
+					\includegraphics[width=0.22\textwidth]{psf-SuperBigCroppedZernike20MFCIntensity70000-1-evolution.png}}\\
+			
+			\caption{Training evolution comparison for the different Zernike datasets}
+		\end{figure*}
+		\FloatBarrier
+		
 		\subparagraph{Original sized 2 modes PSFs}:\\
 		\begin{lstlisting}	
         		-Train MSE: 0.00000000895368188480461
@@ -263,7 +335,7 @@
 		A summary of the MSE evolution over the Zernike PSFs datasets is shown below. The fact that the validation MSE for 2 modes is the worse may be because the neural network is not able to understand traslations.
 		\begin{figure*}[ht!]
 			\centering
-			\includegraphics[width=\textwidth]{pid-mseevolutionzernikedatasets}
+			\includegraphics[width=\textwidth]{oldoldpid-mseevolutionzernikedatasets}
 			\caption{MSE evolution over the Zernike PSFs datasets}
 		\end{figure*}
 		

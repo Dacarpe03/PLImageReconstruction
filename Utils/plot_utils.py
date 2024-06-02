@@ -408,7 +408,8 @@ def plot_amplitude_phase_intensity(
     if plot:
         fig.show()
     if save:
-        fig.write_image(f"{title}.png")
+        new_title = f"pid-{title.replace(' ', '').lower()}"
+        fig.write_image(f"{new_title}.png")
 
     return None
 
@@ -518,6 +519,21 @@ def plot_amplitude_phase_from_electric_field(
     fig.add_trace(predicted_phase_heatmap, row=2, col=2)
     fig.add_trace(residual_phase_heatmap, row=2, col=3)
     
+    cross = go.Scatter(
+        x=[len(original_amplitudes)/2],
+        y=[len(original_amplitudes)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
+
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(cross, row=1, col=3)
+    fig.add_trace(cross, row=2, col=1)
+    fig.add_trace(cross, row=2, col=2)
+    fig.add_trace(cross, row=2, col=3)
+
     fig.update_layout(
         title_text=f"PSF reconstruction from model {model_name}",
         height=700,  # Set the height of the figure
@@ -601,6 +617,18 @@ def plot_intensity_from_electric_field(
     fig.add_trace(original_intensity_heatmap, row=1, col=1)
     fig.add_trace(predicted_intensity_heatmap, row=1, col=2)
     fig.add_trace(residual_intensity_heatmap, row=1, col=3)
+    
+    cross = go.Scatter(
+        x=[len(original_intensity)/2],
+        y=[len(original_intensity)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
+
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(cross, row=1, col=3)
     
     fig.update_layout(
         title_text=f"PSF reconstruction from model {model_name}",
