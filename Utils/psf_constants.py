@@ -1,6 +1,6 @@
 NUMPY_SUFFIX = ".npy"
 
-HOME = "/home/dani"
+HOME = "/home/daniel"
 
 PSF_DATA_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/Data/PSFReconstruction"
 COMPLEX_FIELDS_DATA_PATH = f"{PSF_DATA_PATH}/ComplexFields"
