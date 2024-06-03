@@ -20,7 +20,7 @@ for name in names:
 	end = 10000
 	jump = 10000
 	for i in range(7):
-		new_name = name.replace(".npy.npy", f"_{i}.npy")
+		new_name = name.replace(".npy", f"_{i}.npy")
 		new_vector = vector[start:end]
 		print(new_vector.shape)
 		np.save(new_name, new_vector)
