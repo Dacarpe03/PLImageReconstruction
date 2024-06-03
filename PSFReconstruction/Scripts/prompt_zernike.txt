@@ -7,4 +7,14 @@ python TrainSuperBigCropped9MZernikeFC.py > log_TrainSuperBigCropped9MZernikeFC.
 python TrainSuperBig14MZernikeFC.py > log_TrainSuperBig14MZernikeFC.txt; \
 python TrainSuperBigCropped14MZernikeFC.py > log_TrainSuperBigCropped14MZernikeFC.txt; \
 python TrainSuperBig20MZernikeFC.py > log_TrainSuperBig20MZernikeFC.txt; \
-python TrainSuperBigCropped20MZernikeFC.py > log_TrainSuperBigCropped20MZernikeFC.txt
+python TrainSuperBigCropped20MZernikeFC.py > log_TrainSuperBigCropped20MZernikeFC.txt; \
+python TrainSuperBig2MZernikeFCIntensity.py > log_TrainSuperBig2MZernikeFCIntensity.txt; \
+python TrainSuperBigCropped2MZernikeFCIntensity.py > log_TrainSuperBigCropped2MZernikeFCIntensity.txt; \
+python TrainSuperBig5MZernikeFCIntensity.py > log_TrainSuperBig5MZernikeFCIntensity.txt; \
+python TrainSuperBigCropped5MZernikeFCIntensity.py > log_TrainSuperBigCropped5MZernikeFCIntensity.txt; \
+python TrainSuperBig9MZernikeFCIntensity.py > log_TrainSuperBig9MZernikeFCIntensity.txt; \
+python TrainSuperBigCropped9MZernikeFCIntensity.py > log_TrainSuperBigCropped9MZernikeFCIntensity.txt; \
+python TrainSuperBig14MZernikeFCIntensity.py > log_TrainSuperBig14MZernikeFCIntensity.txt; \
+python TrainSuperBigCropped14MZernikeFCIntensity.py > log_TrainSuperBigCropped14MZernikeFCIntensity.txt; \
+python TrainSuperBig20MZernikeFCIntensity.py > log_TrainSuperBig20MZernikeFCIntensity.txt; \
+python TrainSuperBigCropped20MZernikeFCIntensity.py > log_TrainSuperBigCropped20MZernikeFCIntensity.txt

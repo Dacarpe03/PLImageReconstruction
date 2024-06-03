@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
+                       compute_intensity_from_electric_field, \
                        reshape_fc_electric_field_to_real_imaginary_matrix, \
                        compute_center_of_mass, \
                        compute_ratio, \
@@ -67,7 +68,7 @@ def plot_fluxes(original_flux,
 def plot_model_history(
     history,
     model_name,
-    top_y_lim=0.5,
+    top_y_lim=None,
     show_plot=True,
     save_image=True
     ):
@@ -407,7 +408,8 @@ def plot_amplitude_phase_intensity(
     if plot:
         fig.show()
     if save:
-        fig.write_image(f"{title}.png")
+        new_title = f"pid-{title.replace(' ', '').lower()}"
+        fig.write_image(f"{new_title}.png")
 
     return None
 
@@ -434,7 +436,6 @@ def plot_amplitude_phase_from_electric_field(
     original_amplitudes, original_phases = compute_amplitude_and_phase_from_electric_field(original_electric_field)    
     predicted_amplitudes, predicted_phases = compute_amplitude_and_phase_from_electric_field(predicted_electric_field)
 
-    print(original_phases)
     fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Predicted Amplitude", "Amplitude residual",
                                                         "Original Phase", "Predicted Phase", "Phase residual"))
 
@@ -518,9 +519,120 @@ def plot_amplitude_phase_from_electric_field(
     fig.add_trace(predicted_phase_heatmap, row=2, col=2)
     fig.add_trace(residual_phase_heatmap, row=2, col=3)
     
+    cross = go.Scatter(
+        x=[len(original_amplitudes)/2],
+        y=[len(original_amplitudes)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
+
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(cross, row=1, col=3)
+    fig.add_trace(cross, row=2, col=1)
+    fig.add_trace(cross, row=2, col=2)
+    fig.add_trace(cross, row=2, col=3)
+
     fig.update_layout(
         title_text=f"PSF reconstruction from model {model_name}",
         height=700,  # Set the height of the figure
+        width=800    # Set the width of the figure
+    )
+
+    if show_plot:
+        # Show the plot
+        fig.show()
+
+    if save_image:
+        if validation:
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-validation.png"
+        if train:
+            img_path = f"{PSF_TEMP_IMAGES}/psf-{model_name}-1-train.png"
+
+        fig.write_image(img_path)
+
+    return None
+
+
+def plot_intensity_from_electric_field(
+    original_intensity,
+    predicted_intensity,
+    model_name,
+    log_scale=True,
+    save_image=False,
+    validation=False,
+    train=False,
+    show_plot=True):
+    """
+    Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
+    
+    Input:
+        complex_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        None
+
+    """
+
+    fig = make_subplots(rows=1, cols=3, subplot_titles=("Original Intensity", "Predicted Intensity", "Intensity residual"))
+
+    if log_scale:
+        original_intensity = np.log10((original_intensity/original_intensity.max()))
+        predicted_intensity = np.log10((predicted_intensity/predicted_intensity.max()))
+        
+    original_intensity_heatmap = go.Heatmap(
+                                            z=original_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.14,
+                                                y=-0.4,
+                                                len=0.3,
+                                                thickness=15
+                                            ))
+
+    predicted_intensity_heatmap = go.Heatmap(
+                                            z=predicted_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.5,
+                                                y=-0.4,
+                                                len=0.3,
+                                                thickness=15
+                                    ))
+
+    residual_intensity_heatmap = go.Heatmap(
+                                            z=original_intensity - predicted_intensity,
+                                            colorscale='viridis',
+                                            colorbar=dict(
+                                                orientation='h',
+                                                x=0.86,
+                                                y=-0.4,
+                                                len=0.3,
+                                                thickness=15
+                                        ))
+
+    fig.add_trace(original_intensity_heatmap, row=1, col=1)
+    fig.add_trace(predicted_intensity_heatmap, row=1, col=2)
+    fig.add_trace(residual_intensity_heatmap, row=1, col=3)
+    
+    cross = go.Scatter(
+        x=[len(original_intensity)/2],
+        y=[len(original_intensity)/2],
+        mode='markers',
+        marker=dict(size=10, color='red', symbol='cross'),
+        showlegend=False
+        )
+
+    fig.add_trace(cross, row=1, col=1)
+    fig.add_trace(cross, row=1, col=2)
+    fig.add_trace(cross, row=1, col=3)
+    
+    fig.update_layout(
+        title_text=f"PSF reconstruction from model {model_name}",
+        height=350,  # Set the height of the figure
         width=800    # Set the width of the figure
     )
 
@@ -586,6 +698,51 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
                                              validation=validation,
                                              train=train,
                                              show_plot=show_plot)
+
+    return None
+
+
+def plot_intensity_fully_connected_prediction_from_electric_field(
+    model,
+    ouput_flux,
+    original_intensity,
+    log_scale=True,
+    save_image=True,
+    validation=False,
+    train=False,
+    cropped=False,
+    show_plot=True
+    ):
+    """
+    Function that plots the amplitude and phase, both original and predicted
+
+    Input:
+        model (keras.model): The model that will predict the electric field in the pupil plane
+        output_flux (np.array): The input that the model will predict from
+        original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
+
+    Returns:
+        None
+    """
+
+    input_output_flux = np.array([ouput_flux])
+    predicted_intensity = model.predict(input_output_flux)[0]
+
+    if cropped:
+        reshaped_predicted_intensity = predicted_intensity.reshape(64, 64)
+        reshaped_original_intensity = original_intensity.reshape(64, 64)
+    else:
+        reshaped_predicted_intensity = predicted_intensity.reshape(128, 128)
+        reshaped_original_intensity = original_intensity.reshape(128, 128)
+
+    plot_intensity_from_electric_field(reshaped_original_intensity,
+                                        reshaped_predicted_intensity,
+                                        model.name,
+                                        log_scale=log_scale,
+                                        save_image=save_image,
+                                        validation=validation,
+                                        train=train,
+                                        show_plot=show_plot)
 
     return None
 
@@ -775,7 +932,7 @@ def create_scatters_for_zernike_dataset(
         n_modes,
     ):
 
-    fluxes, lp_modes, og_psf, pr_psf, og_cr_psf, pr_cr_psf = (dataset)
+    fluxes, lp_modes, zernike_coeffs, og_psf, pr_psf, og_cr_psf, pr_cr_psf = separate_zernike_distances(dataset)
     
     fl_to_psf_scatter = create_scatter_with_center_of_mass(fluxes, og_psf, name=f"PL flux vs {n_modes} terms Zernike PSF")
     lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_modes, og_psf, name=f"LP modes vs {n_modes} terms Zernike PSF")
@@ -833,12 +990,32 @@ def plot_one_dataset_zernike_euclidean_distances(
         fig.add_trace(mass_y, row=row, col=col)
         row+=1
 
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=1)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=2)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=3)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=4)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=5)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=6)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=7)
+    fig.update_xaxes(title_text="LP coefficients distance", col=1, row=8)
+    fig.update_xaxes(title_text="PL intensities distance", col=1, row=9)
+
+    fig.update_yaxes(title_text="PSF distance", col=1, row=1)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=2)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=3)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=4)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=5)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=6)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=7)
+    fig.update_yaxes(title_text="PSF distance", col=1, row=8)
+    fig.update_yaxes(title_text="LP coefficients distance", col=1, row=9)
+
     title = f"{modes} modes"
     if suffix is not None:
         title += f"in train subset {suffix}"
     fig.update_layout(
         title_text=title,
-        height=1500,  # Set the height of the figure
+        height=1900,  # Set the height of the figure
         width=400    # Set the width of the figure
     )
 
@@ -857,6 +1034,178 @@ def plot_one_dataset_zernike_euclidean_distances(
         fig.write_image(f"{title}.jpg")
 
     return None
+
+
+def plot_psf_vs_pl_lp_zc_euclidean_distances(
+    psf_distances,
+    pl_distances,
+    lp_distances,
+    zc_distances,
+    modes,
+    psf_type,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+
+    
+    fl_to_psf_scatter = create_scatter_with_center_of_mass(pl_distances, psf_distances, name=f"PL flux vs PSF")
+    lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_distances, psf_distances, name=f"LP coefficients vs PSF")
+    zm_to_psf_scatter = create_scatter_with_center_of_mass(zc_distances, psf_distances, name=f"Zernike coefficients vs PSF")
+
+    zernike_mode_graphs = [fl_to_psf_scatter,
+                           lp_to_psf_scatter,
+                           zm_to_psf_scatter]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
+
+    fig = make_subplots(
+        rows=1, 
+        cols=3, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        col+=1
+
+    fig.update_xaxes(title_text="PL intensities distance", row=1, col=1)
+    fig.update_xaxes(title_text="LP coefficients distance", row=1, col=2)
+    fig.update_xaxes(title_text="Zernike coefficients distance", row=1, col=3)
+
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=1)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=2)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=3)
+
+    title = f"{modes} Zernike modes {psf_type} PSF"
+
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=400,  # Set the height of the figure
+        width=1200 ,   # Set the width of the figure
+        title={
+            'font': {
+                'size': 24  # Increase the font size
+
+            },
+            'xanchor':'left'
+        }
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        file_title=f"pid-{modes}m{psf_type}psfdistances"
+        fig.write_image(f"{file_title}.png")
+
+    return None
+
+
+def plot_pl_lp_zc_euclidean_distances(
+    pl_distances,
+    lp_distances,
+    zc_distances,
+    modes,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+
+    fl_to_lp_scatter = create_scatter_with_center_of_mass(pl_distances, lp_distances, name=f"PL flux vs LP coefficients")
+    fl_to_zc_scatter = create_scatter_with_center_of_mass(pl_distances, zc_distances, name=f"PL flux vs Zernike coefficients")
+    pl_to_zc_scatter = create_scatter_with_center_of_mass(lp_distances, zc_distances, name=f"LP coefficients vs Zernike coefficients")
+
+    zernike_mode_graphs = [fl_to_lp_scatter,
+                           fl_to_zc_scatter,
+                           pl_to_zc_scatter]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
+
+    fig = make_subplots(
+        rows=1, 
+        cols=3, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        col+=1
+
+    fig.update_xaxes(title_text="PL intensities distance", row=1, col=1)
+    fig.update_xaxes(title_text="PL intensities distance", row=1, col=2)
+    fig.update_xaxes(title_text="LP coefficients distance", row=1, col=3)
+
+    fig.update_yaxes(title_text="LP coefficients distance", row=1, col=1)
+    fig.update_yaxes(title_text="Zernike coefficients distance", row=1, col=2)
+    fig.update_yaxes(title_text="Zernike coefficients distance", row=1, col=3)
+
+    title = f"PL and coefficients relationship (from {modes} Zernike modes PSF)"
+
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=400,  # Set the height of the figure
+        width=1200 ,   # Set the width of the figure
+        title={
+            'font': {
+                'size': 24  # Increase the font size
+
+            },
+            'xanchor':'left'
+        }
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    fig.update_traces(
+        marker=dict(size=1)
+        )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        file_title=f"pid-{modes}mcoefficientsdistances"
+        fig.write_image(f"{file_title}.png")
+
+    return None
+
 
 def plot_zernike_euclidean_distances(
     datasets,
