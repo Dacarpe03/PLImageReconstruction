@@ -677,7 +677,7 @@ def load_subfile_for_train_generator(feature_path_prefix,
 ### PSF RELATED
 def generate_psf_complex_fields(
 	filepath,
-	telescope_diameter=1,
+	telescope_diameter=0.5,
 	wavelength=1e-6,
 	pupil_grid_size=256,
 	focal_q=8,
@@ -688,7 +688,8 @@ def generate_psf_complex_fields(
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
-	save_wavefront_phase=False
+	save_wavefront_phase=False,
+	overwrite=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -700,11 +701,11 @@ def generate_psf_complex_fields(
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
 
-	D_tel = 0.5
+	D_tel = telescope_diameter
 	wavelength = 1e-6
 
-	pupil_grid = make_pupil_grid(256, D_tel)
-	focal_grid = make_focal_grid(q=8, num_airy=8, spatial_resolution=wavelength/D_tel)
+	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
+	focal_grid = make_focal_grid(q=8, num_airy=num_airy, spatial_resolution=wavelength/D_tel)
 	propagator = FraunhoferPropagator(pupil_grid, focal_grid)
 
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
@@ -725,9 +726,11 @@ def generate_psf_complex_fields(
 												 plot=plot)
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
-		   						   	   filepath)
+		   						   	   filepath,
+		   						   	   overwrite=overwrite)
 
-	if save_wavefronts_phase:
+	if save_wavefront_phase:
+		print("Aqui")
 		save_wavefronts_phase(propagated_wavefronts,
 							  filepath)
 
@@ -735,8 +738,9 @@ def generate_psf_complex_fields(
 
 
 def generate_zernike_psf_complex_fields(
-	filepath,
-	telescope_diameter=1,
+	psf_filepath,
+	zernike_coeffs_filepath,
+	telescope_diameter=0.5,
 	wavelength=1e-6,
 	pupil_grid_size=256,
 	focal_q=8,
@@ -745,7 +749,8 @@ def generate_zernike_psf_complex_fields(
 	zernike_modes=1,
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
-	save_complex_fields=True
+	save_complex_fields=True,
+	overwrite=False
 	):
 	"""
 	This function generates wavefronts and propagates in through the atmosphere and an aperture to obtain aberrated PSFs that will be stored in the indicated file.
@@ -756,11 +761,11 @@ def generate_zernike_psf_complex_fields(
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
 	"""
-	if os.path.isfile(filepath):
-		print(f"{filepath} already exists")
+	if os.path.isfile(psf_filepath) and not overwrite:
+		print(f"{psf_filepath} already exists")
 		return
 
-	D_tel = 0.5
+	D_tel = telescope_diameter
 
 	pupil_grid = make_pupil_grid(pupil_grid_size, D_tel)
 	
@@ -770,21 +775,18 @@ def generate_zernike_psf_complex_fields(
 	aperture = make_circular_aperture(D_tel)(pupil_grid)
 
 	propagated_wavefronts = []
+	zernike_coefficients_list = []
 
 	for i in range(n_samples):
 
-		zernike_complex_field = create_zernike_complex_field(starting_mode,
-															 zernike_modes,
-															 pupil_grid,
-															 aperture,
-															 D_tel)
-
-		#imshow_field(zernike_complex_field)
-		#plt.colorbar()
+		zernike_complex_field, zernike_coefficients = create_zernike_complex_field(starting_mode,
+															 				 	zernike_modes,
+															 					pupil_grid,
+															 					aperture,
+															 					D_tel)
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
-		imshow_field(zernike_wavefront.phase)
 
 		propagatated_wf = propagate_zernike_wavefront(zernike_wavefront,
 									propagator,
@@ -792,11 +794,17 @@ def generate_zernike_psf_complex_fields(
 									plot=plot)
 
 		propagated_wavefronts.append(propagatated_wf)
+		zernike_coefficients_list.append(zernike_coefficients)
 
 	if save_complex_fields:
 		save_wavefronts_complex_fields(propagated_wavefronts,
-		   						   	   filepath,
-		   						   	   overwrite=False)
+		   						   	   psf_filepath,
+		   						   	   overwrite=overwrite)
+
+		zernike_coefficients_array = np.vstack(zernike_coefficients_list)
+		save_numpy_array(zernike_coefficients_array,
+						 zernike_coeffs_filepath,
+						 overwrite=overwrite)
 
 	return None
 
@@ -822,10 +830,13 @@ def create_zernike_complex_field(
 		mode_coefficients.append(mode_coeff)
 
 
-	phase_pupil = zern_basis.linear_combination(np.array(mode_coefficients))
+	mode_coefficients = np.array(mode_coefficients)
+	phase_pupil = zern_basis.linear_combination(mode_coefficients)
 	zernike_complex_pupil = aperture * np.exp(1j*phase_pupil)
 
-	return zernike_complex_pupil
+
+
+	return zernike_complex_pupil, mode_coefficients
 
 
 def propagate_zernike_wavefront(
@@ -947,11 +958,13 @@ def save_wavefronts_phase(
 
 def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
+	lp_modes_coeffs_file_path,
 	output_fluxes_file_path,
 	nmodes=19,
 	plot=False,
 	verbose=False,
-	overwrite=False
+	overwrite=False,
+	only_lp_coeffs=False
 	):
 	
 	if os.path.isfile(output_fluxes_file_path) and not overwrite:
@@ -988,6 +1001,7 @@ def compute_output_fluxes_from_complex_field(
 	transfer_matrix = load_transfer_matrix()
 
 	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1008,7 +1022,7 @@ def compute_output_fluxes_from_complex_field(
 			show_plots=plot, 
 			fignum=11,
 			complex=True,
-			ylim=0.3,
+			ylim=None,
 			return_abspower=True)
 
 		# Now get the complex amplitudes of the PL outputs:
@@ -1034,7 +1048,12 @@ def compute_output_fluxes_from_complex_field(
 			plt.title('Output fluxes')
 			plt.tight_layout()
 
-	save_numpy_array(output_fluxes, output_fluxes_file_path)
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
+
+	save_numpy_array(output_fluxes, output_fluxes_file_path, overwrite=overwrite)
+	# Save lp modes
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
 
 def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
@@ -1044,10 +1063,11 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	transfer_matrix_path,
 	plot=False,
 	verbose=False,
-	overwrite=False
+	overwrite=False,
+	only_lp_coeffs=False
 	):
 	
-	if os.path.isfile(output_fluxes_file_path) and not overwrite:
+	if os.path.isfile(output_fluxes_file_path) and not overwrite and not only_lp_coeffs:
 		print(f"{output_fluxes_file_path} already exists")
 		return
 	print(f"Computing {output_fluxes_file_path}")
@@ -1073,15 +1093,16 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	lantern_fiber.find_fiber_modes()
 	lantern_fiber.make_fiber_modes(npix=npix, show_plots=plot, max_r=max_r, normtosum=False)
 	modes_to_measure = np.arange(lantern_fiber.nmodes)
-	print(modes_to_measure)
 	input_complex_fields = np.load(complex_fields_file_path)
 	input_complex_fields = input_complex_fields/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
 	n_fields = input_complex_fields.shape[0]
 	transfer_matrix = load_arbitrary_transfer_matrix(transfer_matrix_path)
 	lantern_fiber.Cmat = transfer_matrix
 
-	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
-	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	if not only_lp_coeffs:
+		output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+
+	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
 		original_field = input_complex_fields[k,:,:]
@@ -1104,15 +1125,15 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			complex=True,
 			ylim=0.3,
 			return_abspower=True)
-		print(mode_coupling_complex)
 		# Now get the complex amplitudes of the PL outputs:
-		pl_outputs = transfer_matrix @ mode_coupling_complex
 
-		# In real life, we just measure the intensities of the outputs:
-		pl_output_fluxes = np.abs(pl_outputs)**2
-		output_fluxes[k] = pl_output_fluxes
+		if not only_lp_coeffs:
+			pl_outputs = transfer_matrix @ mode_coupling_complex
 
-		print(np.angle(mode_coupling_complex))
+			# In real life, we just measure the intensities of the outputs:
+			pl_output_fluxes = np.abs(pl_outputs)**2
+			output_fluxes[k] = pl_output_fluxes
+
 		if plot:
 			# Plot input mode coefficients and output fluxes
 			xlabels = np.arange(transfer_matrix.shape[0])
@@ -1130,12 +1151,13 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			plt.tight_layout()
 
 
-		mode_coupling_complex = np.abs(mode_coupling_complex)**2
-		# In real life, we just measure the intensities of the lp_modes:
-		lp_modes_coeffs[k] = mode_coupling_complex
+		lp_modes_coeffs[k][0] = mode_coupling_complex.real
+		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
+	
+	if not only_lp_coeffs:	
+		# Save output fluxes
+		save_numpy_array(output_fluxes, output_fluxes_file_path)
 		
-	# Save output fluxes
-	save_numpy_array(output_fluxes, output_fluxes_file_path)
 	# Save lp modes
 	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
@@ -1144,10 +1166,11 @@ def compute_lp_modes_from_complex_field(
 	complex_fields_file_path,
 	lp_modes_coeffs_file_path,
 	plot=False,
-	verbose=False
+	verbose=False,
+	overwrite=False
 	):
 	
-	if os.path.isfile(lp_modes_coeffs_file_path):
+	if os.path.isfile(lp_modes_coeffs_file_path) and not overwrite:
 		print(f"{lp_modes_coeffs_file_path} already exists")
 		return
 	print(f"Computing {lp_modes_coeffs_file_path}")
@@ -1203,7 +1226,7 @@ def compute_lp_modes_from_complex_field(
 		lp_modes_coeffs[k][0] = mode_coupling_complex.real
 		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
 
-	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path, overwrite=overwrite)
 
 
 def compute_mode_coefficients_from_complex_field(
@@ -1326,6 +1349,33 @@ def compute_amplitude_and_phase_from_electric_field(
     return amplitudes, phases
 
 
+def compute_intensity_from_electric_field(
+    electric_field
+    ):
+    """
+    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+
+    Input:
+        electric_field (np.array): A numpy array containing the electric field complex numbers
+
+    Returns:
+        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
+        phases (np.array): A numpy array containing the phases of the points in the complex field
+    """
+
+    intensities = np.zeros(electric_field.shape)
+    
+    # Iterar sobre cada elemento de la matriz de números complejos
+    for i in range(electric_field.shape[0]):
+        for j in range(electric_field.shape[1]):
+
+            complex_number = electric_field[i, j]
+
+            intensities[i, j] = np.abs(complex_number)**2
+
+    return amplitudes, phases
+
+
 def reshape_fc_electric_field_to_real_imaginary_matrix(
 	electric_field,
 	og_shape_depth = 2,
@@ -1381,7 +1431,8 @@ def compute_square_module_amplitude_from_fc_complex_field(electric_field):
 def compute_pairs_euclidean_distances(
 	points_array, 
 	selected_pairs,
-	is_complex_field=False):
+	is_complex_field=False,
+	is_lp_coefficients=False):
 	"""
 	Function that computes the euclidean distances given pairs of points in a dataset
 
@@ -1403,6 +1454,10 @@ def compute_pairs_euclidean_distances(
 		if is_complex_field:
 			point_a = compute_square_module_amplitude_from_fc_complex_field(point_a)
 			point_b = compute_square_module_amplitude_from_fc_complex_field(point_b)
+
+		elif is_lp_coefficients:
+			point_a = point_a.flatten()
+			point_b = point_b.flatten()
 
 		euclidean_distance = compute_euclidean_distance(point_a,
 														point_b)
@@ -1467,12 +1522,13 @@ def separate_zernike_distances(euclidean_distances):
 
 	pl_flux_distances = euclidean_distances[:, 0:1].flatten()
 	lp_modes_distances = euclidean_distances[:, 1:2].flatten()
-	og_complex_field_distances = euclidean_distances[:, 2:3].flatten()
-	predicted_complex_field_distances = euclidean_distances[:, 3:4].flatten()
-	og_cropped_complex_field_distances = euclidean_distances[:, 4:5].flatten()
-	predicted_cropped_complex_field_distances = euclidean_distances[:, 5:].flatten()
+	zernike_coeffs_distances = euclidean_distances[:, 2:3].flatten()
+	og_complex_field_distances = euclidean_distances[:, 3:4].flatten()
+	predicted_complex_field_distances = euclidean_distances[:, 4:5].flatten()
+	og_cropped_complex_field_distances = euclidean_distances[:, 5:6].flatten()
+	predicted_cropped_complex_field_distances = euclidean_distances[:, 6:].flatten()
 
-	return pl_flux_distances, lp_modes_distances, og_complex_field_distances, predicted_complex_field_distances, og_cropped_complex_field_distances, predicted_cropped_complex_field_distances
+	return pl_flux_distances, lp_modes_distances, zernike_coeffs_distances, og_complex_field_distances, predicted_complex_field_distances, og_cropped_complex_field_distances, predicted_cropped_complex_field_distances
 
 
 def compute_center_of_mass(x_coords, y_coords):
