@@ -10,7 +10,13 @@
 				\hline
 				\textbf{Dataset type} & \textbf{Number of neighbors} & \textbf{Min distance} & \textbf{Number of components} \\
 				\hline
-				Zernike modes PSF & 500 & 0.5 & 1000 \\
+				PSF electric field & 500 & 0.5 & 1000 \\
+				\hline
+				PSF intensity & 500 & 0.5 & 1000 \\
+				\hline
+				Predicted PSF electric field & 500 & 0.5 & 1000 \\
+				\hline
+				Predicted PSF intensity & 500 & 0.5 & 1000 \\
 				\hline
 			\end{tabular}
 		\caption{UMAP parameter configurations for PSFs}
@@ -19,7 +25,7 @@
 	
 	\subsubsection{Clustering}
 		
-		Using DBSCAN I create clusters for the UMAP representations.
+		Using DBSCAN I create clusters for the UMAP representations. In the tables CDM and CDV are Cluster Density Mean and Cluster Density Variance respectively.
 		
 		\paragraph{2 Zernike modes}:
 		\begin{table}[h!]
@@ -33,6 +39,14 @@
 				\textbf{LP coeffs} & 0.99 & 5 & 1470 & 44.00 & 631.91 & 64686 \\
 				\hline
 				\textbf{PL fluxes} & 34.7 & 5 & 1431 & 45.46 & 739.78 & 65065 \\
+				\hline
+				\textbf{PSF electric field} & 0.154 & 5 & 1563 & 40.16 & 110.41 & 62774 \\
+				\hline
+				\textbf{PSF intensity} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN clustering for 2 Zernike modes datasets}
@@ -52,6 +66,14 @@
 				\hline
 				\textbf{PL fluxes} & 410 & 4 & 1500 & 35.54 & 1131.51 & 53324 \\
 				\hline
+				\textbf{PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{PSF intensity} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 5 Zernike modes datasets}
 		\end{table}
@@ -69,6 +91,14 @@
 				\textbf{LP coeffs} & 26 & 4 & 1485 & 28.01 & 889.60 & 43397 \\
 				\hline
 				\textbf{PL fluxes} & 770 & 3 & 1616 & 31.85 & 1099.66 & 51474 \\
+				\hline
+				\textbf{PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{PSF intensity} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 9 Zernike modes datasets}
@@ -88,6 +118,14 @@
 				\hline
 				\textbf{PL fluxes} & 950 & 3 & 1669 & 24.31 & 814.44 & 40577 \\
 				\hline
+				\textbf{PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{PSF intensity} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 14 Zernike modes datasets}
 		\end{table}
@@ -105,6 +143,14 @@
 				\textbf{LP coeffs} & 40.05 & 3 & 1558 & 24.44 & 801.25 & 38079 \\
 				\hline
 				\textbf{PL fluxes} & 1010 & 3 & 1647 & 18.25 & 566.01 & 30067 \\
+				\hline
+				\textbf{PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{PSF intensity} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF electric field} &  &  &  &  &  &  \\
+				\hline
+				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 20 Zernike modes datasets}
