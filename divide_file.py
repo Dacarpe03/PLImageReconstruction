@@ -1,16 +1,16 @@
 import numpy as np
 
 names = [
-"ld_20M_zernike_complex_fields.npy",
-"ld_14M_zernike_complex_fields.npy",
-"ld_9M_zernike_complex_fields.npy",
-"ld_5M_zernike_complex_fields.npy",
-"ld_2M_zernike_complex_fields.npy",
-"ld_2M_zernike_intensities.npy",
-"ld_5M_zernike_intensities.npy",
-"ld_9M_zernike_intensities.npy",
-"ld_14M_zernike_intensities.npy",
-"ld_20M_zernike_intensities.npy",
+#"ld_predicted_20M_zernike_complex_fields.npy",
+#"ld_predicted_14M_zernike_complex_fields.npy",
+#"ld_predicted_9M_zernike_complex_fields.npy",
+#"ld_predicted_5M_zernike_complex_fields.npy",
+#"ld_predicted_2M_zernike_complex_fields.npy",
+"ld_predicted_2M_zernike_intensities.npy",
+"ld_predicted_5M_zernike_intensities.npy",
+"ld_predicted_9M_zernike_intensities.npy",
+"ld_predicted_14M_zernike_intensities.npy",
+"ld_predicted_20M_zernike_intensities.npy",
 ]
 
 for name in names:
