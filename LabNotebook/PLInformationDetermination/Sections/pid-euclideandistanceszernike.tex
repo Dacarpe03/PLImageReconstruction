@@ -228,17 +228,7 @@
 		\FloatBarrier
 		
 	\subsubsection{Analysis}
-		\begin{itemize}
-			\item The correlations between PSF distances and PL flux distances decay as the number of modes increases while the correlation between PSF distances and LP mode coefficients from the overlap integral are constant.
-			\item The predicted psfs from the train datasets create a similar cloud of points to the original psfs which indicates that the models are capturing the information of the PL.
-			\item The model trained for the dataset of 2 zernike terms PSF is the one that has the most overfit as the table shows (False, False, None indicate that no dropout, no batch normalization and no regularizer has been used), the validation mse just flatlines over the training.
-			
-			\item For 5 terms PSFs on the overfitting is reduced significantly although it increases with the number of zernike terms used. When using 20 terms the validation mse flatlines again.
-			
-			\item PL intensities vs PSF datasets evolution is practically the same for original, predicted, cropped and cropped predicted datasets. This indicates that the models are capturing accurately the relationship existing between the original PSF datasets and PL intensities datasets.
-			
-			\item LP coeffs vs PSF datasets evolution is practically the same for original, predicted, cropped and cropped predicted datasets.
-		\end{itemize}
+
     
     
      
