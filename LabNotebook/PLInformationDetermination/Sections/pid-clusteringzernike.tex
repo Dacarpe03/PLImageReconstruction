@@ -46,7 +46,7 @@
 				\hline
 				\textbf{Pred PSF ef} & 0.154 & 5 & 1339 & 41.01 & 159.22 & 63202 \\
 				\hline
-				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\textbf{Pred PSF intensity} & 0.154 & 4 & 1497 & 42.40 & 206.78 & 63480 \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN clustering for 2 Zernike modes datasets}
@@ -72,7 +72,7 @@
 				\hline
 				\textbf{Pred PSF ef} & 0.15 & 4 & 1364 & 48.16 & 210.10 & 65691 \\
 				\hline
-				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\textbf{Pred PSF intensity} & 0.27 & 3 & 1645 & 24.95 & 1182.07 & 57491 \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 5 Zernike modes datasets}
@@ -96,9 +96,9 @@
 				\hline
 				\textbf{PSF intensity} & 0.22 & 4 & 1402 & 39.29 & 1205.03 & 55096 \\
 				\hline
-				\textbf{Pred PSF ef} &  &  &  &  &  &  \\
+				\textbf{Pred PSF ef} & 0.235 & 4 & 1460 & 22.28 & 512.15 & 32530 \\
 				\hline
-				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\textbf{Pred PSF intensity} & 0.235 & 4 & 1385 & 30.49 & 851.07 & 42240 \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 9 Zernike modes datasets}
@@ -122,9 +122,9 @@
 				\hline
 				\textbf{PSF intensity} & 0.21 & 4 & 1436 & 36.52 & 1129.68 & 42830 \\
 				\hline
-				\textbf{Pred PSF ef} &  &  &  &  &  &  \\
+				\textbf{Pred PSF ef} & 0.35 & 3 & 1486 & 36.43 & 1214.19 & 54135  \\
 				\hline
-				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\textbf{Pred PSF intensity} & 0.32 & 3 & 1567 & 36.16 & 1221.05 & 56673 \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 14 Zernike modes datasets}
@@ -138,7 +138,7 @@
 				\hline
 				\textbf{} & \textbf{$\epsilon$} & \textbf{neighbors} & \textbf{Clusters} & \textbf{CDM} & \textbf{CDV} & \textbf{Non noise points}\\
 				\hline
-				\textbf{Zernike coeffs} & 26.32 & 3 & 1431 & 26.32 & 841.71 & 37668 \\
+				\textbf{Zernike coeffs} & 0.53 & 3 & 1431 & 26.32 & 841.71 & 37668 \\
 				\hline
 				\textbf{LP coeffs} & 40.05 & 3 & 1558 & 24.44 & 801.25 & 38079 \\
 				\hline
@@ -148,13 +148,58 @@
 				\hline
 				\textbf{PSF intensity} & 0.20 & 4 & 1559 & 31.47 & 986.86 & 49070 \\
 				\hline
-				\textbf{Pred PSF ef} &  &  &  &  &  &  \\
+				\textbf{Pred PSF ef} & 0.33 & 3 & 1524 & 36.46 & 1222.67 & 55567 \\
 				\hline
-				\textbf{Pred PSF intensity} &  &  &  &  &  &  \\
+				\textbf{Pred PSF intensity} & 0.32 & 3 & 1643 & 35.18 & 1191.70 & 57810 \\
 				\hline
 			\end{tabular}
 		\caption{DBSCAN Clustering for 20 Zernike modes datasets}
 		\end{table}
+		\FloatBarrier
+		
+	\subsubsection{Results}
+	
+	
+		\begin{figure*}[ht!]
+			\centering
+			\subfloat[Coefficients NMI evolution]{%
+				\includegraphics[width=0.45\textwidth]{pid-nmievolutioncoeffs.png}}
+			\hspace{\fill}
+			\subfloat[PSF to predicted PSF]{%
+				\includegraphics[width=0.45\textwidth]{pid-nmievolutionpsfpredpsf.png}}
+			\\
+			\subfloat[PSF electric fields to coeffs NMI evolution]{%
+				\includegraphics[width=0.45\textwidth]{pid-nmievolutionpsfef.png}}
+			\hspace{\fill}
+			\subfloat[PSF intenities to coeffs NMI evolution]{%
+				\includegraphics[width=0.45\textwidth]{pid-nmievolutionpsfint.png}}
+			\caption{NMI evolution over number of Zernike modes}
+		\end{figure*}
+		\FloatBarrier
+		
+		\begin{figure*}[ht!]
+			\centering
+			\caption{Coefficients NMI}
+			\includegraphics[width=0.9\textwidth]{pid-nmibarcoeffs.png}
+		\end{figure*}
+		
+		\begin{figure*}[ht!]
+			\centering
+			\caption{PSF electric fields to coeffs NMI evolution}
+				\includegraphics[width=0.9\textwidth]{pid-nmibarpsfef.png}
+		\end{figure*}
+		
+		\begin{figure*}[ht!]
+			\centering
+			\caption{PSF intensities to coeffs NMI evolution}
+				\includegraphics[width=0.9\textwidth]{pid-nmibarpsfint.png}
+		\end{figure*}
+		
+		\begin{figure*}[ht!]
+			\centering
+			\caption{PSF to predicted PSF NMI}
+				\includegraphics[width=0.9\textwidth]{pid-nmibarpsfpredpsf.png}
+		\end{figure*}
 		\FloatBarrier
 		
 		
