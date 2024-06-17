@@ -1,0 +1,23 @@
+NUMPY_SUFFIX = ".npy"
+
+HOME = "/home/dani"
+
+PSF_MINIDATASET_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/Data/PSFReconstructionMinidataset"
+
+ZERNIKE_COMPLEX_FIELDS_FILE_NAME = "zernike_complex_fields"
+ZERNIKE_INTENSITIES_FILE_NAME = "zernike_intensities"
+ZERNIKE_MODE_COEFFICIENTS_FILE_NAME = "zernike_mode_coefficients"
+ZERNIKE_OUTPUT_FLUXES_FILE_NAME = "zernike_output_fluxes"
+PROCESSED_ZERNIKE_OUTPUT_FLUXES_FILE_NAME = "processed_zernike_output_fluxes"
+ZERNIKE_PSF_LP_MODES_FILE_NAME = "lp_modes_from_zernike_psf"
+PROCESSED_ZERNIKE_PSF_LP_MODES_FILE_NAME = "processed_lp_modes_from_zernike_psf"
+
+# Processed data
+ZERNIKE_COMPLEX_FIELDS_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ZernikeComplexFields"
+PROCESSED_ZERNIKE_COMPLEX_FIELDS_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ProcessedZernikeComplexFields"
+ZERNIKE_OUTPUT_FLUXES_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ZernikeOutputFluxes"
+PROCESSED_ZERNIKE_OUTPUT_FLUXES_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ProcessedZernikeOutputFluxes"
+ZERNIKE_PSF_LP_MODES_MINIDATASET_PATH = f"{PSF_DATA_PATH}/LPModesFromZernikePSF"
+PROCESSED_ZERNIKE_PSF_LP_MODES_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ProcessedLPModesFromZernikePSF"
+ZERNIKE_MODES_MINIDATASET_PATH = f"{PSF_DATA_PATH}/ZernikeModeCoefficients"
+
