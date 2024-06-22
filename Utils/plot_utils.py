@@ -346,7 +346,8 @@ def plot_amplitude_phase_intensity(
     log_scale=False,
     plot=True,
     save=False,
-    title=""
+    title="",
+    title_prefix="pid"
     ):
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
     intensity = amplitude**2
@@ -408,7 +409,7 @@ def plot_amplitude_phase_intensity(
     if plot:
         fig.show()
     if save:
-        new_title = f"pid-{title.replace(' ', '').lower()}"
+        new_title = f"{title_prefix}-{title.replace(' ', '').lower()}"
         fig.write_image(f"{new_title}.png")
 
     return None
@@ -1405,3 +1406,112 @@ def plot_boxplot_zernike_euclidean_distances(
     fig.write_image(f"{title}.png")
 
     return None
+
+
+def plot_clusters_from_labels(
+    dataset_coordinates,
+    labels,
+    title,
+    x_title,
+    y_title,
+    dataset_name,
+    cluster_type,
+    axis_range=[-2.3, 2.3]):
+
+    df = pd.DataFrame(dataset_coordinates, columns=[x_title, y_title])
+    df['label'] = labels
+
+    fig = px.scatter(df, x=x_title, y=y_title, color=df['label'].astype(str), title=title)
+
+    fig.update_layout(
+        autosize=False,
+        legend_title_text='Labels',
+        width=600,
+        height=600,
+        xaxis=dict(scaleanchor='y', scaleratio=1, range=axis_range),
+        yaxis=dict(scaleanchor='x', scaleratio=1, range=axis_range)
+    )
+
+    fig.show()  
+    fig.write_image(f'mdid-{dataset_name}{cluster_type}clusters.png')
+
+
+def plot_grid_clusters(
+    data,
+    data_labels,
+    labels_list,
+    title,
+    xtitle,
+    ytitle,
+    xtickval_jumps,
+    dataset_name,
+    cluster_type
+    ):
+
+    samples = []
+    
+    middles = []
+    ticktexts = []
+    yboxes=[0]
+    
+    for label_type in labels_list:
+        subsamples = data[data_labels==label_type]
+        if len(subsamples) > 0:
+            finish = min(len(subsamples), 10)
+            subsamples = subsamples[0:finish]
+            samples.append(subsamples)
+
+            yboxes.append(yboxes[-1]+finish)
+            middles.append(finish/2)
+            ticktexts.append(label_type)
+
+    samples = np.concatenate(samples)
+    heatmap = go.Heatmap(
+        z=samples,
+        colorscale='Viridis'
+    )
+
+    layout = go.Layout(
+        title=title,
+        xaxis=dict(
+            title=xtitle
+        ),
+        yaxis=dict(
+            title=ytitle
+        ),
+        width=500,
+        height=800
+    )
+
+    fig = go.Figure(data=[heatmap], layout=layout)
+
+    for i in range(0, len(ticktexts)):
+        fig.add_shape(
+            type="rect",
+            x0=-0.5, y0=yboxes[i]-0.5, x1=len(data[0])-0.5, y1=yboxes[i+1]-0.5,
+            line=dict(color="red", width=2)
+        )
+
+    tickvals = []
+    tick = len(samples)
+    for middle in middles:
+        tickval = tick - middle
+        tick = tick - middle*2
+        tickvals.append(tickval)
+
+    ticktexts.reverse()
+    fig.update_yaxes(
+        tickvals=tickvals,
+        ticktext=ticktexts
+    )
+    
+    fig.update_xaxes(
+        tickvals=np.arange(0, len(data[0]), xtickval_jumps),
+    )
+
+    fig.update_layout(
+        margin=dict(t=100, l=100)
+    )
+
+    fig.show()
+    fig.write_image(f'mdid-{dataset_name}{cluster_type}gridclusters.png')
