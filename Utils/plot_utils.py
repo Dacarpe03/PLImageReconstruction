@@ -1515,3 +1515,54 @@ def plot_grid_clusters(
 
     fig.show()
     fig.write_image(f'mdid-{dataset_name}{cluster_type}gridclusters.png')
+
+
+def plot_kneighbours(data, neighbours):
+    nbrs = NearestNeighbors(n_neighbors=neighbours).fit(data)
+    distances, indices = nbrs.kneighbors(data)
+
+    distances = np.sort(distances[:, -1])
+    plt.plot(distances)
+    plt.ylabel(f"{neighbours}-NN Distance ")
+    plt.xlabel("Points sorted by distance to nearest neighbours")
+    plt.title(f"{neighbours}-NN Distance Graph")
+    plt.show()
+
+
+def get_number_of_clusters(data, epsilon, neighbours):
+    dbscan = DBSCAN(eps=epsilon, min_samples=neighbours)
+    labels = dbscan.fit_predict(data)
+    #hdbscan_clusterer = hdbscan.HDBSCAN(min_cluster_size=neighbours)
+    #labels = hdbscan_clusterer.fit_predict(data)
+    print("Number of clusters:", np.max(labels)+1)
+    mask = labels != -1
+    points_that_are_not_noise = np.sum(mask)
+    print("Numbers that are not noise:", points_that_are_not_noise)
+    
+    return labels
+
+def plot_cluster_labels_count(labels,
+                              type_of_clustering,
+                              dataset_name):
+
+    non_noise_labels = labels[labels != -1]
+    counter = Counter(non_noise_labels)
+    most_common = counter.most_common()[0]
+    least_common = counter.most_common()[:-2:-1][0]
+    print(f"The most repeated label is {most_common[0]} with {most_common[1]} occurrences.")
+    print(f"The least repeated label is {least_common[0]} with {least_common[1]} occurrence.")
+
+    keys = list(counter.keys())
+    counts = list(counter.values())
+    
+    integers = list(counter.keys())
+    
+    print("Cluster density mean:", np.mean(counts))
+    print("Cluster density variance:", np.std(counts))
+    plt.bar(keys, counts)
+    plt.xticks(integers)
+    plt.xlabel('Label')
+    plt.ylabel('Frequency')
+    plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
+    plt.savefig(f'mdid-{dataset_name}{type_of_clustering}density.png')
+    plt.show()
