@@ -1,10 +1,12 @@
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+from sklearn.neighbors import NearestNeighbors
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from collections import Counter
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
                        compute_intensity_from_electric_field, \
@@ -1529,9 +1531,7 @@ def plot_kneighbours(data, neighbours):
     plt.show()
 
 
-def get_number_of_clusters(data, epsilon, neighbours):
-    dbscan = DBSCAN(eps=epsilon, min_samples=neighbours)
-    labels = dbscan.fit_predict(data)
+def get_number_of_clusters(labels):
     #hdbscan_clusterer = hdbscan.HDBSCAN(min_cluster_size=neighbours)
     #labels = hdbscan_clusterer.fit_predict(data)
     print("Number of clusters:", np.max(labels)+1)
@@ -1560,7 +1560,7 @@ def plot_cluster_labels_count(labels,
     print("Cluster density mean:", np.mean(counts))
     print("Cluster density variance:", np.std(counts))
     plt.bar(keys, counts)
-    plt.xticks(integers)
+    plt.xticks(integers, rotation=90)
     plt.xlabel('Label')
     plt.ylabel('Frequency')
     plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
