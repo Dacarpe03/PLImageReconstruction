@@ -1,0 +1,195 @@
+	\subsection{PSF Intensities clustering}
+
+		\subsubsection{K-Means}
+			
+			As K-Means allows for the number of clusters to be defined, and we know that there are 4 in the original dataset, K-Means is used to find 4 clusters.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of clusters} & \textbf{Number of initializations}\\
+					\hline
+					\textbf{PCA PSF Intensities} & 64 & 100\\
+					\hline
+				\end{tabular}
+				\caption{K-Means hyperparameter configuration for c coefficients clustering}
+			\end{table}
+		
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-Means clusters densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesK-Meansdensity.png}}\\
+					
+				\subfloat[Original cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-Means cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesK-Meansgridclusters.png}}
+				\caption{Comparison between original clustering and K-Means clustering from PCA of PSF Intensities}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{DBSCAN}
+			
+			A configuration that outputs 4 clusters is searched
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of neighbours} & \textbf{Epsilon}\\
+					\hline
+					PCA PSF Intensities & 10 & 4\\
+					\hline
+				\end{tabular}
+				\caption{DBSCAN hyperparameter configuration for PSF Intensities clustering}
+			\end{table}
+		
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN clusters densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and DBSCAN clustering from PCA of PSF Intensities}
+			\end{figure*}
+			\FloatBarrier
+			
+		
+		\subsubsection{HDBSCAN}
+			
+			A configuration that outputs 4 clusters is searched.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Minimum cluster size} \\
+					\hline
+					PCA PSF Intensities & 15 \\
+					\hline
+				\end{tabular}
+				\caption{HDBSCAN hyperparameter configuration for PSF Intensities clustering}
+			\end{table}
+			\FloatBarrier
+			
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN clusters densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesHDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesHDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and HDBSCAN clustering from PCA of PSF Intensities}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Agglomerative clustering}
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|}
+					\hline
+					 & \textbf{Number of clusters} \\
+					\hline
+					PCA PSF Intensities & 64 \\
+					\hline
+				\end{tabular}
+				\caption{Agglomerative hyperparameter configuration for PSF Intensities clustering}
+			\end{table}
+			\FloatBarrier
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative clusters densities from PCA]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mpcaintensitiesAgglomerativedensity.png}}
+					
+				\subfloat[Original cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples from PCA]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mpcaintensitiesAgglomerativegridclusters.png}}
+				\caption{Comparison between original clustering and Agglomerative clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Summary}
+		
+		\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster densities from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesK-Meansdensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster densities from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster densities from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesHDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster densities from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesAgglomerativedensity.png}}
+				\\
+				
+				\subfloat[Original cluster samples from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster samples from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesK-Meansgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samplesfrom PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesHDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples from PCA]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mpcaintensitiesAgglomerativegridclusters.png}}
+				
+				\caption{Comparison between clustering PCA PSF Intensities algorithms}
+			\end{figure*}
+		\FloatBarrier
+		
+		\begin{table}[h!]
+    			\centering
+    			\begin{tabular}{|c|c|c|c|c|c|}
+        			\hline
+        			& \textbf{Original} & \textbf{K-Means} & \textbf{DBSCAN} & \textbf{HDBSCAN} & \textbf{Agglomerative} \\
+        			\hline
+        			\textbf{Original} & \diagbox{}{} & 0.802 & 0.889 & 0.889 & 0.803 \\
+       			\hline
+        			\textbf{K-Means} &  & \diagbox{}{} & 0.891 & 0.891 & 0.909\\
+        			\hline
+        			\textbf{DBSCAN} &  &  & \diagbox{}{} & 1 & 0.892\\
+        			\hline
+        			\textbf{HDBSCAN} &  &  &  & \diagbox{}{} & 0.892\\
+       			\hline
+    			\end{tabular}
+    			\caption{Normalized Mutual Information between PCA PSF Intensities clusters}
+		\end{table}

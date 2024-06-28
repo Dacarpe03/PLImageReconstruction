@@ -1560,7 +1560,7 @@ def plot_cluster_labels_count(labels,
     print("Cluster density mean:", np.mean(counts))
     print("Cluster density variance:", np.std(counts))
     plt.bar(keys, counts)
-    plt.xticks(integers, rotation=90)
+    plt.xticks(range(1, len(integers), 2), rotation=90)
     plt.xlabel('Label')
     plt.ylabel('Frequency')
     plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')

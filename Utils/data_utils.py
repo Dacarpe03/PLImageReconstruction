@@ -748,6 +748,7 @@ def generate_zernike_psf_complex_fields(
 	starting_mode=2,
 	zernike_modes=1,
 	coefficients_range=None,
+	coefficients_can_be_negative=None,
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
@@ -785,7 +786,8 @@ def generate_zernike_psf_complex_fields(
 															 					pupil_grid,
 															 					aperture,
 															 					D_tel,
-															 					coefficients_range=coefficients_range)
+															 					coefficients_range=coefficients_range,
+																				coefficients_can_be_negative=coefficients_can_be_negative)
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
@@ -817,7 +819,8 @@ def create_zernike_complex_field(
 	pupil_grid,
 	aperture,
 	D_tel,
-	coefficients_range=None):
+	coefficients_range=None,
+	coefficients_can_be_negative=None):
 	
 
 	mode_complex_fields = []
@@ -834,7 +837,8 @@ def create_zernike_complex_field(
 			lower_bound = coefficients_range[coeff_index][0]
 			upper_bound = coefficients_range[coeff_index][1]
 			mode_coeff = np.random.uniform(lower_bound, upper_bound)
-			mode_coeff = mode_coeff * np.random.choice([-1, 1])
+			if coefficients_can_be_negative[coeff_index]:
+				mode_coeff = mode_coeff * np.random.choice([-1, 1])
 			coeff_index += 1
 		mode_coefficients.append(mode_coeff)
 

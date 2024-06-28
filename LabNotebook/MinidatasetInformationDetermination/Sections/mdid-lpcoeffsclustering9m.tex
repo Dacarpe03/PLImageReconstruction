@@ -1,0 +1,192 @@
+	\subsection{LP coefficients clustering}
+
+		\subsubsection{K-Means}
+			
+			As K-Means allows for the number of clusters to be defined, and we know that there are 4 in the original dataset, K-Means is used to find 4 clusters.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of clusters} & \textbf{Number of initializations}\\
+					\hline
+					\textbf{Original LP coefficients} & 32 & 100\\
+					\hline
+				\end{tabular}
+				\caption{K-Means hyperparameter configuration for c coefficients clustering}
+			\end{table}
+		
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-Means clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsK-Meansdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-Means cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsK-Meansgridclusters.png}}
+				\caption{Comparison between original clustering and K-Means clustering from original LP coefficients}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{DBSCAN}
+			
+			A configuration that outputs 4 clusters is searched
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of neighbours} & \textbf{Epsilon}\\
+					\hline
+					Original LP coefficients & 15 & 18\\
+				\end{tabular}
+				\caption{DBSCAN hyperparameter configuration for LP coefficients clustering}
+			\end{table}
+		
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and DBSCAN clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{HDBSCAN}
+			
+			A configuration that outputs 4 clusters is searched.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Minimum cluster size} \\
+					\hline
+					Original LP coefficients & 21 \\
+				\end{tabular}
+				\caption{HDBSCAN hyperparameter configuration for LP coefficients clustering}
+			\end{table}
+			\FloatBarrier
+			
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsHDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsHDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and HDBSCAN clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Agglomerative clustering}
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|}
+					\hline
+					 & \textbf{Number of clusters} \\
+					\hline
+					Original LP coefficients & 64 \\
+					\hline
+				\end{tabular}
+				\caption{Agglomerative hyperparameter configuration for LP coefficients clustering}
+			\end{table}
+			\FloatBarrier
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-9mlpcoefficientsAgglomerativedensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-9mlpcoefficientsAgglomerativegridclusters.png}}
+				\caption{Comparison between original clustering and Agglomerative clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Summary}
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsK-Meansdensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsHDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsAgglomerativedensity.png}}\\
+				
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsK-Meansgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsHDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-9mlpcoefficientsAgglomerativegridclusters.png}}
+				
+				\caption{Comparison between clustering LP coefficients algorithms}
+			\end{figure*}
+		\FloatBarrier
+		
+		\begin{table}[h!]
+    			\centering
+    			\begin{tabular}{|c|c|c|c|c|c|}
+        			\hline
+        			& \textbf{Original} & \textbf{K-Means} & \textbf{DBSCAN} & \textbf{HDBSCAN} & \textbf{Agglomerative} \\
+        			\hline
+        			\textbf{Original} & \diagbox{}{} & 1 & 1 & 1 & 1 \\
+       			\hline
+        			\textbf{K-Means} &  & \diagbox{}{} & 1 & 1 & 1\\
+        			\hline
+        			\textbf{DBSCAN} &  &  & \diagbox{}{} & 1 & 1\\
+        			\hline
+        			\textbf{HDBSCAN} &  &  &  & \diagbox{}{} & 1\\
+       			\hline
+    			\end{tabular}
+    			\caption{Normalized Mutual Information between original LP coefficients clusters}
+		\end{table}
