@@ -1,10 +1,12 @@
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+from sklearn.neighbors import NearestNeighbors
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from collections import Counter
 
 from data_utils import compute_amplitude_and_phase_from_electric_field, \
                        compute_intensity_from_electric_field, \
@@ -346,7 +348,8 @@ def plot_amplitude_phase_intensity(
     log_scale=False,
     plot=True,
     save=False,
-    title=""
+    title="",
+    title_prefix="pid"
     ):
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
     intensity = amplitude**2
@@ -408,7 +411,7 @@ def plot_amplitude_phase_intensity(
     if plot:
         fig.show()
     if save:
-        new_title = f"pid-{title.replace(' ', '').lower()}"
+        new_title = f"{title_prefix}-{title.replace(' ', '').lower()}"
         fig.write_image(f"{new_title}.png")
 
     return None
@@ -1405,3 +1408,173 @@ def plot_boxplot_zernike_euclidean_distances(
     fig.write_image(f"{title}.png")
 
     return None
+
+
+def plot_clusters_from_labels(
+    dataset_coordinates,
+    labels,
+    title,
+    x_title,
+    y_title,
+    dataset_name,
+    cluster_type,
+    axis_range=[-2.3, 2.3]):
+
+    df = pd.DataFrame(dataset_coordinates, columns=[x_title, y_title])
+    df['label'] = labels
+
+    fig = px.scatter(df, x=x_title, y=y_title, color=df['label'].astype(str), title=title)
+
+    fig.update_layout(
+        autosize=False,
+        legend_title_text='Labels',
+        width=600,
+        height=600,
+        xaxis=dict(scaleanchor='y', scaleratio=1, range=axis_range),
+        yaxis=dict(scaleanchor='x', scaleratio=1, range=axis_range)
+    )
+
+    fig.show()  
+    fig.write_image(f'mdid-{dataset_name}{cluster_type}clusters.png')
+
+
+def plot_grid_clusters(
+    data,
+    data_labels,
+    labels_list,
+    title,
+    xtitle,
+    ytitle,
+    xtickval_jumps,
+    dataset_name,
+    cluster_type,
+    cluster_line_width=2,
+    samples_per_cluster=10,
+    y_tick_jump_size=1,
+    width=500,
+    height=800
+    ):
+
+    samples = []
+    
+    middles = []
+    ticktexts = []
+    yboxes=[0]
+    
+    label_count = 0
+    for label_type in labels_list:
+        subsamples = data[data_labels==label_type]
+        if len(subsamples) > 0:
+            finish = min(len(subsamples), samples_per_cluster)
+            subsamples = subsamples[0:finish]
+            samples.append(subsamples)
+
+            yboxes.append(yboxes[-1]+finish)
+            middles.append(finish/2)
+
+            if label_count % y_tick_jump_size == 0:
+                ticktexts.append(label_type)
+            label_count+=1
+
+    samples = np.concatenate(samples)
+    heatmap = go.Heatmap(
+        z=samples,
+        colorscale='Viridis'
+    )
+
+    layout = go.Layout(
+        title=title,
+        xaxis=dict(
+            title=xtitle
+        ),
+        yaxis=dict(
+            title=ytitle
+        ),
+        width=width,
+        height=height
+    )
+
+    fig = go.Figure(data=[heatmap], layout=layout)
+
+    for i in range(0, len(labels_list)):
+        fig.add_shape(
+            type="rect",
+            x0=-0.5, y0=yboxes[i]-0.5, x1=len(data[0])-0.5, y1=yboxes[i+1]-0.5,
+            line=dict(color="red", width=cluster_line_width)
+        )
+
+    tickvals = []
+    tick = len(samples)
+    for middle in middles:
+        tickval = tick - middle
+        tick = tick - middle*2
+        if label_count % y_tick_jump_size == 0:
+            tickvals.append(tickval)
+        label_count += 1
+
+    ticktexts.reverse()
+    fig.update_yaxes(
+        tickvals=tickvals,
+        ticktext=ticktexts
+    )
+    
+    fig.update_xaxes(
+        tickvals=np.arange(0, len(data[0]), xtickval_jumps),
+    )
+
+    fig.update_layout(
+        margin=dict(t=100, l=100)
+    )
+
+    fig.show()
+    fig.write_image(f'mdid-{dataset_name}{cluster_type}gridclusters.png')
+
+
+def plot_kneighbours(data, neighbours):
+    nbrs = NearestNeighbors(n_neighbors=neighbours).fit(data)
+    distances, indices = nbrs.kneighbors(data)
+
+    distances = np.sort(distances[:, -1])
+    plt.plot(distances)
+    plt.ylabel(f"{neighbours}-NN Distance ")
+    plt.xlabel("Points sorted by distance to nearest neighbours")
+    plt.title(f"{neighbours}-NN Distance Graph")
+    plt.show()
+
+
+def get_number_of_clusters(labels):
+    #hdbscan_clusterer = hdbscan.HDBSCAN(min_cluster_size=neighbours)
+    #labels = hdbscan_clusterer.fit_predict(data)
+    print("Number of clusters:", np.max(labels)+1)
+    mask = labels != -1
+    points_that_are_not_noise = np.sum(mask)
+    print("Numbers that are not noise:", points_that_are_not_noise)
+    
+    return labels
+
+def plot_cluster_labels_count(labels,
+                              type_of_clustering,
+                              dataset_name,
+                              xtick_jump_size=1):
+
+    non_noise_labels = labels[labels != -1]
+    counter = Counter(non_noise_labels)
+    most_common = counter.most_common()[0]
+    least_common = counter.most_common()[:-2:-1][0]
+    print(f"The most repeated label is {most_common[0]} with {most_common[1]} occurrences.")
+    print(f"The least repeated label is {least_common[0]} with {least_common[1]} occurrence.")
+
+    keys = list(counter.keys())
+    counts = list(counter.values())
+    
+    integers = list(counter.keys())
+    
+    print("Cluster density mean:", np.mean(counts))
+    print("Cluster density variance:", np.std(counts))
+    plt.bar(keys, counts)
+    plt.xticks(range(1, len(integers), xtick_jump_size), rotation=90)
+    plt.xlabel('Label')
+    plt.ylabel('Frequency')
+    plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
+    plt.savefig(f'mdid-{dataset_name}{type_of_clustering}density.png')
+    plt.show()

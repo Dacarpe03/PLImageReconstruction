@@ -1,0 +1,195 @@
+	\subsection{Output fluxes clustering}
+
+		\subsubsection{K-Means}
+			
+			As K-Means allows for the number of clusters to be defined, and we know that there are 4 in the original dataset, K-Means is used to find 4 clusters.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of clusters} & \textbf{Number of initializations}\\
+					\hline
+					\textbf{Original Output fluxes} & 32 & 100\\
+					\hline
+				\end{tabular}
+				\caption{K-Means hyperparameter configuration for c coefficients clustering}
+			\end{table}
+		
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-Means clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesK-Meansdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-Means cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesK-Meansgridclusters.png}}
+				\caption{Comparison between original clustering and K-Means clustering from original Output fluxes}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{DBSCAN}
+			
+			A configuration that outputs 4 clusters is searched
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Number of neighbours} & \textbf{Epsilon}\\
+					\hline
+					Original Output fluxes & 7 & 300\\
+					\hline
+				\end{tabular}
+				\caption{DBSCAN hyperparameter configuration for Output fluxes clustering}
+			\end{table}
+		
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and DBSCAN clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{HDBSCAN}
+			
+			A configuration that outputs 4 clusters is searched.
+			
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|c|}
+					\hline
+					& \textbf{Minimum cluster size} \\
+					\hline
+					Original Output fluxes & 21 \\
+					\hline
+				\end{tabular}
+				\caption{HDBSCAN hyperparameter configuration for Output fluxes clustering}
+			\end{table}
+			\FloatBarrier
+			
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesHDBSCANdensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesHDBSCANgridclusters.png}}
+				\caption{Comparison between original clustering and HDBSCAN clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Agglomerative clustering}
+			\begin{table}[h!]
+				\centering
+				\begin{tabular}{|c|c|}
+					\hline
+					 & \textbf{Number of clusters} \\
+					\hline
+					Original Output fluxes & 32 \\
+					\hline
+				\end{tabular}
+				\caption{Agglomerative hyperparameter configuration for Output fluxes clustering}
+			\end{table}
+			\FloatBarrier
+			The results are the following:
+			
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative clusters densities]{%
+					\includegraphics[width=0.45\textwidth]{mdid-5moutputfluxesAgglomerativedensity.png}}\\
+					
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples]{%
+					\includegraphics[width=0.4\textwidth]{mdid-5moutputfluxesAgglomerativegridclusters.png}}
+				\caption{Comparison between original clustering and Agglomerative clustering}
+			\end{figure*}
+			\FloatBarrier
+		
+		\subsubsection{Summary}
+			\begin{figure*}[ht!]
+				\centering
+				\subfloat[Original cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesoriginaldensity.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesK-Meansdensity.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesHDBSCANdensity.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster densities]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesAgglomerativedensity.png}}
+				\\
+				
+				\subfloat[Original cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesoriginalgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[K-means cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesK-Meansgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[DBSCAN cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[HDBSCAN cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesHDBSCANgridclusters.png}}
+				\hspace{\fill}
+				\subfloat[Agglomerative cluster samples]{%
+					\includegraphics[width=0.18\textwidth]{mdid-5moutputfluxesAgglomerativegridclusters.png}}
+				
+				\caption{Comparison between clustering Output fluxes algorithms}
+			\end{figure*}
+		\FloatBarrier
+		
+		\begin{table}[h!]
+    			\centering
+    			\begin{tabular}{|c|c|c|c|c|c|}
+        			\hline
+        			& \textbf{Original} & \textbf{K-Means} & \textbf{DBSCAN} & \textbf{HDBSCAN} & \textbf{Agglomerative} \\
+        			\hline
+        			\textbf{Original} & \diagbox{}{} & 1 & 0.998 & 1 & 1 \\
+       			\hline
+        			\textbf{K-Means} &  & \diagbox{}{} & 0.998 & 1 & 1\\
+        			\hline
+        			\textbf{DBSCAN} &  &  & \diagbox{}{} & 0.998 & 0.998\\
+        			\hline
+        			\textbf{HDBSCAN} &  &  &  & \diagbox{}{} & 1\\
+       			\hline
+    			\end{tabular}
+    			\caption{Normalized Mutual Information between original Output fluxes clusters}
+		\end{table}

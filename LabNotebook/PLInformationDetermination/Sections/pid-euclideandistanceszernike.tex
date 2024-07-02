@@ -117,7 +117,28 @@
 	
 	\FloatBarrier
 	\subsubsection{Euclidean distances comparison evolution over number of zernike modes}
-	
+		\begin{figure*}[ht!]
+			\centering
+			\subfloat[Coefficients distances correlation evolution]{%
+				\includegraphics[width=0.9\textwidth]{pid-edevolutioncoeffs.png}}
+			\\
+			\subfloat[PSF intensity distance correlation evolution]{%
+				\includegraphics[width=0.45\textwidth]{pid-edevolutionpsf.png}}
+			\hspace{\fill}
+			\subfloat[Predicted PSF intensity distance correlation evolution]{%
+				\includegraphics[width=0.45\textwidth]{pid-edevolutionpredpsf.png}}
+			\\
+			\subfloat[Coefficients vs PL flux for 9 zernike modes]{%
+				\includegraphics[width=0.45\textwidth]{pid-edevolutioncroppedpsf.png}}
+			\hspace{\fill}
+			\subfloat[Coefficients vs PL flux for 2 zernike modes]{%
+				\includegraphics[width=0.45\textwidth]{pid-edevolutionpredcroppedpsf.png}}
+				
+			\caption{Euclidean distances correlation evolution over number of Zernike modes}
+		\end{figure*}
+		\FloatBarrier
+		
+		
 		\begin{figure*}[ht!]
 			\centering
 			\subfloat[Coefficients vs PL flux for 2 zernike modes]{%
@@ -228,17 +249,7 @@
 		\FloatBarrier
 		
 	\subsubsection{Analysis}
-		\begin{itemize}
-			\item The correlations between PSF distances and PL flux distances decay as the number of modes increases while the correlation between PSF distances and LP mode coefficients from the overlap integral are constant.
-			\item The predicted psfs from the train datasets create a similar cloud of points to the original psfs which indicates that the models are capturing the information of the PL.
-			\item The model trained for the dataset of 2 zernike terms PSF is the one that has the most overfit as the table shows (False, False, None indicate that no dropout, no batch normalization and no regularizer has been used), the validation mse just flatlines over the training.
-			
-			\item For 5 terms PSFs on the overfitting is reduced significantly although it increases with the number of zernike terms used. When using 20 terms the validation mse flatlines again.
-			
-			\item PL intensities vs PSF datasets evolution is practically the same for original, predicted, cropped and cropped predicted datasets. This indicates that the models are capturing accurately the relationship existing between the original PSF datasets and PL intensities datasets.
-			
-			\item LP coeffs vs PSF datasets evolution is practically the same for original, predicted, cropped and cropped predicted datasets.
-		\end{itemize}
+
     
     
      

@@ -747,6 +747,8 @@ def generate_zernike_psf_complex_fields(
 	num_airy=8,
 	starting_mode=2,
 	zernike_modes=1,
+	coefficients_range=None,
+	coefficients_can_be_negative=None,
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
@@ -783,7 +785,9 @@ def generate_zernike_psf_complex_fields(
 															 				 	zernike_modes,
 															 					pupil_grid,
 															 					aperture,
-															 					D_tel)
+															 					D_tel,
+															 					coefficients_range=coefficients_range,
+																				coefficients_can_be_negative=coefficients_can_be_negative)
 
 		zernike_wavefront = Wavefront(zernike_complex_field, wavelength)
 		
@@ -814,7 +818,9 @@ def create_zernike_complex_field(
 	zernike_modes,
 	pupil_grid,
 	aperture,
-	D_tel):
+	D_tel,
+	coefficients_range=None,
+	coefficients_can_be_negative=None):
 	
 
 	mode_complex_fields = []
@@ -822,11 +828,18 @@ def create_zernike_complex_field(
 
 	zern_basis = make_zernike_basis(starting_mode=starting_mode, num_modes=zernike_modes, D=D_tel, grid=pupil_grid)
 
-
+	coeff_index = 0
 	for zernike_mode in range(starting_mode, starting_mode+zernike_modes):
 		n, m = noll_to_zernike(zernike_mode)
-
-		mode_coeff = np.random.uniform(-1, 1) / n
+		if coefficients_range == None:
+			mode_coeff = np.random.uniform(-1, 1) / n
+		else:
+			lower_bound = coefficients_range[coeff_index][0]
+			upper_bound = coefficients_range[coeff_index][1]
+			mode_coeff = np.random.uniform(lower_bound, upper_bound)
+			if coefficients_can_be_negative[coeff_index]:
+				mode_coeff = mode_coeff * np.random.choice([-1, 1])
+			coeff_index += 1
 		mode_coefficients.append(mode_coeff)
 
 
@@ -1573,3 +1586,19 @@ def compute_anova_test(set_1, set_2, set_3, set_4):
 def compute_anova_test_5_sets(set_1, set_2, set_3, set_4, set_5):
 	f_statistic, p_value = f_oneway(set_1, set_2, set_3, set_4, set_5)
 	return f_statistic, p_value
+
+def classify_zernike_coefficients_clusters(zernike_coefficients_list,
+										   labels_dictionary):
+	
+	labels = []
+	for zernike_coeffs in zernike_coefficients_list:
+		label_key = ""
+		for coeff in zernike_coeffs:
+			if coeff >= 0:
+				label_key += "p"
+			else:
+				label_key += "n"
+
+		labels.append(labels_dictionary[label_key])
+
+	return np.array(labels)
