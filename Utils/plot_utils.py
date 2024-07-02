@@ -1447,7 +1447,12 @@ def plot_grid_clusters(
     ytitle,
     xtickval_jumps,
     dataset_name,
-    cluster_type
+    cluster_type,
+    cluster_line_width=2,
+    samples_per_cluster=10,
+    y_tick_jump_size=1,
+    width=500,
+    height=800
     ):
 
     samples = []
@@ -1456,16 +1461,20 @@ def plot_grid_clusters(
     ticktexts = []
     yboxes=[0]
     
+    label_count = 0
     for label_type in labels_list:
         subsamples = data[data_labels==label_type]
         if len(subsamples) > 0:
-            finish = min(len(subsamples), 10)
+            finish = min(len(subsamples), samples_per_cluster)
             subsamples = subsamples[0:finish]
             samples.append(subsamples)
 
             yboxes.append(yboxes[-1]+finish)
             middles.append(finish/2)
-            ticktexts.append(label_type)
+
+            if label_count % y_tick_jump_size == 0:
+                ticktexts.append(label_type)
+            label_count+=1
 
     samples = np.concatenate(samples)
     heatmap = go.Heatmap(
@@ -1481,17 +1490,17 @@ def plot_grid_clusters(
         yaxis=dict(
             title=ytitle
         ),
-        width=500,
-        height=800
+        width=width,
+        height=height
     )
 
     fig = go.Figure(data=[heatmap], layout=layout)
 
-    for i in range(0, len(ticktexts)):
+    for i in range(0, len(labels_list)):
         fig.add_shape(
             type="rect",
             x0=-0.5, y0=yboxes[i]-0.5, x1=len(data[0])-0.5, y1=yboxes[i+1]-0.5,
-            line=dict(color="red", width=2)
+            line=dict(color="red", width=cluster_line_width)
         )
 
     tickvals = []
@@ -1499,7 +1508,9 @@ def plot_grid_clusters(
     for middle in middles:
         tickval = tick - middle
         tick = tick - middle*2
-        tickvals.append(tickval)
+        if label_count % y_tick_jump_size == 0:
+            tickvals.append(tickval)
+        label_count += 1
 
     ticktexts.reverse()
     fig.update_yaxes(
@@ -1543,7 +1554,8 @@ def get_number_of_clusters(labels):
 
 def plot_cluster_labels_count(labels,
                               type_of_clustering,
-                              dataset_name):
+                              dataset_name,
+                              xtick_jump_size=1):
 
     non_noise_labels = labels[labels != -1]
     counter = Counter(non_noise_labels)
@@ -1560,7 +1572,7 @@ def plot_cluster_labels_count(labels,
     print("Cluster density mean:", np.mean(counts))
     print("Cluster density variance:", np.std(counts))
     plt.bar(keys, counts)
-    plt.xticks(range(1, len(integers), 2), rotation=90)
+    plt.xticks(range(1, len(integers), xtick_jump_size), rotation=90)
     plt.xlabel('Label')
     plt.ylabel('Frequency')
     plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
