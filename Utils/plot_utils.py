@@ -1555,7 +1555,8 @@ def get_number_of_clusters(labels):
 def plot_cluster_labels_count(labels,
                               type_of_clustering,
                               dataset_name,
-                              xtick_jump_size=1):
+                              xtick_jump_size=1,
+                              title=None):
 
     non_noise_labels = labels[labels != -1]
     counter = Counter(non_noise_labels)
@@ -1576,7 +1577,8 @@ def plot_cluster_labels_count(labels,
     plt.xlabel('Label')
     plt.ylabel('Frequency')
     plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
-    plt.savefig(f'mdid-{dataset_name}{type_of_clustering}density.png')
+
+    plt.savefig(f"mdid-{dataset_name.lower().replace(' ', '')}{type_of_clustering}density.png")
     plt.show()
 
 
