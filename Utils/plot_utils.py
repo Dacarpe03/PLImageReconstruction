@@ -1555,7 +1555,8 @@ def get_number_of_clusters(labels):
 def plot_cluster_labels_count(labels,
                               type_of_clustering,
                               dataset_name,
-                              xtick_jump_size=1):
+                              xtick_jump_size=1,
+                              title=None):
 
     non_noise_labels = labels[labels != -1]
     counter = Counter(non_noise_labels)
@@ -1576,5 +1577,72 @@ def plot_cluster_labels_count(labels,
     plt.xlabel('Label')
     plt.ylabel('Frequency')
     plt.title(f'Label frequency in the {dataset_name} {type_of_clustering} clustering')
-    plt.savefig(f'mdid-{dataset_name}{type_of_clustering}density.png')
+
+    plt.savefig(f"mdid-{dataset_name.lower().replace(' ', '')}{type_of_clustering}density.png")
     plt.show()
+
+
+def plot_nmi_evolutions_over_clusters(
+    number_of_clusters,
+    nmi_zernike_psf,
+    nmi_zernike_lp,
+    nmi_zernike_flux,
+    nmi_psf_lp,
+    nmi_psf_flux,
+    nmi_lp_flux,
+    n_modes):
+
+    
+    fig = make_subplots(rows=3, 
+                        cols=2,
+                        subplot_titles=["Zernike coefficients vs PSF NMI",
+                                        "Zernike coefficients vs LP coefficients NMI",
+                                        "Zernike coefficients vs PL output fluxes NMI",
+                                        "PSF vs LP coefficients NMI",
+                                        "PSF vs PL output fluxes NMI",
+                                        "LP coefficients vs PL output fluxes NMI"])
+
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF NMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs LP coefficients NMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PL output fluxes NMI'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='PSF vs LP coefficients NMI'), row=2, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='PSF vs PL output fluxes NMI'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='LP coefficients vs PL output fluxes NMI'), row=3, col=2)
+
+    # Update layout
+    fig.update_layout(height=840,
+                      width=1200,
+                      title_text=f"NMI evolution over different number of clusters for {n_modes} zernike modes")
+    fig.update_yaxes(title_text='NMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Number of clusters',
+                     tickvals=number_of_clusters,
+                     type="log")
+    fig.show()
+
+    fig.write_image(f'nmia-nmievolutionover{n_modes}.png')
+
+
+def plot_nmi_evolution_over_modes(
+    number_of_clusters,
+    nmi_evolutions,
+    title):
+    
+    fig = go.Figure()
+    modes = [2, 5, 9, 14, 20]
+    for nmi_evo, n_mode in zip(nmi_evolutions, modes):
+        fig.add_trace(go.Scatter(x=number_of_clusters, 
+                                 y=nmi_evo, mode='lines+markers', 
+                                 name=f'{n_mode} modes'))
+    
+    # Update layout
+    fig.update_layout(height=600,
+                      width=800,
+                      title_text=title)
+    fig.update_yaxes(title_text='NMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Number of clusters',
+                     tickvals=number_of_clusters,
+                     type="log")
+    fig.show()
+    fig.write_image(f'nmia-{title.strip().lower().replace(" ", "")}.png')

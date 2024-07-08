@@ -1,0 +1,16 @@
+\section{Preprocessing}
+
+	\subsection{PSF Intensities}
+		The 5000x128x128 PSF intensities datasets are dimensionally reduced using UMAP giving an array of 5000x19 projections of the PSF Intensities for each dataset.
+		
+		\begin{table}[h!]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Number of neighbors} & \textbf{Min distance} & \textbf{Number of components} \\
+				\hline
+				15 & 0.3 & 19 \\
+				\hline
+			\end{tabular}
+		\caption{UMAP hyperparameter configurations for PSF Intensities dimensionality reduction}
+		\end{table}
