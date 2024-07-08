@@ -37,7 +37,7 @@ minidataset_dict = PATHS_DICTIONARY[key]
 start = 0
 end = 10000
 for i in range(10):
-	intensities = process_fc_complex_field_intensity(minidataset_dict['complex_fields_path'])
+	intensities = process_fc_complex_field_intensity(minidataset_dict['complex_fields_path'], start, end)
 	save_numpy_array(intensities, f"{str(i)}{minidataset_dict['intensities_file_path']}")
 	start += 10000
 	end += 10000
