@@ -1,6 +1,6 @@
 NUMPY_SUFFIX = ".npy"
 
-HOME = "/home/dani"
+HOME = "/suphys/dcar0877"
 
 PSF_MINIDATASET_PATH = f"{HOME}/DaniProjects/SAIL/PhotonicLanternProjects/Data/PSFReconstructionMinidataset"
 
