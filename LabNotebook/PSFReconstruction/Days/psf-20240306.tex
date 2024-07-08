@@ -1,9 +1,0 @@
-\newday{06 March 2024}
-	
-	\action{Today I will be looking at the code from the \filename{lantern\_fiber\_utils.py} file looking for the place where the LP mode coefficients are normalized}
-	
-	\action{Found it, in the function \filename{make\_fiber\_modes()} used to compute de coefficients, there is a parameter called \filename{normtosum} that is set to True by default, it looks as it normalizes the coefficients after the overlap integral is computed.}
-		
-	\action{Set \filename{normtosum} to False, and compute 10000 output fluxes.}
-	
-\finishday
