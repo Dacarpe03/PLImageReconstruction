@@ -25,8 +25,6 @@ def process_fc_complex_field_intensity(filepath):
     start_col = (128 - 64) // 2
     end_col = start_col + 64
 
-    cropped_intensities_array = intensities_arrays[:, start_row:end_row, start_col:end_col]
-
     intensities_arrays = intensities_arrays.reshape(100000, 128*128)
     return intensities_arrays
 
