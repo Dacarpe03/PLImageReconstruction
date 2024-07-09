@@ -23,7 +23,7 @@ ds_info = PATHS_DICTIONARY[dataset_name]
 print(f"Generating {dataset_name}")
 
 # Save intensities
-psf_path = ds_info["intensities_file_path"]
+psf_path = ds_info["complex_fields_path"]
 
 zernike_coeffs_path = ds_info["zernike_mode_coefficients_path"]
 lp_coeffs_path = ds_info["lp_modes_path"]
@@ -48,8 +48,8 @@ generate_zernike_psf_complex_fields(psf_path,
                                     coefficients_can_be_negative=coefficients_can_be_negative,
                                     n_samples=n_samples,
                                     overwrite=False,
-                                    save_complex_fields=False,
-                                    save_intensities=True)
+                                    save_complex_fields=True,
+                                    save_intensities=False)
 
 print("    Generating Fluxes and LP coefficients")
 compute_output_fluxes_from_complex_field(psf_path,

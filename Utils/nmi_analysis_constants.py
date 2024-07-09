@@ -321,6 +321,6 @@ PATHS_DICTIONARY = {
 									False,
 									False,
 									False],
-		"n_samples": 100000
+		"n_samples": 75000
 	},
 }
