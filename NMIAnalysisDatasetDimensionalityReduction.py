@@ -30,14 +30,8 @@ tf.config.experimental.set_memory_growth(gpus[0], True)
 key = "NMI_ANALYSIS_BIG_9M"
 minidataset_dict = PATHS_DICTIONARY[key]
 
-intensities = []
-for i in range(10):
-    path = f"{minidataset_dict['intensities_file_path']}{str(i)}.npy"
-    inten = np.load(path)
-    intensities.append(inten)
+intensities = np.load(minidataset_dict['intensities_file_path'])
 
-intensities = np.concatenate(intensities)
-print(intensities.shape)
 umap_reducer = umap.UMAP(n_neighbors=15,
                          min_dist=0.3,
                          n_components=19,
