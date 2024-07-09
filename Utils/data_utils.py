@@ -752,6 +752,7 @@ def generate_zernike_psf_complex_fields(
 	n_samples=SUBFILE_SAMPLES,
 	plot=False,
 	save_complex_fields=True,
+	save_intensities=False,
 	overwrite=False
 	):
 	"""
@@ -805,8 +806,14 @@ def generate_zernike_psf_complex_fields(
 		   						   	   psf_filepath,
 		   						   	   overwrite=overwrite)
 
-		zernike_coefficients_array = np.vstack(zernike_coefficients_list)
-		save_numpy_array(zernike_coefficients_array,
+	
+	if save_intensities:
+		save_wavefront_intensities(propagated_wavefronts,
+		   						   psf_filepath,
+		   						   overwrite=overwrite)
+
+	zernike_coefficients_array = np.vstack(zernike_coefficients_list)
+	save_numpy_array(zernike_coefficients_array,
 						 zernike_coeffs_filepath,
 						 overwrite=overwrite)
 
@@ -950,6 +957,23 @@ def save_wavefronts_complex_fields(
 		complex_fields[i] = comp_amp_phase
 
 	save_numpy_array(complex_fields, filepath, single_precision=False, overwrite=overwrite)
+
+
+def save_wavefront_intensities(
+	propagated_wavefronts,
+	filepath,
+	overwrite=False
+	):
+
+	complex_arrays = complex_arrays/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
+    intensities_arrays = np.abs(complex_arrays)**2
+    start_row = (128 - 64) // 2
+    end_row = start_row + 64
+    start_col = (128 - 64) // 2
+    end_col = start_col + 64
+
+    intensities_arrays = intensities_arrays.reshape(100000, 128*128)
+    return intensities_arrays
 
 
 def save_wavefronts_phase(

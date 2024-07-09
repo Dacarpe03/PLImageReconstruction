@@ -21,7 +21,10 @@ dataset_name = "NMI_ANALYSIS_BIG_9M"
 ds_info = PATHS_DICTIONARY[dataset_name]
 
 print(f"Generating {dataset_name}")
-psf_path = ds_info["complex_fields_path"]
+
+# Save intensities
+psf_path = ds_info["intensities_file_path"]
+
 zernike_coeffs_path = ds_info["zernike_mode_coefficients_path"]
 lp_coeffs_path = ds_info["lp_modes_path"]
 flux_path = ds_info["output_fluxes_path"]
@@ -44,7 +47,9 @@ generate_zernike_psf_complex_fields(psf_path,
                                     coefficients_range=coefficients_range,
                                     coefficients_can_be_negative=coefficients_can_be_negative,
                                     n_samples=n_samples,
-                                    overwrite=False)
+                                    overwrite=False,
+                                    save_complex_fields=False,
+                                    save_intensities=True)
 
 print("    Generating Fluxes and LP coefficients")
 compute_output_fluxes_from_complex_field(psf_path,
