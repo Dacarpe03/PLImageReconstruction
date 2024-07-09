@@ -21,12 +21,6 @@ import umap
 
 # ### Intensities
 
-# In[4]:
-import tensorflow as tf
- 
-gpus = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpus[0], True)
-
 key = "NMI_ANALYSIS_BIG_9M"
 minidataset_dict = PATHS_DICTIONARY[key]
 
