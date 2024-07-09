@@ -809,8 +809,8 @@ def generate_zernike_psf_complex_fields(
 	
 	if save_intensities:
 		save_wavefront_intensities(propagated_wavefronts,
-		   						   psf_filepath,
-		   						   overwrite=overwrite)
+								   psf_filepath,
+								   overwrite=overwrite)
 
 	zernike_coefficients_array = np.vstack(zernike_coefficients_list)
 	save_numpy_array(zernike_coefficients_array,
@@ -966,14 +966,14 @@ def save_wavefront_intensities(
 	):
 
 	complex_arrays = complex_arrays/COMPLEX_NUMBER_NORMALIZATION_CONSTANT
-    intensities_arrays = np.abs(complex_arrays)**2
-    start_row = (128 - 64) // 2
-    end_row = start_row + 64
-    start_col = (128 - 64) // 2
-    end_col = start_col + 64
+	intensities_arrays = np.abs(complex_arrays)**2
+	start_row = (128 - 64) // 2
+	end_row = start_row + 64
+	start_col = (128 - 64) // 2
+	end_col = start_col + 64
 
-    intensities_arrays = intensities_arrays.reshape(100000, 128*128)
-    return intensities_arrays
+	intensities_arrays = intensities_arrays.reshape(100000, 128*128)
+	return intensities_arrays
 
 
 def save_wavefronts_phase(
