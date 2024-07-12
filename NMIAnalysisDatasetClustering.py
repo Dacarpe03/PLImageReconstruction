@@ -48,7 +48,7 @@ for n_clusters in number_of_clusters:
 
         data = np.load(data_path)
         if data_path_key == "lp_modes_path":
-            data = data.reshape(5000, 38)
+            data = data.reshape(75000, 38)
                 
         kmeans = KMeans(n_clusters=n_clusters,
                         n_init=200)
