@@ -24,12 +24,10 @@ number_of_clusters = [8000, 10000, 20000]
 
 data_keys = ["umap_intensities_path",
              "zernike_mode_coefficients_path",
-             "lp_modes_path",
              "output_fluxes_path"]
 
 labels_keys = ["complex_fields_labels_path",
                 "zernike_mode_coefficients_labels_path",
-                "lp_modes_labels_path",
                 "output_fluxes_labels_path"]
 
 key = "NMI_ANALYSIS_BIG_9M"
