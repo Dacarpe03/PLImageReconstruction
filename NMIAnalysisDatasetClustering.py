@@ -20,7 +20,7 @@ import numpy as np
 # In[3]:
 
 
-number_of_clusters = [4, 8, 16, 32, 64, 100, 250, 500, 1000, 2000, 4000, 8000, 10000, 20000]
+number_of_clusters = [8000, 10000, 20000]
 
 data_keys = ["umap_intensities_path",
              "zernike_mode_coefficients_path",
@@ -45,15 +45,18 @@ for n_clusters in number_of_clusters:
         data_path = minidataset_dict[data_path_key]
         print(data_path)
         labels_path = minidataset_dict[labels_path_key]
-
-        data = np.load(data_path)
-        if data_path_key == "lp_modes_path":
-            data = data.reshape(75000, 38)
-                
-        kmeans = KMeans(n_clusters=n_clusters,
-                        n_init=200)
-        data_labels = kmeans.fit_predict(data)
-            
+        
         complete_labels_path = f"{labels_path}{cluster_suffix}"
-        save_numpy_array(data_labels, complete_labels_path, single_precision=False)
+
+        if not os.path.isfile(complete_labels_path):
+            data = np.load(data_path)
+            if data_path_key == "lp_modes_path":
+                data = data.reshape(75000, 38)
+                    
+            kmeans = KMeans(n_clusters=n_clusters,
+                            n_init=100)
+            data_labels = kmeans.fit_predict(data)
+            save_numpy_array(data_labels, complete_labels_path, single_precision=False)
+        else:
+            print(f"{complete_labels_path} already exists")
 
