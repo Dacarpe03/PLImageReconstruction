@@ -16,7 +16,7 @@ from sklearn.cluster import KMeans
 
 import numpy as np
 
-
+import os
 # In[3]:
 
 
