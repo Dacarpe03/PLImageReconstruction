@@ -234,8 +234,9 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
 			convolutional_activation (string): The name of the activation function in the convolutional layers		
 			output_activation (string): The name of the activation in the output layer
-			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
+			padding (string): The type of padding used
+			use_batch_normalization (bool): True if use batch normalization between hidden layers
 		"""
 
 		return self.convolutional_layer_sizes, \
