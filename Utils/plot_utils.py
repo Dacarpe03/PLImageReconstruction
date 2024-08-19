@@ -790,6 +790,37 @@ def create_scatter_with_center_of_mass(x_coords, y_coords, name='Untitled'):
     return [scatter, x_mass_line, y_mass_line, name]
 
 
+def create_histogram_with_center_of_mass(x_coords, y_coords, name='Untitled'):
+    scatter = go.Histogram2d(
+    x=x_coords,
+    y=y_coords,
+    nbinsx=150,  # Number of bins in x-direction
+    nbinsy=150,  # Number of bins in y-direction
+    colorscale='Viridis',
+    name=name,
+    showscale=False
+    )
+
+    center_x, center_y = compute_center_of_mass(x_coords, y_coords)
+
+    x_mass_line = go.Scatter(x=[center_x, center_x],
+                             y=[np.min(y_coords), np.max(y_coords)],
+                             mode='lines',
+                                 showlegend=False,
+                                 marker_color='coral')
+
+    y_mass_line = go.Scatter(x=[np.min(x_coords), np.max(x_coords)],
+                             y=[center_y, center_y],
+                             mode='lines',
+                             showlegend=False,
+                             marker_color='coral')
+
+    corr = np.corrcoef(x_coords, y_coords)[0, 1]
+
+    name+=f"<br>Correlation: {round(corr, 3)}"
+    return [scatter, x_mass_line, y_mass_line, name]
+
+
 
 def plot_euclidean_distances(
     pl_flux_distances,
@@ -1114,6 +1145,93 @@ def plot_psf_vs_pl_lp_zc_euclidean_distances(
     fig.update_traces(
         marker=dict(size=1)
         )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        file_title=f"pid-{modes}m{psf_type}psfdistances"
+        fig.write_image(f"{file_title}.png")
+
+    return None
+
+
+def plot_psf_vs_pl_lp_zc_euclidean_distances_histogram(
+    psf_distances,
+    pl_distances,
+    lp_distances,
+    zc_distances,
+    modes,
+    psf_type,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+
+    
+    fl_to_psf_scatter = create_histogram_with_center_of_mass(pl_distances, psf_distances, name=f"PL flux vs PSF")
+    lp_to_psf_scatter = create_histogram_with_center_of_mass(lp_distances, psf_distances, name=f"LP coefficients vs PSF")
+    zm_to_psf_scatter = create_histogram_with_center_of_mass(zc_distances, psf_distances, name=f"Zernike coefficients vs PSF")
+
+    zernike_mode_graphs = [fl_to_psf_scatter,
+                           lp_to_psf_scatter,
+                           zm_to_psf_scatter]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
+
+    fig = make_subplots(
+        rows=1, 
+        cols=3, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        col+=1
+
+    fig.update_xaxes(title_text="PL intensities distance", row=1, col=1)
+    fig.update_xaxes(title_text="LP coefficients distance", row=1, col=2)
+    fig.update_xaxes(title_text="Zernike coefficients distance", row=1, col=3)
+
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=1)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=2)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=3)
+
+    title = f"{modes} Zernike modes {psf_type} PSF"
+
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=400,  # Set the height of the figure
+        width=1200 ,   # Set the width of the figure
+        title={
+            'font': {
+                'size': 24  # Increase the font size
+
+            },
+            'xanchor':'left'
+        }
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    #fig.update_traces(
+    #    marker=dict(size=1)
+    #    )
 
     if show:
         fig.show()

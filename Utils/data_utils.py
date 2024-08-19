@@ -537,7 +537,8 @@ def save_numpy_array(
 	Input:
 		array (np.array): The numpy array to store in a file
 		filepath (string): The path to the file where the array will be saved
-
+		single_precision (bool): If true, will convert the array type to float32
+		overwrite (bool): If True, it will overwrite the file that in the filepath. Default is False.
 	Returns:
 		None
 	"""
@@ -699,6 +700,16 @@ def generate_psf_complex_fields(
 		teslecope_diameter (float): The diameter of the aperture
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+		focal_q (int): Unused
+		num_airy (int): The number of airy that defines the focal grid
+		fried_parameter (float): To define the Cn_squared value
+		outer_scale (float): To define the atmosphere
+		velocity (float): To define the speed of the atmosphere
+		n_samples (int): The number of samples to generate
+		plot (bool): If true, it will show the plots of the optical system.
+		save_complex_fields (bool): If True, it will save the complex fields of the PSFs in numpy arrays
+		save_wavefront_phase (bool): If True, it will store the phase of the PSF
+		overwrite (bool): If True, it will overwrite the existing file in the filepath
 	"""
 
 	D_tel = telescope_diameter
@@ -762,6 +773,16 @@ def generate_zernike_psf_complex_fields(
 		teslecope_diameter (float): The diameter of the aperture
 		wavelength (float): The wavelength of the light
 		pupil_grid_size (int): The pixels per row (or columns as it is a square) of the grid
+		focal_q (int): Parameter of the focal grid
+		num_airy (int): Parameter of the focal grid
+		starting_mode (int): The index of the first zernike mode to start using
+		zernike_modes (int): The number of zernike modes to use
+		coefficients_range (list): A list of lists containing the rmse range of each of the zernike mode coefficients
+		coefficinets_can_be_negative (list): A list of bools that indicates if we can use a mirror negative range of zernike coefficients\
+		n_samples (int): The number of samples to create
+		plot (bool): If True, plot the optical system plots
+		save_complex_fields (bool): If True, the complex fields will be store in .npy files
+		overwrite (bool): If True the files in psf_filepath will be overwritten. Default is False
 	"""
 	if os.path.isfile(psf_filepath) and not overwrite:
 		print(f"{psf_filepath} already exists")
@@ -822,6 +843,18 @@ def create_zernike_complex_field(
 	coefficients_range=None,
 	coefficients_can_be_negative=None):
 	
+	"""
+	Function to create a single complex field with zernike aberrations
+
+	Input:
+		starting_mode (int): The index of the starting zernike mode
+		zernike_modes (int): The number of zernike modes to use
+		pupil_grid (Grid): The pupil grid created with hcipy
+		aperture: The aperture created with hcipy
+		D_tel (float): The diameter of the telescope
+		coefficients_range (list): A list of lists containing the rmse range of each of the zernike mode coefficients
+		coefficinets_can_be_negative (list): A list of bools that indicates if we can use a mirror negative range of zernike coefficients		
+	"""
 
 	mode_complex_fields = []
 	mode_coefficients = []
@@ -860,6 +893,11 @@ def propagate_zernike_wavefront(
 	):
 	"""
 	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	Input:
+		zernike_wavefront (wavefront): The zernike aberrated wavefront
+		propagator (): The Hcipy propagator
+		aperture (): The aperture of the telescope
+		plot (bool): If True, plot the propagated wavefront
 	"""
 	
 	propagated_wavefront = propagator(zernike_wavefront)
@@ -899,6 +937,11 @@ def propagate_wavefronts(
 	):
 	"""
 	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	Input:
+		wavefront (wavefront): The star wavefront
+		propagator (): The Hcipy propagator
+		atmosphere (): The atmosphere defined by hcipy
+		plot (bool): If True, plot the propagated wavefront
 	"""
 	wavefronts = []
 
@@ -936,6 +979,15 @@ def save_wavefronts_complex_fields(
 	filepath,
 	overwrite=False
 	):
+
+	"""
+	Function to store the wavefronts in .npy files
+
+	Input:
+		propagated_wavefronts (np.array): The propagated wavefronts to save in files
+		filepath (string): The path where the wavefronts will be stored
+		overwrite (bool): If True, the file in the filepath will be overwritten. Default is False
+	"""
 	
 	n_fields = len(propagated_wavefronts)
 	# Compute the rows (or columns as the wf is a square grid)
@@ -957,6 +1009,14 @@ def save_wavefronts_phase(
 	filepath
 	):
 	
+	"""
+	Function to store the wavefronts phases in .npy files
+
+	Input:
+		propagated_wavefronts (np.array): The propagated wavefronts to save in files
+		filepath (string): The path where the wavefronts will be stored
+	"""
+
 	n_wavefronts = len(propagated_wavefronts)
 	# Compute the rows (or columns as the wf is a square grid)
 	square_side = int(np.sqrt(propagated_wavefronts[0].phase.shape))
@@ -973,13 +1033,19 @@ def compute_output_fluxes_from_complex_field(
 	complex_fields_file_path,
 	lp_modes_coeffs_file_path,
 	output_fluxes_file_path,
+	complex_output_fluxes_file_path=None,
 	nmodes=19,
 	plot=False,
 	verbose=False,
 	overwrite=False,
 	only_lp_coeffs=False
 	):
-	
+	"""
+	Function to compute the output fluxes of the photonic lantern given a path to complex fields
+
+	Input:
+		
+	"""
 	if os.path.isfile(output_fluxes_file_path) and not overwrite:
 		print(f"{output_fluxes_file_path} already exists")
 		return
@@ -1014,6 +1080,8 @@ def compute_output_fluxes_from_complex_field(
 	transfer_matrix = load_transfer_matrix()
 
 	output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
+	if complex_output_fluxes_file_path is not None:
+		complex_output_fluxes = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
@@ -1044,6 +1112,9 @@ def compute_output_fluxes_from_complex_field(
 		# In real life, we just measure the intensities of the outputs:
 		pl_output_fluxes = np.abs(pl_outputs)**2
 		output_fluxes[k] = pl_output_fluxes
+		if complex_output_fluxes_file_path is not None:
+			complex_output_fluxes[k][0] = pl_outputs.real
+			complex_output_fluxes[k][1] = pl_outputs.imag
 
 		if plot:
 			# Plot input mode coefficients and output fluxes
@@ -1065,8 +1136,11 @@ def compute_output_fluxes_from_complex_field(
 		lp_modes_coeffs[k][1] = mode_coupling_complex.imag
 
 	save_numpy_array(output_fluxes, output_fluxes_file_path, overwrite=overwrite)
+	if complex_output_fluxes_file_path is not None:
+		print("aqui")
+		save_numpy_array(complex_output_fluxes, complex_output_fluxes_file_path, overwrite=overwrite)
 	# Save lp modes
-	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
+	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path, overwrite=overwrite)
 
 
 def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
