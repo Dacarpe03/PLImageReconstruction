@@ -254,7 +254,7 @@ def add_row_padding(
 		bottom_rows (int): The number of zero rows to add to each data point at bottom of the image
 
 	Returns:
-		padded_data_array (np.array): The 3d array with the 2d padded data points
+		final_data_array (np.array): The 3d array with the 2d padded data points
 	"""
 	zeros_shape = (data_array[0].shape[1])
 	new_data_array = np.zeros((data_array.shape[0], data_array.shape[1] + top_rows, data_array.shape[2]))
@@ -594,6 +594,10 @@ def train_generator(
 		labels_path (string): The path to the label files, in this case it will be the AMP_PHASE_PATH_PREFIX
 		batch_size (int): The size of the arrays
 		do_shuffle (bool): If True, then shuffle the data
+
+	Yields:
+		fluxes_batch (np.array): An array with the fluxes of the batch
+		amp_phase_batch (np.array): An array with the amplitudes and phases of the batch
 	"""
 	
 	while True:
@@ -892,12 +896,15 @@ def propagate_zernike_wavefront(
 	plot=False
 	):
 	"""
-	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	This function propagates a single wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
 	Input:
 		zernike_wavefront (wavefront): The zernike aberrated wavefront
 		propagator (): The Hcipy propagator
 		aperture (): The aperture of the telescope
 		plot (bool): If True, plot the propagated wavefront
+
+	Returns:
+		propagated_wavefront (Wavefront): The propagated wavefront or PSF.
 	"""
 	
 	propagated_wavefront = propagator(zernike_wavefront)
@@ -936,12 +943,16 @@ def propagate_wavefronts(
 	plot=False
 	):
 	"""
-	This function propagates a wavefront through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
+	This function propagates a set of wavefronts through an atmosphere layer several times and results the wavefront propagated until the focal plane of a propagator
 	Input:
 		wavefront (wavefront): The star wavefront
 		propagator (): The Hcipy propagator
 		atmosphere (): The atmosphere defined by hcipy
 		plot (bool): If True, plot the propagated wavefront
+
+
+	Returns:
+		wavefronts (Wavefront list): The propagated wavefronts or PSFs.
 	"""
 	wavefronts = []
 
@@ -981,7 +992,7 @@ def save_wavefronts_complex_fields(
 	):
 
 	"""
-	Function to store the wavefronts in .npy files
+	Function to store the complex fields of the wavefronts in .npy files
 
 	Input:
 		propagated_wavefronts (np.array): The propagated wavefronts to save in files
@@ -1041,10 +1052,18 @@ def compute_output_fluxes_from_complex_field(
 	only_lp_coeffs=False
 	):
 	"""
-	Function to compute the output fluxes of the photonic lantern given a path to complex fields
+	Function to compute and store the output fluxes of the photonic lantern given a path to complex fields
 
 	Input:
-		
+		complex_fields_file_path (string): The path to the complex fields that are going to be injected to the photonic lantern
+		lp_modes_coeffs_file_path (string): The path where the LP coeffs from the PSF and LP modes overlap integral will be stored
+		output_fluxes_file_path (string): The path where the output fluxes will be stored
+		complex_output_fluxes_file_path (string): The path where the complex amplitudes of the photonic lantern will be stored
+		nmodes (int): The number of modes of LP modes of the lantern. Default is 19
+		plot (bool): If True plots will be shown
+		verbose (bool): Adds verbosity
+		overwrite (bool): If true, the files in the indicated paths will be overwritten
+		only_lp_coeffs (bool): Only compute lp coeffs.
 	"""
 	if os.path.isfile(output_fluxes_file_path) and not overwrite:
 		print(f"{output_fluxes_file_path} already exists")
@@ -1153,7 +1172,19 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	overwrite=False,
 	only_lp_coeffs=False
 	):
-	
+	"""
+	Function to compute and store the output fluxes of the photonic lantern given a path to complex fields and an arbitrary transfer matrix
+
+	Input:
+		complex_fields_file_path (string): The path to the complex fields that are going to be injected to the photonic lantern
+		lp_modes_coeffs_file_path (string): The path where the LP coeffs from the PSF and LP modes overlap integral will be stored
+		output_fluxes_file_path (string): The path where the output fluxes will be stored
+		transfer_matrix_path (string): The path to the arbitrary transfer matrix
+		plot (bool): If True plots will be shown
+		verbose (bool): Adds verbosity
+		overwrite (bool): If true, the files in the indicated paths will be overwritten
+		only_lp_coeffs (bool): Only compute lp coeffs.
+	"""
 	if os.path.isfile(output_fluxes_file_path) and not overwrite and not only_lp_coeffs:
 		print(f"{output_fluxes_file_path} already exists")
 		return
@@ -1256,7 +1287,16 @@ def compute_lp_modes_from_complex_field(
 	verbose=False,
 	overwrite=False
 	):
-	
+	"""
+	Function to compute and store the lp coefficients of a set of PSFs
+
+	Input:
+		complex_fields_file_path (string): The path to the complex fields that are going to be injected to the photonic lantern
+		lp_modes_coeffs_file_path (string): The path where the LP coeffs from the PSF and LP modes overlap integral will be 
+		plot (bool): If True plots will be shown
+		verbose (bool): Adds verbosity
+		overwrite (bool): If true, the files in the indicated paths will be overwritten
+	"""
 	if os.path.isfile(lp_modes_coeffs_file_path) and not overwrite:
 		print(f"{lp_modes_coeffs_file_path} already exists")
 		return
@@ -1321,6 +1361,16 @@ def compute_mode_coefficients_from_complex_field(
 	plot=False,
 	verbose=False
 	):
+	"""
+	Function to ONLY COMPUTE the lp coefficients of a set of PSFs
+
+	Input:
+		complex_fields_file_path (string): The path to the complex fields that are going to be injected to the photonic lantern
+		lp_modes_coeffs_file_path (string): The path where the LP coeffs from the PSF and LP modes overlap integral will be 
+		plot (bool): If True plots will be shown
+		verbose (bool): Adds verbosity
+		overwrite (bool): If true, the files in the indicated paths will be overwritten
+	"""
 	# Create the lantern fiber
 	n_core = 1.44
 	n_cladding = 1.4345
@@ -1380,6 +1430,16 @@ def compute_mode_coefficients_from_complex_field(
 def load_transfer_matrix(
 	lanter_fiber_directory=PSF_DATA_PATH,
 	lantern_fiber_filename=LANTERN_FIBER_FILENAME):
+	"""
+	Function that loads the transfer matrix of a photonic lantern
+
+	Input:
+		lanter_fiber_directory (string): The path to the directory where the transfer matrix is saved
+		lantern_fiber_filename (string): The name of the file with the transfer matrix
+
+	Returns:
+		transfer_matrix (np.array): The transfer matrix from the photonic lantern with 19 modes.
+	"""
 
 	lantern_fiber = LanternFiber(datadir=PSF_DATA_PATH, nmodes=19, nwgs=19)
 	lantern_fiber.load_savedvalues(LANTERN_FIBER_FILENAME)
@@ -1391,6 +1451,15 @@ def load_transfer_matrix(
 
 def load_arbitrary_transfer_matrix(
 	MATRIX_PATH):
+	"""
+	Function that loads the transfer matrix of a photonic lantern
+
+	Input:
+		MATRIX_PATH (string): The path to the transfer matrix
+
+	Returns:
+		transfer_matrix (np.array): The transfer matrix from the photonic lantern with 19 modes.
+	"""
 	transfer_matrix = np.load(MATRIX_PATH)
 	return transfer_matrix
 
@@ -1400,6 +1469,16 @@ def create_and_save_arbitrary_matrix(
 	matrix_path,
 	overwrite=False
 	):
+	"""
+	Function that creates an arbitrary transfer matrix of a photonic lantern
+
+	Input:
+		n_modes (int): The number of LP modes supported
+		matrix_path (string): The path where the transfer matrix will be stored
+
+	Returns:
+		transfer_matrix (np.array): The transfer matrix from the photonic lantern with 19 modes.
+	"""
 	matrix = unitary_group.rvs(n_modes)
 	matrix_condition_number = np.linalg.cond(matrix)
 
@@ -1440,14 +1519,13 @@ def compute_intensity_from_electric_field(
     electric_field
     ):
     """
-    Function that transforms a 2d matrix of complex numbers into two 2d matrix of amplitude and phase
+    Function that transforms a 2d matrix of complex numbers into a 2d matrix of intensities
 
     Input:
         electric_field (np.array): A numpy array containing the electric field complex numbers
 
     Returns:
-        amplitudes (np.array): A numpy array containing the amplitudes of the points in the complex field
-        phases (np.array): A numpy array containing the phases of the points in the complex field
+        intensities (np.array): A numpy array containing the intensities of the points in the complex field
     """
 
     intensities = np.zeros(electric_field.shape)
@@ -1460,7 +1538,7 @@ def compute_intensity_from_electric_field(
 
             intensities[i, j] = np.abs(complex_number)**2
 
-    return amplitudes, phases
+    return intensities
 
 
 def reshape_fc_electric_field_to_real_imaginary_matrix(
@@ -1470,11 +1548,15 @@ def reshape_fc_electric_field_to_real_imaginary_matrix(
 	og_shape_cols = 128
 	):
 	"""
-	Function that reshapes the predicted electric field array of a fully connected network, as it is flattened in that stage
+	Function that reshapes the predicted electric field array of a fully connected network, as it is flattened in that stage, to a 2d matrix with real and imaginary values
 
 	Input:
 		electric_field (np.array): A 1d array with the first half of the elements representing the real part of a complex number and the second half
 								   representing the imaginary part of a complex number
+		og_shape_depth (int): The original depth of the matrix
+		og_shape_rows (int): The original rows of the matrix
+		of_shape_cols (int): The original cols of the matrix
+
 
 	Returns:
 		electric_field (np.array): A 2d array with its elements being the complex numbers
@@ -1527,6 +1609,10 @@ def compute_pairs_euclidean_distances(
 		points_array (np.array): The dataset where the points are stored
 		selected_pairs (np.array): An integer array of shape nx2 containing the selected pairs for which the distance will be measured
 		is_complex_field (bool): If the input is a complex field, the function will perform a transformation to compute the psf and flatten it
+		is_lp_coefficients (bool): If the input is a set of lp coeffs, the function will perform a transformation to flatted the np.array that contains it
+
+	Returns:
+		euclidean distances (np.array): A 1d array containing the euclidean distances between the selected pairs of points.
 	"""
 	n_pairs = selected_pairs.shape[0]
 	euclidean_distances = np.zeros((n_pairs))
@@ -1576,11 +1662,11 @@ def separate_distances(euclidean_distances):
 		euclidean_distances (np.array): The array with the merged information
 
 	Returns:
-		pl_flux_distances
-		og_complex_field_distances
-		og_cropped_complex_field_distances
-		predicted_complex_field_distances
-		predicted_cropped_complex_field_distances
+		pl_flux_distances (np.aray)
+		og_complex_field_distances (np.aray)
+		og_cropped_complex_field_distances (np.aray)
+		predicted_complex_field_distances (np.aray)
+		predicted_cropped_complex_field_distances (np.aray)
     """
 
 	pl_flux_distances = euclidean_distances[:, 0:1].flatten()
@@ -1600,11 +1686,11 @@ def separate_zernike_distances(euclidean_distances):
 		euclidean_distances (np.array): The array with the merged information
 
 	Returns:
-		pl_flux_distances
-		og_complex_field_distances
-		og_cropped_complex_field_distances
-		predicted_complex_field_distances
-		predicted_cropped_complex_field_distances
+		pl_flux_distances (np.aray)
+		og_complex_field_distances (np.aray)
+		og_cropped_complex_field_distances (np.aray)
+		predicted_complex_field_distances (np.aray)
+		predicted_cropped_complex_field_distances (np.aray)
     """
 
 	pl_flux_distances = euclidean_distances[:, 0:1].flatten()

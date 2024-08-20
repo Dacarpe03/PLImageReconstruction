@@ -1713,25 +1713,25 @@ def plot_nmi_evolutions_over_clusters(
     
     fig = make_subplots(rows=3, 
                         cols=2,
-                        subplot_titles=["Zernike coefficients vs PSF NMI",
-                                        "Zernike coefficients vs LP coefficients NMI",
-                                        "Zernike coefficients vs PL output fluxes NMI",
-                                        "PSF vs LP coefficients NMI",
-                                        "PSF vs PL output fluxes NMI",
-                                        "LP coefficients vs PL output fluxes NMI"])
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs LP coefficients AMI",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "PSF vs LP coefficients AMI",
+                                        "PSF vs PL output fluxes AMI",
+                                        "LP coefficients vs PL output fluxes AMI"])
 
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF NMI'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_lp, mode='lines+markers', name='Zernike coefficients vs LP coefficients NMI'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes NMI'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_lp, mode='lines+markers', name='PSF vs LP coefficients NMI'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes NMI'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes NMI'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_lp, mode='lines+markers', name='Zernike coefficients vs LP coefficients AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_lp, mode='lines+markers', name='PSF vs LP coefficients AMI'), row=2, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes AMI'), row=3, col=2)
 
     # Update layout
     fig.update_layout(height=840,
                       width=1200,
-                      title_text=f"NMI evolution over different number of clusters for {n_modes} zernike modes")
-    fig.update_yaxes(title_text='NMI',
+                      title_text=f"AMI evolution over different number of clusters for {n_modes} zernike modes")
+    fig.update_yaxes(title_text='AMI',
                      range=[0, 1])
     fig.update_xaxes(title_text='Number of clusters',
                      tickvals=number_of_clusters,
@@ -1739,6 +1739,63 @@ def plot_nmi_evolutions_over_clusters(
     fig.show()
 
     fig.write_image(f'nmia-nmievolutionover{n_modes}.png')
+
+
+def plot_ami_evolutions_over_clusters_with_complex(
+    number_of_clusters,
+    nmi_zernike_psf,
+    nmi_zernike_complex_psf,
+    nmi_zernike_lp,
+    nmi_zernike_flux,
+    nmi_zernike_complex_flux,
+    nmi_psf_lp,
+    nmi_complex_psf_lp,
+    nmi_psf_flux,
+    nmi_complex_psf_complex_flux,
+    nmi_lp_flux,
+    nmi_lp_complex_flux,
+    n_samples):
+
+    
+    fig = make_subplots(rows=6, 
+                        cols=2,
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs complex PSF AMI",
+                                        "Zernike coefficients vs LP coefficients AMI",
+                                        "",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "Zernike coefficients vs complex PL output fluxes AMI",
+                                        "PSF vs LP coefficients AMI",
+                                        "Complex PSF vs LP coefficients AMI",
+                                        "PSF vs PL fluxes AMI",
+                                        "Complex PSF vs Complex PL output fluxes AMI",
+                                        "LP coefficients vs PL output fluxes AMI",
+                                        "LP coefficients vs Complex PL output fluxes AMI"])
+
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_complex_psf, mode='lines+markers', name='Zernike coefficients vs complex PSF AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_lp, mode='lines+markers', name='Zernike coefficients vs LP coefficients AMI'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_complex_flux, mode='lines+markers', name='Zernike coefficients vs complex PL output fluxes AMI'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_lp, mode='lines+markers', name='PSF vs LP coefficients AMI'), row=4, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_complex_psf_lp, mode='lines+markers', name='Complex PSF vs LP coefficients AMI'), row=4, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=5, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_complex_psf_complex_flux, mode='lines+markers', name='complex PSF vs complex PL output fluxes AMI'), row=5, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes AMI'), row=6, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_complex_flux, mode='lines+markers', name='LP coefficients vs complex PL output fluxes AMI'), row=6, col=2)
+
+    # Update layout
+    fig.update_layout(height=1680,
+                      width=1200,
+                      title_text=f"AMI evolution over different number of clusters for 9 zernike modes and {n_samples}")
+    fig.update_yaxes(title_text='AMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Number of clusters',
+                     tickvals=number_of_clusters,
+                     type="log")
+    fig.show()
+
+    fig.write_image(f'ld-amievolutionover{n_samples}.png')
 
 
 def plot_nmi_evolutions_over_clusters_no_lp(
@@ -1751,19 +1808,19 @@ def plot_nmi_evolutions_over_clusters_no_lp(
     
     fig = make_subplots(rows=1, 
                         cols=3,
-                        subplot_titles=["Zernike coefficients vs PSF NMI",
-                                        "Zernike coefficients vs PL output fluxes NMI",
-                                        "PSF vs PL output fluxes NMI"])
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "PSF vs PL output fluxes AMI"])
 
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF NMI'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes NMI'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes NMI'), row=1, col=3)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=1, col=3)
     
     # Update layout
     fig.update_layout(height=270,
                       width=1800,
-                      title_text=f"NMI evolution over different number of clusters for {n_modes} zernike modes")
-    fig.update_yaxes(title_text='NMI',
+                      title_text=f"AMI evolution over different number of clusters for {n_modes} zernike modes")
+    fig.update_yaxes(title_text='AMI',
                      range=[0, 1])
     fig.update_xaxes(title_text='Number of clusters',
                      tickvals=number_of_clusters,
@@ -1789,10 +1846,37 @@ def plot_nmi_evolution_over_modes(
     fig.update_layout(height=600,
                       width=800,
                       title_text=title)
-    fig.update_yaxes(title_text='NMI',
+    fig.update_yaxes(title_text='AMI',
                      range=[0, 1])
     fig.update_xaxes(title_text='Number of clusters',
                      tickvals=number_of_clusters,
                      type="log")
     fig.show()
     fig.write_image(f'nmia-{title.strip().lower().replace(" ", "")}.png')
+
+
+def plot_ami_evolution_over_dataset_sizes(
+    number_of_clusters,
+    ami_evolutions,
+    title):
+    
+    fig = go.Figure()
+    modes = [500, 1000, 2000, 5000, 10000, 20000]
+    max_ami = []
+    for ami_evo in ami_evolutions:
+        max_ami.append(max(ami_evo))
+
+    fig.add_trace(go.Scatter(x=modes, 
+                             y=max_ami, mode='lines+markers'))
+    
+    # Update layout
+    fig.update_layout(height=600,
+                      width=800,
+                      title_text=title)
+    fig.update_yaxes(title_text='AMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Datasetsize',
+                     tickvals=modes,
+                     type="log")
+    fig.show()
+    fig.write_image(f'ld-{title.strip().lower().replace(" ", "")}.png')

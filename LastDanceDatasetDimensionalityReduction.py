@@ -43,7 +43,7 @@ for key, minidataset_dict in PATHS_DICTIONARY.items():
     intensities = np.load(minidataset_dict['intensities_file_path'])
     umap_reducer = umap.UMAP(n_neighbors=15,
                              min_dist=0.3,
-                             n_components=19,
+                             n_components=100,
                              metric='euclidean')
     umap_intensities = umap_reducer.fit_transform(intensities)
     save_numpy_array(umap_intensities, minidataset_dict["umap_intensities_path"])
@@ -53,7 +53,7 @@ for key, minidataset_dict in PATHS_DICTIONARY.items():
     complex_fields = flatten_complex_fields(complex_fields)
     umap_reducer = umap.UMAP(n_neighbors=15,
                              min_dist=0.3,
-                             n_components=19,
+                             n_components=100,
                              metric='euclidean')
 
     umap_complex_fields = umap_reducer.fit_transform(complex_fields)
