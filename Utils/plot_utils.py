@@ -79,7 +79,10 @@ def plot_model_history(
 
     Input:
         history (): The training history of the model
-
+        model_name (string): The name of the model
+        top_y_lim (float): The top y lim of the figure. If not specified it will be automatically set
+        show_plot(bool): If True, show the plot
+        save_image (bool): If True, save the image 
     Returns:
         None
     """
@@ -150,8 +153,7 @@ def plot_conv_amp_phase_prediction(
     Input:
         model (keras.models): A trained neural network
         input_flux (np.array): A data point to feed the neural network
-        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
-        original_phase (np.array): Original 2d array containing the phase information in the pupil
+        original_amp_phase (np.array): Original 3d array containing the amplitude and phase information in the focal plane
 
     Returns:
         None
@@ -189,7 +191,7 @@ def plot_amp_phase_prediction(
         predicted_phase (np.array): The model phase map reconstruction
         original_amplitude (np.array): The original amplitude map
         original_phase (np.array): The original phase map
- 
+        model_name (string): The name of the model
     """
     # Create a subplot with 2 rows and 2 columns
     fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Reconstructed Amplitude", "Amplitude Residual", "Original Phase", "Reconstructed Phase", "Phase Residual"))
@@ -298,7 +300,7 @@ def plot_enc_conv_amp_phase_prediction(
     Input:
         model (keras.models): A trained neural network
         input_flux (np.array): A data point to feed the neural network
-        original_amplitude_phase (np.array): Original 3d array containing the amplitude and phase information in the pupil
+        original_amp_phase (np.array): Original 3d array containing the amplitude and phase information in the pupil
 
     Returns:
         None
@@ -330,7 +332,9 @@ def plot_enc_conv_amp_phase_prediction(
 def plot_diffusion_output(
     original_amp_phase,
     diffusion_output):
-
+    """
+    Add
+    """
     pred_amp = diffusion_output[0]
     pred_phase = diffusion_output[1]
     original_amp = original_amp_phase[0]
@@ -1754,7 +1758,8 @@ def plot_ami_evolutions_over_clusters_with_complex(
     nmi_complex_psf_complex_flux,
     nmi_lp_flux,
     nmi_lp_complex_flux,
-    n_samples):
+    n_samples,
+    save=False):
 
     
     fig = make_subplots(rows=6, 
@@ -1794,8 +1799,8 @@ def plot_ami_evolutions_over_clusters_with_complex(
                      tickvals=number_of_clusters,
                      type="log")
     fig.show()
-
-    fig.write_image(f'ld-amievolutionover{n_samples}.png')
+    if save:
+        fig.write_image(f'ld-amievolutionover{n_samples}.png')
 
 
 def plot_nmi_evolutions_over_clusters_no_lp(

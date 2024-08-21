@@ -1167,6 +1167,7 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	lp_modes_coeffs_file_path,
 	output_fluxes_file_path,
 	transfer_matrix_path,
+	complex_output_fluxes_file_path=None,
 	plot=False,
 	verbose=False,
 	overwrite=False,
@@ -1189,11 +1190,17 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 		print(f"{output_fluxes_file_path} already exists")
 		return
 	print(f"Computing {output_fluxes_file_path}")
+	# This configuration allows for 42 modes
+	# n_core = 1.435
+	# n_cladding = 1.42
+	# wavelength = 1.7
+	# core_radius = 33.1/2
+
 	# Create the lantern fiber
-	n_core = 1.435#1.44
-	n_cladding = 1.42#1.4345
-	wavelength = 1.7#1.5 # microns
-	core_radius = 33.1/2#32.8/2 # microns
+	n_core = 1.44
+	n_cladding = 1.4345
+	wavelength = 1.5 # microns
+	core_radius = 32.8/2 # microns
 
 	# Scale parameters
 	max_r = 2 # Maximum radius to calculate mode field, where r=1 is the core diameter
@@ -1220,6 +1227,9 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	if not only_lp_coeffs:
 		output_fluxes = np.zeros((input_complex_fields.shape[0], len(modes_to_measure)))
 
+	if complex_output_fluxes_file_path is not None:
+		complex_output_fluxes = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
+	
 	lp_modes_coeffs = np.zeros((input_complex_fields.shape[0], 2, len(modes_to_measure)))
 
 	for k in range(n_fields):
@@ -1252,6 +1262,10 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 			pl_output_fluxes = np.abs(pl_outputs)**2
 			output_fluxes[k] = pl_output_fluxes
 
+			if complex_output_fluxes_file_path is not None:
+				complex_output_fluxes[k][0] = pl_outputs.real
+				complex_output_fluxes[k][1] = pl_outputs.imag
+
 		if plot:
 			# Plot input mode coefficients and output fluxes
 			xlabels = np.arange(transfer_matrix.shape[0])
@@ -1275,7 +1289,10 @@ def compute_output_fluxes_from_complex_field_using_arbitrary_transfer_matrix(
 	if not only_lp_coeffs:	
 		# Save output fluxes
 		save_numpy_array(output_fluxes, output_fluxes_file_path)
-		
+		if complex_output_fluxes_file_path is not None:
+			print("aqui")
+			save_numpy_array(complex_output_fluxes, complex_output_fluxes_file_path, overwrite=overwrite)
+			
 	# Save lp modes
 	save_numpy_array(lp_modes_coeffs, lp_modes_coeffs_file_path)
 
@@ -1483,7 +1500,8 @@ def create_and_save_arbitrary_matrix(
 	matrix_condition_number = np.linalg.cond(matrix)
 
 	print("Matrix condition number: %.16f" % matrix_condition_number)
-	save_numpy_array(matrix, matrix_path, overwrite=overwrite)
+	print("Shape:", matrix.shape)
+	save_numpy_array(matrix, matrix_path, overwrite=overwrite, single_precision=False)
 
 
 def compute_amplitude_and_phase_from_electric_field(
