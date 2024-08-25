@@ -79,7 +79,10 @@ def plot_model_history(
 
     Input:
         history (): The training history of the model
-
+        model_name (string): The name of the model
+        top_y_lim (float): The top y lim of the figure. If not specified it will be automatically set
+        show_plot(bool): If True, show the plot
+        save_image (bool): If True, save the image 
     Returns:
         None
     """
@@ -150,8 +153,7 @@ def plot_conv_amp_phase_prediction(
     Input:
         model (keras.models): A trained neural network
         input_flux (np.array): A data point to feed the neural network
-        original_amplitude (np.array): Original 2d array containing the amplitude information in the pupil
-        original_phase (np.array): Original 2d array containing the phase information in the pupil
+        original_amp_phase (np.array): Original 3d array containing the amplitude and phase information in the focal plane
 
     Returns:
         None
@@ -189,7 +191,7 @@ def plot_amp_phase_prediction(
         predicted_phase (np.array): The model phase map reconstruction
         original_amplitude (np.array): The original amplitude map
         original_phase (np.array): The original phase map
- 
+        model_name (string): The name of the model
     """
     # Create a subplot with 2 rows and 2 columns
     fig = make_subplots(rows=2, cols=3, subplot_titles=("Original Amplitude", "Reconstructed Amplitude", "Amplitude Residual", "Original Phase", "Reconstructed Phase", "Phase Residual"))
@@ -298,7 +300,7 @@ def plot_enc_conv_amp_phase_prediction(
     Input:
         model (keras.models): A trained neural network
         input_flux (np.array): A data point to feed the neural network
-        original_amplitude_phase (np.array): Original 3d array containing the amplitude and phase information in the pupil
+        original_amp_phase (np.array): Original 3d array containing the amplitude and phase information in the pupil
 
     Returns:
         None
@@ -330,7 +332,13 @@ def plot_enc_conv_amp_phase_prediction(
 def plot_diffusion_output(
     original_amp_phase,
     diffusion_output):
+    """
+    Function to plot the generated and original amplitude and phase of a diffusion model
 
+    Input:
+        original_amp_phase (np.array): The numpy array with an original PSF from the dataset
+        diffusion_output (np.array): The numpy array with a generated PSF from the difussion model
+    """
     pred_amp = diffusion_output[0]
     pred_phase = diffusion_output[1]
     original_amp = original_amp_phase[0]
@@ -351,6 +359,18 @@ def plot_amplitude_phase_intensity(
     title="",
     title_prefix="pid"
     ):
+
+    """
+    FUnction to plot the amplitude phase and intensity given a complex electric field
+
+    Input:
+        electric_field (np.array): A 2d complex matrix
+        log_scale (bool): If true, use the log scale in the plot
+        plot (bool): If True, show the plot
+        save (bool): If True, save the plot in a .png
+        title (string): The title of the plot
+        title_prefix (string): The prefix of the .png
+    """
     amplitude, phase = compute_amplitude_and_phase_from_electric_field(electric_field)
     intensity = amplitude**2
 
@@ -430,7 +450,15 @@ def plot_amplitude_phase_from_electric_field(
     Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
     
     Input:
-        complex_field (np.array): A numpy array containing the electric field complex numbers
+        original_complex_field (np.array): A numpy array containing the original electric field complex numbers
+        predicted_complex_field (np.array): A numpy array containing the original electric field complex numbers
+        model_name (string): The name of the model that predicted the output
+        log_scale (bool): If True, use logarithmic scale in the plot
+        save_image (bool): If True, save the plot in a .png
+        validation (bool): True to indicate that it is a validation datapoint, it will change the title of the .png and plot
+        train (bool): True to indicate that it is a train datapoint, it will change the title of the .png and plot
+        show_plot(bool): If True, show the plot
+
 
     Returns:
         None
@@ -568,10 +596,18 @@ def plot_intensity_from_electric_field(
     train=False,
     show_plot=True):
     """
-    Fuction that from an electric field represented by a matrix of complex numbers, computes amplitude, phase and intensity and plots them in heatmap
+    Fuction that from an electric field intensity and its prediction represented by a matrix plots them in heatmap
     
     Input:
-        complex_field (np.array): A numpy array containing the electric field complex numbers
+        original_intensity (np.array): A numpy array containing the original electric field complex numbers
+        predicted_intensity (np.array): A numpy array containing the original electric field complex numbers
+        model_name (string): The name of the model that predicted the output
+        log_scale (bool): If True, use logarithmic scale in the plot
+        save_image (bool): If True, save the plot in a .png
+        validation (bool): True to indicate that it is a validation datapoint, it will change the title of the .png and plot
+        train (bool): True to indicate that it is a train datapoint, it will change the title of the .png and plot
+        show_plot(bool): If True, show the plot
+
 
     Returns:
         None
@@ -672,7 +708,12 @@ def plot_amplitude_phase_fully_connected_prediction_from_electric_field(
         model (keras.model): The model that will predict the electric field in the pupil plane
         output_flux (np.array): The input that the model will predict from
         original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
-
+        log_scale (bool): If True, use logarithmic scale in the plot
+        save_image (bool): If True, save the plot in a .png
+        validation (bool): True to indicate that it is a validation datapoint, it will change the title of the .png and plot
+        train (bool): True to indicate that it is a train datapoint, it will change the title of the .png and plot
+        cropped (bool): True to indicate that it is a cropped datapoint, it will change the title of the .png and plot
+        show_plot(bool): If True, show the plot
     Returns:
         None
     """
@@ -717,13 +758,18 @@ def plot_intensity_fully_connected_prediction_from_electric_field(
     show_plot=True
     ):
     """
-    Function that plots the amplitude and phase, both original and predicted
+    Function that plots the intensity, both original and predicted, from a PSF given a model and an output fluxs
 
     Input:
         model (keras.model): The model that will predict the electric field in the pupil plane
         output_flux (np.array): The input that the model will predict from
         original_complex_field (np.array): The original electric field in a flattened shape (1, realpartsize + imaginarypartsize)
-
+        log_scale (bool): If True, use logarithmic scale in the plot
+        save_image (bool): If True, save the plot in a .png
+        validation (bool): True to indicate that it is a validation datapoint, it will change the title of the .png and plot
+        train (bool): True to indicate that it is a train datapoint, it will change the title of the .png and plot
+        cropped (bool): True to indicate that it is a cropped datapoint, it will change the title of the .png and plot
+        show_plot(bool): If True, show the plot
     Returns:
         None
     """
@@ -753,6 +799,9 @@ def plot_intensity_fully_connected_prediction_from_electric_field(
 def plot_19_mode_pl_flux(flux):
     """
     Plots the output flux of the PL, measured only in one wavelength
+
+    Input:
+        flux (np.array): The output flux of the PL to plot
     """
     fig = px.bar(y=flux, x=np.arange(1, len(flux)+1))
     fig.update_xaxes(title_text='Fiber', tickvals=np.arange(len(flux)+1))
@@ -761,7 +810,23 @@ def plot_19_mode_pl_flux(flux):
 
 
 
-def create_scatter_with_center_of_mass(x_coords, y_coords, name='Untitled'):
+def create_scatter_with_center_of_mass(
+    x_coords,
+    y_coords, 
+    name='Untitled'):
+    """
+    Function that creates a scatter plot given x and y coordinates of a set of points and also its center of mass
+    
+    Input:
+        x_coords (np.array): The x coordinates of the points  
+        y_coords (np.array): The y coordinates of the points
+        name (string): The name of the scatter plot
+
+    Returns:
+        scatter (go.Scatter): The scatter plot of the points
+        x_mass_line (go.Scatter): A scatter plot with a vertical line in the x coordinate of the center of mass of the points
+        y_mass_line (go.Scatter): A scatter plot with a horizontal line in the y coordinate of the center of mass of the points
+    """
     scatter = go.Scatter(
         x=x_coords, 
         y=y_coords, 
@@ -769,6 +834,50 @@ def create_scatter_with_center_of_mass(x_coords, y_coords, name='Untitled'):
         showlegend=False,
         marker_color='blue',
         name=name)
+
+    center_x, center_y = compute_center_of_mass(x_coords, y_coords)
+
+    x_mass_line = go.Scatter(x=[center_x, center_x],
+                             y=[np.min(y_coords), np.max(y_coords)],
+                             mode='lines',
+                                 showlegend=False,
+                                 marker_color='coral')
+
+    y_mass_line = go.Scatter(x=[np.min(x_coords), np.max(x_coords)],
+                             y=[center_y, center_y],
+                             mode='lines',
+                             showlegend=False,
+                             marker_color='coral')
+
+    corr = np.corrcoef(x_coords, y_coords)[0, 1]
+
+    name+=f"<br>Correlation: {round(corr, 3)}"
+    return [scatter, x_mass_line, y_mass_line, name]
+
+
+def create_histogram_with_center_of_mass(x_coords, y_coords, name='Untitled'):
+    """
+    Function that creates a 2d histogram of poinst plot given x and y coordinates of a set of points and also its center of mass
+    
+    Input:
+        x_coords (np.array): The x coordinates of the points  
+        y_coords (np.array): The y coordinates of the points
+        name (string): The name of the scatter plot
+
+    Returns:
+        scatter (go.Histogram2d): The histogram plot of the points
+        x_mass_line (go.Scatter): A scatter plot with a vertical line in the x coordinate of the center of mass of the points
+        y_mass_line (go.Scatter): A scatter plot with a horizontal line in the y coordinate of the center of mass of the points
+    """
+    scatter = go.Histogram2d(
+    x=x_coords,
+    y=y_coords,
+    nbinsx=150,  # Number of bins in x-direction
+    nbinsy=150,  # Number of bins in y-direction
+    colorscale='Viridis',
+    name=name,
+    showscale=False
+    )
 
     center_x, center_y = compute_center_of_mass(x_coords, y_coords)
 
@@ -799,7 +908,17 @@ def plot_euclidean_distances(
     predicted_cropped_complex_field_distances,
     suffix=None
     ):
-    
+    """
+    Function that plots figures that compare euclidean distances ratios. PL FLUX, COMPLEX FIELDS, CROPPED COMPLEX FIELDS, PREDICTED COMPLEX FIELDS, PREDICTED CROPPED COMPLEX FIELD DISTANCES
+
+    Input:
+        pl_flux_distances (np.array): The array of distances between pl fluxes pairs
+        og_complex_field_distances (np.array): The array of distances between original PSFs intensities pairs
+        cropped_complex_field_distances (np.array): The array of distances between cropped PSFs intensities pairs
+        predicted_complex_field_distances (np.array): The array of distances between predicted PSFs intensities pairs
+        predicted_cropped_complex_field_distances (np.array): The array of distances between cropped predicted PSFs intensities pairs
+        suffix (string): The suffix indicating the number of modes of the dataset
+    """
     og_corr = np.corrcoef(pl_flux_distances, og_complex_field_distances)[0, 1]
     cr_corr = np.corrcoef(pl_flux_distances, cropped_complex_field_distances)[0, 1]
     pr_corr = np.corrcoef(pl_flux_distances, predicted_complex_field_distances)[0, 1]
@@ -872,6 +991,17 @@ def plot_pl42_euclidean_distances(
     og_complex_field_distances,
     suffix=None,
     ):
+    """
+    Function that plots figures that compare euclidean distances ratios. PL FLUX, COMPLEX FIELDS, CROPPED COMPLEX FIELDS, PREDICTED COMPLEX FIELDS, PREDICTED CROPPED COMPLEX FIELD DISTANCES
+
+    Input:
+        pl_flux_distances (np.array): The array of distances between pl fluxes pairs
+        og_complex_field_distances (np.array): The array of distances between original PSFs intensities pairs
+        cropped_complex_field_distances (np.array): The array of distances between cropped PSFs intensities pairs
+        predicted_complex_field_distances (np.array): The array of distances between predicted PSFs intensities pairs
+        predicted_cropped_complex_field_distances (np.array): The array of distances between cropped predicted PSFs intensities pairs
+        suffix (string): The suffix indicating the number of modes of the dataset
+    """
     pl_flux_distances = pl_flux_distances.flatten()
     lp_coeffs_distances = lp_coeffs_distances.flatten()
     og_complex_field_distances = og_complex_field_distances.flatten()
@@ -934,6 +1064,16 @@ def create_scatters_for_zernike_dataset(
         dataset,
         n_modes,
     ):
+    """
+    Function that creates a list of scatter plots with the euclidean distances
+
+    Input:
+        dataset (np.array): An array containing the distances between pairs of points (has everythin, zernike, lp, pl, psfs)
+        n_modes (int): The number of zernike modes with which the dataset have been created.
+
+    Returns:
+        A list with all the scatter plots.
+    """
 
     fluxes, lp_modes, zernike_coeffs, og_psf, pr_psf, og_cr_psf, pr_cr_psf = separate_zernike_distances(dataset)
     
@@ -961,6 +1101,17 @@ def plot_one_dataset_zernike_euclidean_distances(
     show=False,
     save_image=True
     ):
+    
+    """
+    A function that plots a list of scatter plots from a euclidean distance dataset
+
+     Input:
+        dataset (np.array): An array containing the distances between pairs of points (has everythin, zernike, lp, pl, psfs)
+        n_modes (int): The number of zernike modes with which the dataset have been created.
+        suffix (string): The suffix of the .png file to save
+        show (bool): If True, show the plot
+        save_image (bool): If True, save the image in a .png
+    """
     
     zernike_mode_graphs = create_scatters_for_zernike_dataset(dataset, modes)
 
@@ -1050,7 +1201,21 @@ def plot_psf_vs_pl_lp_zc_euclidean_distances(
     show=False,
     save_image=True
     ):
+    """
+    Function that plots psf distancs vs coefficients and pl
 
+    Input:
+        psf_distances (np.array): An array with euclidean distances from psf pairs
+        pl_distances (np.array): An array with euclidean distances from pl output pairs
+        lp_distances (np.array): An array with euclidean distances from lp coefficient pairs
+        zc_distances (np.array): An array with euclidean distances from zernik coefficient pairs
+        modes (int): The number of zernike modes
+        psf_type (string): Either original croped or predicted
+
+        suffix (string): The suffix of the .png file to save
+        show (bool): If True, show the plot
+        save_image (bool): If True, save the image in a .png
+    """
     
     fl_to_psf_scatter = create_scatter_with_center_of_mass(pl_distances, psf_distances, name=f"PL flux vs PSF")
     lp_to_psf_scatter = create_scatter_with_center_of_mass(lp_distances, psf_distances, name=f"LP coefficients vs PSF")
@@ -1126,6 +1291,107 @@ def plot_psf_vs_pl_lp_zc_euclidean_distances(
     return None
 
 
+def plot_psf_vs_pl_lp_zc_euclidean_distances_histogram(
+    psf_distances,
+    pl_distances,
+    lp_distances,
+    zc_distances,
+    modes,
+    psf_type,
+    suffix=None,
+    show=False,
+    save_image=True
+    ):
+    """
+    Function that plots psf distancs vs coefficients and pl in a 2d histogram
+
+    Input:
+        psf_distances (np.array): An array with euclidean distances from psf pairs
+        pl_distances (np.array): An array with euclidean distances from pl output pairs
+        lp_distances (np.array): An array with euclidean distances from lp coefficient pairs
+        zc_distances (np.array): An array with euclidean distances from zernik coefficient pairs
+        modes (int): The number of zernike modes
+        psf_type (string): Either original croped or predicted
+        
+        suffix (string): The suffix of the .png file to save
+        show (bool): If True, show the plot
+        save_image (bool): If True, save the image in a .png
+    """
+    
+    fl_to_psf_scatter = create_histogram_with_center_of_mass(pl_distances, psf_distances, name=f"PL flux vs PSF")
+    lp_to_psf_scatter = create_histogram_with_center_of_mass(lp_distances, psf_distances, name=f"LP coefficients vs PSF")
+    zm_to_psf_scatter = create_histogram_with_center_of_mass(zc_distances, psf_distances, name=f"Zernike coefficients vs PSF")
+
+    zernike_mode_graphs = [fl_to_psf_scatter,
+                           lp_to_psf_scatter,
+                           zm_to_psf_scatter]
+
+    subplot_titles = []
+    zm_titles = []
+    for graph_info in zernike_mode_graphs:
+        subplot_titles.append(graph_info[-1])
+
+    fig = make_subplots(
+        rows=1, 
+        cols=3, 
+        subplot_titles=subplot_titles
+    )
+
+    col=1
+    row=1
+    for graph in zernike_mode_graphs:
+        print(f"Row {row}")
+        scatter = graph[0]
+        mass_x = graph[1]
+        mass_y = graph[2]
+        fig.add_trace(scatter, row=row, col=col)
+        fig.add_trace(mass_x, row=row, col=col)
+        fig.add_trace(mass_y, row=row, col=col)
+        col+=1
+
+    fig.update_xaxes(title_text="PL intensities distance", row=1, col=1)
+    fig.update_xaxes(title_text="LP coefficients distance", row=1, col=2)
+    fig.update_xaxes(title_text="Zernike coefficients distance", row=1, col=3)
+
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=1)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=2)
+    fig.update_yaxes(title_text="PSF intensity distance", row=1, col=3)
+
+    title = f"{modes} Zernike modes {psf_type} PSF"
+
+    if suffix is not None:
+        title += f"in train subset {suffix}"
+    fig.update_layout(
+        title_text=title,
+        height=400,  # Set the height of the figure
+        width=1200 ,   # Set the width of the figure
+        title={
+            'font': {
+                'size': 24  # Increase the font size
+
+            },
+            'xanchor':'left'
+        }
+    )
+
+    #fig.update_xaxes(title_text='PL Fluxes euclidean distance')
+    #fig.update_yaxes(title_text='PSF Intensity euclidean distance')
+
+    #fig.update_traces(
+    #    marker=dict(size=1)
+    #    )
+
+    if show:
+        fig.show()
+
+    if save_image:
+        print("Saving image")
+        file_title=f"pid-{modes}m{psf_type}psfdistances"
+        fig.write_image(f"{file_title}.png")
+
+    return None
+
+
 def plot_pl_lp_zc_euclidean_distances(
     pl_distances,
     lp_distances,
@@ -1135,7 +1401,18 @@ def plot_pl_lp_zc_euclidean_distances(
     show=False,
     save_image=True
     ):
+    """
+    Function that plots euclidean distances between coefficients and pl in a scatter plot
 
+    Input:
+        pl_distances (np.array): An array with euclidean distances from pl output pairs
+        lp_distances (np.array): An array with euclidean distances from lp coefficient pairs
+        zc_distances (np.array): An array with euclidean distances from zernike coefficient pairs
+        modes (int): The number of zernike modes
+        suffix (string): The suffix of the .png file to save
+        show (bool): If True, show the plot
+        save_image (bool): If True, save the image in a .png
+    """
     fl_to_lp_scatter = create_scatter_with_center_of_mass(pl_distances, lp_distances, name=f"PL flux vs LP coefficients")
     fl_to_zc_scatter = create_scatter_with_center_of_mass(pl_distances, zc_distances, name=f"PL flux vs Zernike coefficients")
     pl_to_zc_scatter = create_scatter_with_center_of_mass(lp_distances, zc_distances, name=f"LP coefficients vs Zernike coefficients")
@@ -1217,6 +1494,15 @@ def plot_zernike_euclidean_distances(
     save_image=True
     ):
     
+    """
+    Function that plots all euclidean distances from all datasets
+
+    Input:
+        distances (np.array): An array with euclidean distances from dataset point pairs        
+        suffix (string): The suffix of the .png file to save
+        show (bool): If True, show the plot
+        save_image (bool): If True, save the image in a .png
+    """
     modes = [2, 5, 9, 14, 20]
     i=0
     all_graphs = []
@@ -1290,6 +1576,15 @@ def plot_zernike_euclidean_distances(
 
 
 def create_boxplot(data, name=""):
+    """
+    Creates a boxplot of euclidean distances
+
+    Input:
+        data (np.array): A set of distances from pairs of points (either psf, zernike, lp or pl)
+        name (string): The name of the plot
+    Returns:
+        boxplot. (go.Box): The boxplot object
+    """
     data_mean = np.mean(data)
     data_std = np.std(data)
     text = f"<br>Ratio mean: {round(data_mean, 2)}<br>Ratio std: {round(data_std, 2)}"
@@ -1306,7 +1601,17 @@ def plot_boxplot_euclidean_distances(
     predicted_cropped_complex_field_distances,
     suffix=None
     ):
+    """
+    Creates and saves a series of boxplots of euclidean distances from a dataset
 
+    Input:
+        pl_flux_distances (np.array): A set of distances from pl fluxes pairs
+        og_complex_field_distances (np.array): A set of distances from psf pairs
+        cropped_complex_field_distances (np.array): A set of distances from cropped psf pairs
+        predicted_complex_field_distances (np.array): A set of distances from predicted psf pairs
+        predicted_cropped_complex_field_distances (np.array): A set of distances from predicted cropped psf pairs
+        suffix (string): A suffix indicating the dataset name
+    """
     fig = go.Figure()
 
     og_plf_ratio = compute_ratio(og_complex_field_distances, pl_flux_distances)
@@ -1361,7 +1666,22 @@ def plot_boxplot_zernike_euclidean_distances(
     m20_psf,
     suffix=None
     ):
+    """
+    Plots and saves boxplots for all datasets:
 
+    Input:
+        m2_fluxes (np.array): Array containing disntaces between pl fluxes from 2 zernike modes dataset pairs of point
+        m2_psf (np.array): Array containing disntaces between psfs from 2 zernike modes dataset pairs of point
+        m5_fluxes (np.array): Array containing disntaces between pl fluxes from 5 zernike modes dataset pairs of point
+        m5_psf (np.array): Array containing disntaces between psfs from 5 zernike modes dataset pairs of point
+        m9_fluxes (np.array): Array containing disntaces between pl fluxes from 9 zernike modes dataset pairs of point
+        m9_psf (np.array): Array containing disntaces between psfs from 9 zernike modes dataset pairs of point
+        m14_fluxes (np.array): Array containing disntaces between pl fluxes from 14 zernike modes dataset pairs of point
+        m14_psf (np.array): Array containing disntaces between psfs from 14 zernike modes dataset pairs of point
+        m20_fluxes (np.array): Array containing disntaces between pl fluxes from 20 zernike modes dataset pairs of point
+        m20_psf (np.array): Array containing disntaces between psfs from 20 zernike modes dataset pairs of point
+        suffix (string): THe suffix indicating the name of the dataset       
+    """
     fig = go.Figure()
 
     m2_ratio = compute_ratio(m2_psf, m2_fluxes)
@@ -1419,6 +1739,19 @@ def plot_clusters_from_labels(
     dataset_name,
     cluster_type,
     axis_range=[-2.3, 2.3]):
+    """
+    Function that plots and saves 2d clusters:
+
+    Input:
+        dataset_coordinates (np.array): The coordinates of the points
+        labels (np.array): The labels of each of the points
+        title (string): THe title of the plot
+        x_title (string): The name of the x axis
+        y_title (string): The name of the y axis
+        dataset_name (string): The name of the dataset
+        cluser_type (string): The name of the clustering algorithm
+        axis_range (list): THe range of the axis
+    """
 
     df = pd.DataFrame(dataset_coordinates, columns=[x_title, y_title])
     df['label'] = labels
@@ -1454,7 +1787,24 @@ def plot_grid_clusters(
     width=500,
     height=800
     ):
+    """
+    Function that plots and saves samples from the clusters clusters:
 
+    Input:
+        data (np.array): The datapoints
+        dataset_labels (np.array): The labels of the points
+        labels_list (list): A list with all labels
+        title (string): THe title of the plot
+        x_title (string): The name of the x axis
+        y_title (string): The name of the y axis
+        dataset_name (string): The name of the dataset
+        cluser_type (string): The name of the clustering algorithm
+        cluster_line_width (float): The width of the line that encloses the cluster samples
+        samples_per_cluster (int): The number of examples per cluster
+        y_tick_jump_size (int): The size of the jump between ticks in the y axis
+        heigth (float): The height of the plot
+        width (float): The width of the plot
+    """
     samples = []
     
     middles = []
@@ -1531,6 +1881,12 @@ def plot_grid_clusters(
 
 
 def plot_kneighbours(data, neighbours):
+    """
+    A functiont that plots the number of points that have a numer of neighbours in a distance vs the distance needed for that
+    Input:
+        ddata (np.array): Datapoints
+        neighbours: The number of neighbours
+    """
     nbrs = NearestNeighbors(n_neighbors=neighbours).fit(data)
     distances, indices = nbrs.kneighbors(data)
 
@@ -1543,8 +1899,9 @@ def plot_kneighbours(data, neighbours):
 
 
 def get_number_of_clusters(labels):
-    #hdbscan_clusterer = hdbscan.HDBSCAN(min_cluster_size=neighbours)
-    #labels = hdbscan_clusterer.fit_predict(data)
+    """
+    Function that prints the number of clusters that are not noise
+    """
     print("Number of clusters:", np.max(labels)+1)
     mask = labels != -1
     points_that_are_not_noise = np.sum(mask)
@@ -1557,7 +1914,14 @@ def plot_cluster_labels_count(labels,
                               dataset_name,
                               xtick_jump_size=1,
                               title=None):
-
+    """
+    Function that plots and saves a barplot with the number of points per cluster
+    Input:
+        labels (np.array): The labels of the points
+        type_of_clustering (string): The name of the clusterng algorithm
+        dataset_name (string): THe name of the dataset
+        title (string): The title of the plot.
+    """
     non_noise_labels = labels[labels != -1]
     counter = Counter(non_noise_labels)
     most_common = counter.most_common()[0]
@@ -1591,29 +1955,41 @@ def plot_nmi_evolutions_over_clusters(
     nmi_psf_flux,
     nmi_lp_flux,
     n_modes):
+    """
+    Plots and saves the evolution of mutual information over number of clusters:
 
+    Input:
+        number_of_clusters (list): A list with the number of clusters used
+        nmi_zernike_psf (list): The list of mutual information score evolution between zernike and psf
+        nmi_zernike_lp (list): The list of mutual information score evolution between zernike and lp
+        nmi_zernike_flux (list): The list of mutual information score evolution between zernike and flux
+        nmi_psf_lp (list): The list of mutual information score evolution between psf and lp
+        nmi_psf_flux (list): The list of mutual information score evolution between psf and flux
+        nmi_lp_flux (list): The list of mutual information score evolution between lp and flux
+        n_modes (int): The number of modes of the dataset
+    """
     
     fig = make_subplots(rows=3, 
                         cols=2,
-                        subplot_titles=["Zernike coefficients vs PSF NMI",
-                                        "Zernike coefficients vs LP coefficients NMI",
-                                        "Zernike coefficients vs PL output fluxes NMI",
-                                        "PSF vs LP coefficients NMI",
-                                        "PSF vs PL output fluxes NMI",
-                                        "LP coefficients vs PL output fluxes NMI"])
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs LP coefficients AMI",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "PSF vs LP coefficients AMI",
+                                        "PSF vs PL output fluxes AMI",
+                                        "LP coefficients vs PL output fluxes AMI"])
 
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF NMI'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs LP coefficients NMI'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PL output fluxes NMI'), row=2, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='PSF vs LP coefficients NMI'), row=2, col=2)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='PSF vs PL output fluxes NMI'), row=3, col=1)
-    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='LP coefficients vs PL output fluxes NMI'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_lp, mode='lines+markers', name='Zernike coefficients vs LP coefficients AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_lp, mode='lines+markers', name='PSF vs LP coefficients AMI'), row=2, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes AMI'), row=3, col=2)
 
     # Update layout
     fig.update_layout(height=840,
                       width=1200,
-                      title_text=f"NMI evolution over different number of clusters for {n_modes} zernike modes")
-    fig.update_yaxes(title_text='NMI',
+                      title_text=f"AMI evolution over different number of clusters for {n_modes} zernike modes")
+    fig.update_yaxes(title_text='AMI',
                      range=[0, 1])
     fig.update_xaxes(title_text='Number of clusters',
                      tickvals=number_of_clusters,
@@ -1623,13 +1999,135 @@ def plot_nmi_evolutions_over_clusters(
     fig.write_image(f'nmia-nmievolutionover{n_modes}.png')
 
 
+def plot_ami_evolutions_over_clusters_with_complex(
+    number_of_clusters,
+    nmi_zernike_psf,
+    nmi_zernike_complex_psf,
+    nmi_zernike_lp,
+    nmi_zernike_flux,
+    nmi_zernike_complex_flux,
+    nmi_psf_lp,
+    nmi_complex_psf_lp,
+    nmi_psf_flux,
+    nmi_complex_psf_complex_flux,
+    nmi_lp_flux,
+    nmi_lp_complex_flux,
+    n_samples,
+    save=False):
+    """
+    Plots and saves the evolution of mutual information over number of clusters:
+
+    Input:
+        number_of_clusters (list): A list with the number of clusters used
+        nmi_zernike_psf (list): The list of mutual information score evolution between zernike and psf 
+        nmi_zernike_complex_psf (list): The list of mutual information score evolution between zernike and complex field psf
+        nmi_zernike_lp (list): The list of mutual information score evolution between zernike and lp
+        nmi_zernike_flux (list): The list of mutual information score evolution between zernike and flux
+        nmi_psf_lp (list): The list of mutual information score evolution between psf and lp
+        nmi_complex_psf_lp (list): The list of mutual information score evolution between complex field psf and lp
+        nmi_psf_flux (list): The list of mutual information score evolution between psf and flux
+        nmi_complex_psf_complex_flux (list): The list of mutual information score evolution between complex field psf and fluxes complex amplitudes
+        nmi_lp_flux (list): The list of mutual information score evolution between lp and flux
+        nmi_lp_complex_flux (list): The list of mutual information score evolution between lp and flux complex amplitudes
+        n_modes (int): The number of modes of the dataset
+    """
+    
+    fig = make_subplots(rows=6, 
+                        cols=2,
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs complex PSF AMI",
+                                        "Zernike coefficients vs LP coefficients AMI",
+                                        "",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "Zernike coefficients vs complex PL output fluxes AMI",
+                                        "PSF vs LP coefficients AMI",
+                                        "Complex PSF vs LP coefficients AMI",
+                                        "PSF vs PL fluxes AMI",
+                                        "Complex PSF vs Complex PL output fluxes AMI",
+                                        "LP coefficients vs PL output fluxes AMI",
+                                        "LP coefficients vs Complex PL output fluxes AMI"])
+
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_complex_psf, mode='lines+markers', name='Zernike coefficients vs complex PSF AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_lp, mode='lines+markers', name='Zernike coefficients vs LP coefficients AMI'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=3, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_complex_flux, mode='lines+markers', name='Zernike coefficients vs complex PL output fluxes AMI'), row=3, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_lp, mode='lines+markers', name='PSF vs LP coefficients AMI'), row=4, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_complex_psf_lp, mode='lines+markers', name='Complex PSF vs LP coefficients AMI'), row=4, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=5, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_complex_psf_complex_flux, mode='lines+markers', name='complex PSF vs complex PL output fluxes AMI'), row=5, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes AMI'), row=6, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_complex_flux, mode='lines+markers', name='LP coefficients vs complex PL output fluxes AMI'), row=6, col=2)
+
+    # Update layout
+    fig.update_layout(height=1680,
+                      width=1200,
+                      title_text=f"AMI evolution over different number of clusters for 9 zernike modes and {n_samples}")
+    fig.update_yaxes(title_text='AMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Number of clusters',
+                     tickvals=number_of_clusters,
+                     type="log")
+    fig.show()
+    if save:
+        fig.write_image(f'ld-amievolutionover{n_samples}.png')
+
+
+def plot_nmi_evolutions_over_clusters_no_lp(
+    number_of_clusters,
+    nmi_zernike_psf,
+    nmi_zernike_flux,
+    nmi_psf_flux,
+    n_modes):
+    """
+    Plots and saves the evolution of mutual information over number of clusters excluding lp:
+
+    Input:
+        number_of_clusters (list): A list with the number of clusters used
+        nmi_zernike_psf (list): The list of mutual information score evolution between zernike and psf 
+        nmi_zernike_flux (list): The list of mutual information score evolution between zernike and flux
+        nmi_psf_flux (list): The list of mutual information score evolution between psf and flux
+        n_modes (int): The number of modes of the dataset
+    """
+    
+    fig = make_subplots(rows=1, 
+                        cols=3,
+                        subplot_titles=["Zernike coefficients vs PSF AMI",
+                                        "Zernike coefficients vs PL output fluxes AMI",
+                                        "PSF vs PL output fluxes AMI"])
+
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_psf, mode='lines+markers', name='Zernike coefficients vs PSF AMI'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_zernike_flux, mode='lines+markers', name='Zernike coefficients vs PL output fluxes AMI'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_psf_flux, mode='lines+markers', name='PSF vs PL output fluxes AMI'), row=1, col=3)
+    
+    # Update layout
+    fig.update_layout(height=270,
+                      width=1800,
+                      title_text=f"AMI evolution over different number of clusters for {n_modes} zernike modes")
+    fig.update_yaxes(title_text='AMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Number of clusters',
+                     tickvals=number_of_clusters,
+                     type="log")
+    fig.show()
+
+    fig.write_image(f'nmia-nmievolutionoverbig{n_modes}.png')
+
+
 def plot_nmi_evolution_over_modes(
     number_of_clusters,
     nmi_evolutions,
     title):
-    
+    """
+    Plots and saves the evolution of mutual information over number of clusters excluding lp:
+
+    Input:
+        number_of_clusters (list): A list with the number of clusters used
+        nmi_evolutions (list): The list of mutual information score evolution between zernike and psf 
+        n_modes (int): The number of modes of the dataset
+    """
     fig = go.Figure()
-    modes = [2, 5, 9, 14, 20]
+    modes = [2, 5, 9, 14, 20, 27, 35, 44]
     for nmi_evo, n_mode in zip(nmi_evolutions, modes):
         fig.add_trace(go.Scatter(x=number_of_clusters, 
                                  y=nmi_evo, mode='lines+markers', 
@@ -1639,10 +2137,44 @@ def plot_nmi_evolution_over_modes(
     fig.update_layout(height=600,
                       width=800,
                       title_text=title)
-    fig.update_yaxes(title_text='NMI',
+    fig.update_yaxes(title_text='AMI',
                      range=[0, 1])
     fig.update_xaxes(title_text='Number of clusters',
                      tickvals=number_of_clusters,
                      type="log")
     fig.show()
     fig.write_image(f'nmia-{title.strip().lower().replace(" ", "")}.png')
+
+
+def plot_ami_evolution_over_dataset_sizes(
+    number_of_clusters,
+    ami_evolutions,
+    title):
+    """
+    Plots and saves the evolution of mutual information over dataset sizes excluding lp:
+
+    Input:
+        number_of_clusters (list): A list with the number of clusters used. REMOVE FROM THE FUNCTION NOT USED.
+        ami_evolutions (list): The list of mutual information score evolutions
+        title (string): The title of the plot
+    """
+    fig = go.Figure()
+    modes = [500, 1000, 2000, 5000, 10000, 20000]
+    max_ami = []
+    for ami_evo in ami_evolutions:
+        max_ami.append(max(ami_evo))
+
+    fig.add_trace(go.Scatter(x=modes, 
+                             y=max_ami, mode='lines+markers'))
+    
+    # Update layout
+    fig.update_layout(height=600,
+                      width=800,
+                      title_text=title)
+    fig.update_yaxes(title_text='AMI',
+                     range=[0, 1])
+    fig.update_xaxes(title_text='Datasetsize',
+                     tickvals=modes,
+                     type="log")
+    fig.show()
+    fig.write_image(f'ld-{title.strip().lower().replace(" ", "")}.png')

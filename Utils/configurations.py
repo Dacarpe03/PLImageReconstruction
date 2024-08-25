@@ -234,8 +234,9 @@ class EncoderConvolutionalArchitecture(ConfigurationElement):
 			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
 			convolutional_activation (string): The name of the activation function in the convolutional layers		
 			output_activation (string): The name of the activation in the output layer
-			use_batch_normalization (bool): True if use batch normalization between hidden layers
 			model_name (string): The name of the model
+			padding (string): The type of padding used
+			use_batch_normalization (bool): True if use batch normalization between hidden layers
 		"""
 
 		return self.convolutional_layer_sizes, \
@@ -286,12 +287,16 @@ class PSFConvolutionalArchitecture(ConfigurationElement):
 			None
 		
 		Returns:
+			fc_layer_sizes (list): A list of integers containing the number of filters per fully connected layer
+			fc_activation (string): The activation function of the fully connected layers
 			convolutional_layer_sizes (list): A list of integers containing the number of filters per convolutional layer
 			convolutinal_layer_kernels (list): A list of tuples containing the size of the kernel per convolutional layer
 			convolutional_activation (string): The name of the activation function in the convolutional layers		
 			output_activation (string): The name of the activation in the output layer
-			use_batch_normalization (bool): True if use batch normalization between hidden layers
+			regularizer (keras.regularizers): The regularizer for the hidden layers
 			model_name (string): The name of the model
+			padding (string): The type of padding used
+			use_batch_normalization (bool): True if use batch normalization between hidden layers
 		"""
 
 		return self.fc_layer_sizes, \
@@ -335,7 +340,6 @@ class CompilationConfiguration(ConfigurationElement):
 		Returns:
 			loss_function (keras.losses): A loss function to backpropagate
 			optimizer (keras.optimizers): An optimizer to tune the neural network
-			learning_rate (float): The learning rate used by the optimizer
 			metric (keras.metrics): The metric to monitor to execute the callbacks
 		"""
 
@@ -523,7 +527,7 @@ def SimpleFCModel(
 def PSFSimpleFCModel(
 	):
 	"""
-	Function that creates the model configuration for the first working model (a fully connected one)
+	Function that creates the model configuration for a fully connected PSF reconstructor
 	"""
 
 	# Define architecture hyperparmeters
@@ -630,7 +634,7 @@ def PSFSimpleFCModel(
 def SimpleFCWithBN(
 	):
 	"""
-	Function that creates the model configuration for the first working model adding batch normalization
+	Function that creates the model configuration for a fully connected PSF reconstructor with batch normalization
 	"""
 
 	# Define architecture hyperparmeters
@@ -731,7 +735,7 @@ def SimpleFCWithBN(
 def FullyConnectedDropoutAndBN(
 	):
 	"""
-	Function that creates the model configuration for a fully connected model with dropout and batch normalization
+	Function that creates the model configuration for a fully connected PSF reconstructor with batch normalization and dropout
 	"""
 
 	# Define architecture hyperparmeters
@@ -1369,7 +1373,7 @@ def AutoEncoderConfiguration(
 def EncoderConvolutionalConfiguration(
 	):
 	"""
-	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for amplitude and phase
+	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for amplitude and phase reconstruction
 	"""
 
 	# Define architecture hyperparmeters
@@ -1462,7 +1466,7 @@ def EncoderConvolutionalConfiguration(
 
 def PSFConvolutionalConfiguration():
 	"""
-	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for amplitude and phase
+	Function that creates the model configuration for a model with a frozen encoder and a convolutional decoder for PSF reconstruction
 	"""
 
 	# Define architecture hyperparmeters
