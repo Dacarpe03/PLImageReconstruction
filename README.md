@@ -47,3 +47,13 @@ Folder containing notebooks for multiple projects (PSF Reconstruction, Clusterin
 - **MinidatasetDimensionalityReduction.ipynb**: Notebook to create UMAPS and PCAs for minidatasets used in Clustering analysis.
 - **MinidatasetProcessing.ipynb**: PSF intensity computing and flattening of data
 - **MinidatasetZernikePSFGeneration.ipynb**: Notebook to generate minidatasets for Clustering analysis.
+- **NMIAnalysisDatasetClustering.ipynb**: Notebook to cluster the datasets related to NMI analysis.
+- **NMIAnalysisDatasetDimensionalityReduction**: Notebook to create UMAP and PCAs for the NMI analysis related datasets.
+- **NMIAnalysisDatasetZernikePSFGeneration-Copy1.ipynb**: Notebook used to generate datasets for NMI analysis.
+- **NMIAnalysisOverNClusters.ipynb**: Notebook to plot cluster densities and NMI evolution.
+- **NMIAnalysisdatasetProcessing.ipynb**: Notebook to preprocess NMI analysis related data
+- **NormalizedMutualInformation.ipynb**: First test of NMI using clusters from DBSCAN algorithm
+- **PLInformationDetermination.ipynb**: Notebook to analyze Euclidean distances for atmospheric aberrated PSFs.
+- **PSFGeneration.ipynb**: Notebook to generate data related to the PSF Reconstruction models
+- **PSFProcessing.ipynb**: Notebook to preprocess data related to the PSF Reconstruction models
+- **PredictionsGeneration.ipybn**: Notebook to generate big datasets of predicted outputs from the models
