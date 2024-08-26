@@ -1,0 +1,32 @@
+\section{Photonic Lantern Information Determination}
+
+	This section contains information about the euclidean distances comparison between the different spaces along the optical pathway.
+	
+	\subsection{The data}
+		
+		There are 4 different types of datasets:
+		\begin{itemize}
+			\item Zernike coefficients
+			\item PSF
+			\item LP coefficients
+			\item Photonic Lantern Output fluxes
+		\end{itemize}
+		
+		The paths to the datasets can be found in the file \href{https://github.com/Dacarpe03/PLImageReconstruction/blob/main/Utils/psf_constants.py}{psf\_constants.py}.\\
+		
+		In this case the PSFs are generated from Zernike coefficients instead of atmospheric aberrations so the function to generate them is \filename{generate\_zernike\_psf\_complex\_fields} which can be found in the file  \href{https://github.com/Dacarpe03/PLImageReconstruction/blob/main/Utils/data_utils.py}{data\_utils.py}.\\
+		
+	\subsection{Results}
+		
+		The results tell us that similarity between PSF imply similarity between PL fluxes but not viceversa.
+		
+	\subsection{Code}
+		\begin{itemize}
+			\item To measure the euclidean distances use the notebook \href{https://github.com/Dacarpe03/PLImageReconstruction/blob/main/PSFReconstruction/DataNotebooks/PLInformationDetermination.ipynb}{PLInformationDetermination.ipynb}
+			\item To plot the cloud of euclidean distances use the notebook \href{https://github.com/Dacarpe03/PLImageReconstruction/blob/main/PSFReconstruction/Plots/LowOrderZernikePLInformationPlots.ipynb}{LowOrderZernikePLInformationPlots.ipynb} for zernike generated datasets or \href{https://github.com/Dacarpe03/PLImageReconstruction/blob/main/PSFReconstruction/Plots/PLInformationPlots.ipynb}{PLInformationPlots.ipynb}
+		\end{itemize}
+		
+	\subsection{Detailed results}
+	
+		For a detailed report on the datasets, results and plots see Part III from \filename{all.pdf}.
+		
