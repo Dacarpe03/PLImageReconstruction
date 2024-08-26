@@ -27,3 +27,23 @@ A set of notebooks to train neural networks that reconstruct SLM data from PL ou
 - **DataProcessing**: Normalization, reshaping, padding of data
 - **EncoderConvolutionalTraining**: Notebook to train encoder+convolutional neural networks
 - **Evaluation notebook**: Notebook to  evaluate models and plot output examples
+
+## PSFReconstruction
+Folder containing notebooks for multiple projects (PSF Reconstruction, Clustering, Euclidean distances, AMI analysis)
+
+### DataNotebooks
+- **Clustering.ipynb**: Cluster of zernike generated PSFs, zernike coefficients, lp coefficients and PL outputs
+- **CorrelationTest.ipynb**: Analysis of intensity sumatory of psf vs LP coefficients L2SUM
+- **CreateArbitraryMatrix.ipynb**: Notebook to create an arbitrary transfer matrix with a high condition number.
+- **DimensionalityReduction**: Notebook to create UMAPS and PCA of different datasets
+- **ExampleCalcCouplingArbinputCube.ipynb**: An example to test the PL lantern module.
+- **ExampleUseMat.ipynb**: An example on how to use a transfer matrix to compute PL outputs.
+- **HcipyTutorial.ipynb**: A tutorial on how to create PSFs with Hcipy
+- **LPModeCoefficientAnalysis**: A data analysis on the LPCoefficients
+- **LastDanceAMIAnalysisOverNClusters.ipynb**: Adjusted Mutual Information analysis on datasets of different sizes generated with 9 zernike modes.
+- **LowOrderZernikePLInformationDetermination.ipynb**: Euclidean distances analysis for zernike generated datasets.
+- **LowOrderZernikePSFGeneration.ipynb**: Notebook to generate train, validation, and test data using zernike modes.
+- **MinidatasetnModesClustering.ipynb**: Clustering analysis for minidatasets
+- **MinidatasetDimensionalityReduction.ipynb**: Notebook to create UMAPS and PCAs for minidatasets used in Clustering analysis.
+- **MinidatasetProcessing.ipynb**: PSF intensity computing and flattening of data
+- **MinidatasetZernikePSFGeneration.ipynb**: Notebook to generate minidatasets for Clustering analysis.
