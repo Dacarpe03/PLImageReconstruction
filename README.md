@@ -1,5 +1,11 @@
 # PLImageReconstruction
 
+## Installation and use
+1. Install the environment: ```conda env create -f sail-env.yml```
+2. Add Utils folder to python path: ```export PYTHONPATH="${PYTHONPATH}:${UTILS_PATH}"``` (UTILS_PATH being the absolute path to your utils folder)
+3. Activate the environment: ```conda activate sail-env```
+4. Ready to go!
+
 ## LabNotebook
 .tex files containing results and plots
 
