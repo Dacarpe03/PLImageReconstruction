@@ -2013,6 +2013,7 @@ def plot_ami_evolutions_over_clusters_with_complex(
     nmi_lp_flux,
     nmi_lp_complex_flux,
     n_samples,
+    best_case=False,
     save=False):
     """
     Plots and saves the evolution of mutual information over number of clusters:
@@ -2029,7 +2030,9 @@ def plot_ami_evolutions_over_clusters_with_complex(
         nmi_complex_psf_complex_flux (list): The list of mutual information score evolution between complex field psf and fluxes complex amplitudes
         nmi_lp_flux (list): The list of mutual information score evolution between lp and flux
         nmi_lp_complex_flux (list): The list of mutual information score evolution between lp and flux complex amplitudes
-        n_modes (int): The number of modes of the dataset
+        n_samples (int): The number of samples of the dataset
+        best_case (bool): If true, print dotted lines on all of the plots with the pl complex amplitud and lp coeffs AMI
+        save (bool): If true, save the plot in a .png
     """
     
     fig = make_subplots(rows=6, 
@@ -2059,6 +2062,19 @@ def plot_ami_evolutions_over_clusters_with_complex(
     fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_flux, mode='lines+markers', name='LP coefficients vs PL output fluxes AMI'), row=6, col=1)
     fig.add_trace(go.Scatter(x=number_of_clusters, y=nmi_lp_complex_flux, mode='lines+markers', name='LP coefficients vs complex PL output fluxes AMI'), row=6, col=2)
 
+    if best_case:
+
+        showlegend=True
+        for row in range(1, 7):
+            for col in range(1,3):
+                if row == 2 and col ==2:
+                    print()
+                else:
+                    fig.add_trace(go.Scatter(x=number_of_clusters, 
+                                             y=nmi_lp_complex_flux, line = dict(color='royalblue', width=1, dash='dash'), 
+                                             name='Best case', showlegend=showlegend), row=row, col=col)
+                showlegend=False
+    
     # Update layout
     fig.update_layout(height=1680,
                       width=1200,

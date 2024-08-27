@@ -593,6 +593,10 @@ PATHS_DICTIONARY = {
 	},
 
 
+
+}
+
+BIG_PATHS_DICTIONARY = {
 	"NMI_ANALYSIS_BIG_9M":{
 		"complex_fields_path": BIG_ZERNIKE_9M_COMPLEX_FIELDS_FILE_PATH,
 		"intensities_file_path": BIG_PROCESSED_ZERNIKE_9M_COMPLEX_FIELDS_INTENSITY_FILE_PATH,
@@ -624,5 +628,5 @@ PATHS_DICTIONARY = {
 									False,
 									False],
 		"n_samples": 75000
-	},
+	}
 }
