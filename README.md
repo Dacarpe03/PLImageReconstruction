@@ -1,5 +1,11 @@
 # PLImageReconstruction
 
+## Installation and use
+1. Install the environment: ```conda env create -f sail-env.yml```
+2. Add Utils folder to python path: ```export PYTHONPATH="${PYTHONPATH}:${UTILS_PATH}"``` (UTILS_PATH being the absolute path to your utils folder)
+3. Activate the environment: ```conda activate sail-env```
+4. Ready to go!
+
 ## LabNotebook
 .tex files containing results and plots
 
@@ -57,3 +63,25 @@ Folder containing notebooks for multiple projects (PSF Reconstruction, Clusterin
 - **PSFGeneration.ipynb**: Notebook to generate data related to the PSF Reconstruction models
 - **PSFProcessing.ipynb**: Notebook to preprocess data related to the PSF Reconstruction models
 - **PredictionsGeneration.ipybn**: Notebook to generate big datasets of predicted outputs from the models
+
+### Diffusion
+Contains some notebooks to train diffusion models to generate random PSF (needs Pytorch)
+
+### Evaluation
+- **PSFReconstructionEvaluation**: Notebook to evaluate a model and see its outputs
+
+### Plots
+Contains notebooks used for plotting 
+- **LowOrderZernikePLInformationPlots.ipynb**: Plots for the euclidean distances analysis
+- **MinidatasetReportPlots.ipynb**: Some plots for the clustering analysis
+- **PLInformationPlots.ipynb**: Plots for the euclidean distances analysis used for atmospheric aberrated psfs
+- **ReportPlots.ipynb**: Plots for the first clustering try
+
+### Scripts
+Contains script versions of the notebooks to launch in a terminal. Some to train models, other to generate data, process and reduce dimensionality and even for clustering.
+
+### Training
+Notebooks to train models
+
+## TransferMatrixes
+Contains the transfer matrixes of the PL used in the projects
